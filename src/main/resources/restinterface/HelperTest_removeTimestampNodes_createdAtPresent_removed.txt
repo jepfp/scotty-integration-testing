@@ -1,0 +1,17 @@
+{
+  "data": [{
+    "Bemerkungen": null,
+    "Stichwoerter": null,
+    "Titel": "My Int-Testi-Song",
+    "created_at": "2014-11-22 14:02:59",
+    "externalLink": null,
+    "id": 20,
+    "lastEditUser_id": 3,
+    "rubrik_id": 3,
+    "tonality": "E"
+  }],
+  "message": "Success",
+  "success": true,
+  "totalCount": 1,
+  "type": "response"
+}

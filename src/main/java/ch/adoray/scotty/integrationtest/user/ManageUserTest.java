@@ -1,0 +1,79 @@
+package ch.adoray.scotty.integrationtest.user;
+
+import static ch.adoray.scotty.integrationtest.common.Configuration.config;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Map;
+
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
+import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.Interactor;
+import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
+import ch.adoray.scotty.integrationtest.common.ResourceLoader;
+
+import com.gargoylesoftware.htmlunit.JavaScriptPage;
+public class ManageUserTest {
+    @Test
+    public void register_userAlreadyExists_error() throws Exception {
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getExtDirectUrl()).setMethodPost()//
+            .addParam("email", "philippjenni@bluemail.ch")//
+            .addParam("password", "asdf")//
+            .addParam("passwordRepeat", "asdf")//
+            .addParam("adoray", "Luzern");
+        addBasicParams(config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    private void addBasicParams(InteractorConfigurationWithParams config) {
+        config.addParam("extTID", "1")//
+            .addParam("extAction", "ManageUser")//
+            .addParam("extMethod", "register")//
+            .addParam("extType", "rpc")//
+            .addParam("extUpload", "false")//
+            .addParam("firstname", "Philipp")//
+            .addParam("lastname", "Jenni");
+    }
+
+    @Test
+    public void register_passwordsDontMatch_error() throws Exception {
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getExtDirectUrl())//
+            .setMethodPost()//
+            .addParam("email", "newUser@bluemail.ch")//
+            .addParam("password", "asdff")//
+            .addParam("passwordRepeat", "asdf")//
+            .addParam("adoray", "Luzern");
+        addBasicParams(config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    @Test
+    public void register_noEmail_error() throws Exception {
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getExtDirectUrl()).setMethodPost()//
+            .addParam("password", "asdf")//
+            .addParam("passwordRepeat", "asdf")//
+            .addParam("adoray", "Luzern");
+        addBasicParams(config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    @Test
+    public void register_correctData_success() throws Exception {
+        String expectedEmail = "newUserCorrect@bluemail.ch";
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getExtDirectUrl()).setMethodPost()//
+            .addParam("email", expectedEmail)//
+            .addParam("password", "asdf")//
+            .addParam("passwordRepeat", "asdf")//
+            .addParam("adoray", "Bern");
+        addBasicParams(config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        // assert
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        Map<String, String> record = DatabaseAccess.getLastRecord("user");
+        assertEquals(expectedEmail, record.get("email"));
+    }
+}
