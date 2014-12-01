@@ -25,7 +25,7 @@
       "Buchname": "Adonai",
       "Liednr": null,
       "id": null,
-      "lied_id": null,
+      "lied_id": 1,
       "liederbuch_id": 3,
       "locked": 1,
       "mnemonic": "AI"
@@ -35,7 +35,7 @@
       "Buchname": "Luzern",
       "Liednr": null,
       "id": null,
-      "lied_id": null,
+      "lied_id": 1,
       "liederbuch_id": 4,
       "locked": 0,
       "mnemonic": "LU"
@@ -45,7 +45,7 @@
       "Buchname": "Zug",
       "Liednr": null,
       "id": null,
-      "lied_id": null,
+      "lied_id": 1,
       "liederbuch_id": 5,
       "locked": 0,
       "mnemonic": "ZG"

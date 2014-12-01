@@ -16,6 +16,7 @@ public class DTOValidatorTest {
         //arrange
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("lied");
         interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
         // act
         RestResponse response = RestResponse.createFromResponse(interactor.performRequest().getContent());
         // assert
@@ -36,6 +37,7 @@ public class DTOValidatorTest {
             .setField("rubrik_id", "3")//
             .setField("tonality", "E");
         interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
         RestResponse response = RestResponse.createFromResponse(interactor.performRequest().getContent());
         assertValidationError(response, "Fehler im Feld Titel: Das Feld darf nicht leer sein.");
     }
@@ -49,6 +51,7 @@ public class DTOValidatorTest {
             .setField("rubrik_id", "3")//
             .setField("tonality", "E");
         interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
         RestResponse response = RestResponse.createFromResponse(interactor.performRequest().getContent());
         assertValidationError(response, "Fehler im Feld Titel: Das Feld darf nicht leer sein.");
     }

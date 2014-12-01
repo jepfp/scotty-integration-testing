@@ -67,7 +67,7 @@ public class Helper {
      * @return Json String with the nodes removed.
      */
     public static String removeTimestampNodes(String input) {
-        return removeDataNode(input, "created_at", "updated_at");
+        return removeInDataNode(input, "created_at", "updated_at");
     }
 
     private static JSONObject parseJson(String content) {
@@ -79,7 +79,7 @@ public class Helper {
         }
     }
 
-    public static String removeDataNode(String input, String... nodeToRemove){
+    public static String removeInDataNode(String input, String... nodeToRemove){
         JSONObject json = parseJson(input);
         try {
             JSONArray data = (JSONArray) json.get("data");

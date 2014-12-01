@@ -94,7 +94,8 @@ public class AbstractDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
             .disableCookies()//
-            .disableFailOnJsonSuccessFalse();
+            .disableFailOnJsonSuccessFalse()//
+            .disableThrowExceptionOnFailingStatusCode();
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
         JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
@@ -131,7 +132,8 @@ public class AbstractDAOTest {
     public void read_orderByInvalidParameter_correctOrder() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
-            .disableFailOnJsonSuccessFalse();
+            .disableFailOnJsonSuccessFalse()//
+            .disableThrowExceptionOnFailingStatusCode();
         Helper.addSortParameter("\" sql injection test", false, config);
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -238,7 +240,8 @@ public class AbstractDAOTest {
     public void update_logging_noSuccess() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/logging")//
-            .disableFailOnJsonSuccessFalse();
+            .disableFailOnJsonSuccessFalse()//
+            .disableThrowExceptionOnFailingStatusCode();
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
         JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());

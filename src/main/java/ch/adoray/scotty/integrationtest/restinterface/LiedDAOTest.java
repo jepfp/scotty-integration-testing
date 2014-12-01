@@ -94,14 +94,14 @@ public class LiedDAOTest {
         assertEquals(titel, record.get(titelKey));
         assertEquals(rubrikId, record.get(rubrikIdKey));
         assertEquals(tonality, record.get(tonalityKey));
-        assertDbLogEntry(id);
+        assertDbLogEntry();
     }
 
     private String removeIdAndTimestamps(String jsonString) {
-        return Helper.removeDataNode(Helper.removeTimestampNodes(jsonString), "id");
+        return Helper.removeInDataNode(Helper.removeTimestampNodes(jsonString), "id");
     }
 
-    private void assertDbLogEntry(long id) throws ClassNotFoundException, SQLException {
+    private void assertDbLogEntry() throws ClassNotFoundException, SQLException {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
         String expectedMessage = "3 ## correct@login.ch ## lied ## INSERT INTO lied (Titel, rubrik_id, lastEditUser_id, tonality) VALUES (?, ?, ?, ?) ## ssss, My Int-Testi-Song, 3, 3, E";

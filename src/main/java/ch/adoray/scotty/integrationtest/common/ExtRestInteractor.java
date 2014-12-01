@@ -78,4 +78,8 @@ abstract class ExtRestInteractor {
     public void setFailOnJsonSuccessFalse(boolean value) {
         this.failOnJsonSuccessFalse = value;
     }
+    
+    public void setThrowExceptionOnFailingStatusCode(boolean value) {
+        this.throwExceptionOnFailingStatusCode = value;
+    }
 }

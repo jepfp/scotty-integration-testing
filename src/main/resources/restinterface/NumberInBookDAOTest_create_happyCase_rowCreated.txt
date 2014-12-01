@@ -1,0 +1,16 @@
+{
+  "data": [{
+    "Beschreibung": "Das Liederbuch Adonai von den Seligpreisungen Zug.",
+    "Buchname": "Adonai",
+    "Liednr": "8888",
+    "id": 9,
+    "lied_id": 10,
+    "liederbuch_id": 3,
+    "locked": 1,
+    "mnemonic": "AI"
+  }],
+  "message": "Success",
+  "success": true,
+  "totalCount": 1,
+  "type": "response"
+}
