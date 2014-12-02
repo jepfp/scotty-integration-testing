@@ -4,7 +4,6 @@ import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
 
 import com.gargoylesoftware.htmlunit.HttpMethod;
@@ -12,8 +11,6 @@ import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.util.NameValuePair;
-import com.google.common.collect.Lists;
 abstract class ExtRestInteractor {
     private final String controller;
     private final Optional<String> id;
@@ -58,6 +55,7 @@ abstract class ExtRestInteractor {
             String requestUrl = url + (addDebugParam ? "?" + debugParamString : "");
             WebRequest request = new WebRequest(new URL(requestUrl), getHttpMethod());
             request.setAdditionalHeader("Content-Type", "application/json");
+            request.setCharset("utf-8");
             setRequestBody(request);
             JavaScriptPage page = getPage(request);
             Interactor.printAndValidate(page.getContent(), failOnUnparsableJson, failOnJsonSuccessFalse);
