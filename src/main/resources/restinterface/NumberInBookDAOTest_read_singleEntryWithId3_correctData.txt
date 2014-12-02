@@ -1,6 +1,6 @@
 {
   "data": [{
-    "Beschreibung": "Das klassische Grüne",
+    "Beschreibung": "Das klassische GrÃ¼ne",
     "Buchname": "Dir singen wir 2",
     "Liednr": "100",
     "id": 3,

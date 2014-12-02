@@ -3,9 +3,9 @@
     {
       "Beschreibung": "Der grosse Liederordner, der sämtlichen Adorays der Schweiz zur Verfügung steht.",
       "Buchname": "Adoray Liederordner",
-      "Liednr": "1000",
-      "id": 1,
-      "lied_id": 1,
+      "Liednr": null,
+      "id": null,
+      "lied_id": null,
       "liederbuch_id": 1,
       "locked": 1,
       "mnemonic": "AL"
@@ -13,9 +13,9 @@
     {
       "Beschreibung": "Das klassische Grüne",
       "Buchname": "Dir singen wir 2",
-      "Liednr": "100",
-      "id": 3,
-      "lied_id": 1,
+      "Liednr": null,
+      "id": null,
+      "lied_id": null,
       "liederbuch_id": 2,
       "locked": 1,
       "mnemonic": "DSW2"
@@ -25,7 +25,7 @@
       "Buchname": "Adonai",
       "Liednr": null,
       "id": null,
-      "lied_id": 1,
+      "lied_id": null,
       "liederbuch_id": 3,
       "locked": 1,
       "mnemonic": "AI"
@@ -35,7 +35,7 @@
       "Buchname": "Luzern",
       "Liednr": null,
       "id": null,
-      "lied_id": 1,
+      "lied_id": null,
       "liederbuch_id": 4,
       "locked": 0,
       "mnemonic": "LU"
@@ -45,7 +45,7 @@
       "Buchname": "Zug",
       "Liednr": null,
       "id": null,
-      "lied_id": 1,
+      "lied_id": null,
       "liederbuch_id": 5,
       "locked": 0,
       "mnemonic": "ZG"
@@ -53,5 +53,6 @@
   ],
   "message": "Success",
   "success": true,
-  "totalCount": 5
+  "totalCount": 5,
+  "type": "response"
 }
