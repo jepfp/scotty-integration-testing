@@ -43,7 +43,7 @@ public class LiedWithLiedtextsAndRefrainsFixture extends AbstractFixture {
         }
     }
 
-    public long getLiedId() {
+    public Long getLiedId() {
         return liedId;
     }
 }

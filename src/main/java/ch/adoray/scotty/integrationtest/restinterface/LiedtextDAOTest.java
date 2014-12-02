@@ -1,6 +1,7 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -17,17 +18,17 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
-import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
+import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.Maps;
 public class LiedtextDAOTest {
-    private static final String TABLE = "liedtext";
-
     @Test
     public void read_LiedId6_correctOrderOfReihenfolge() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -42,7 +43,7 @@ public class LiedtextDAOTest {
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 2, 1, 3, 4);
     }
-    
+
     @Test
     public void destroy_liedtext_liedtextDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
@@ -75,5 +76,62 @@ public class LiedtextDAOTest {
     @Ignore
     public void insertLiedtext_insertLiedtextWithReihenfolge_triggerDoesntChangeReihenfolge() {
         fail("Implement");
+    }
+
+    @Test
+    public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
+        String stropheKey = "Strophe";
+        String liedIdKey = "lied_id";
+        String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        // act
+        JavaScriptPage result = interactor//
+            .setField(stropheKey, strophe)//
+            .setField(liedIdKey, liedId)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals(liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(liedIdKey));
+        assertEquals(strophe, response.getDataValueByKeyFromFirst(stropheKey));
+        assertNull(response.getDataValueByKeyFromFirst("refrain_id"));
+        assertDbLogEntry(liedFixture.getLiedId());
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    private void assertDbLogEntry(long liedId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage =
+            "3 ## correct@login.ch ## liedtext ## INSERT INTO liedtext (Strophe, refrain_id, lied_id) VALUES (?, ?, ?) ## sss, Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet., , "
+                + String.valueOf(liedId);
+        assertEquals("Format correct?", expectedMessage, message);
+    }
+
+    @Test
+    public void create_noRefrainSelectedWhichMeansRefrainId0_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
+        String stropheKey = "Strophe";
+        String liedIdKey = "lied_id";
+        String refrainIdKey = "refrain_id";
+        String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        // act
+        JavaScriptPage result = interactor//
+            .setField(stropheKey, strophe)//
+            .setField(liedIdKey, liedId)//
+            .setField(refrainIdKey, "0")//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIEDTEXT, response.getFirstId());
+        assertNull(record.get(refrainIdKey));
+        //clean up
+        liedFixture.cleanUp();
     }
 }
