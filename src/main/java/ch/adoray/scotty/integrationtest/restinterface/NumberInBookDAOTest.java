@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class NumberInBookDAOTest {
     @Test
@@ -37,7 +39,26 @@ public class NumberInBookDAOTest {
         // assert
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
     }
-    
+
+    @Test
+    // This would be the case for a new song which should be created
+    public void read_withoutLiedId_liedIdIs0ForEveryEntry() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        // act
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/numberInBook");
+        addFilterAsExtDoes(config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        // assert
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    // Adds the filter in the same way as ext js does: only the key is set without any "value" node.
+    private void addFilterAsExtDoes(InteractorConfigurationWithParams config) {
+        JSONArray filter = new JSONArray();
+        filter.put(new JSONObject(ImmutableMap.of("property", "lied_id")));
+        config.addParam("filter", filter.toString());
+    }
+
     @Test
     public void read_singleEntryWithId3_correctData() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -47,7 +68,7 @@ public class NumberInBookDAOTest {
         // assert
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
     }
-    
+
     @Test
     public void read_withNoFilterAndId_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -60,14 +81,12 @@ public class NumberInBookDAOTest {
         boolean success = json.getBoolean("success");
         assertFalse("no filter and no id is set --> success must be false", success);
     }
-    
+
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
-        interactor.setThrowExceptionOnFailingStatusCode(false);
-        
         String liednrKey = "Liednr";
         String liedIdKey = "lied_id";
         String liederbuchIdKey = "liederbuch_id";
@@ -95,7 +114,8 @@ public class NumberInBookDAOTest {
     private void assertDbLogEntry(long liedId) throws ClassNotFoundException, SQLException {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
-        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## INSERT INTO fkliederbuchlied (Liednr, lied_id, liederbuch_id) VALUES (?, ?, ?) ## sss, 8888, " + String.valueOf(liedId) + ", 3";
+        String expectedMessage =
+            "3 ## correct@login.ch ## fkliederbuchlied ## INSERT INTO fkliederbuchlied (Liednr, lied_id, liederbuch_id) VALUES (?, ?, ?) ## sss, 8888, " + String.valueOf(liedId) + ", 3";
         assertEquals("Format correct?", expectedMessage, message);
     }
 }
