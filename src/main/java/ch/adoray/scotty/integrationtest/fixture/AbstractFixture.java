@@ -27,7 +27,7 @@ abstract class AbstractFixture {
         }
     }
 
-    protected void addTableIdTuple(String table, long id) {
+    public void addTableIdTuple(String table, long id) {
         tableIdTuples.add(new TableIdTuple(table, id));
     }
 

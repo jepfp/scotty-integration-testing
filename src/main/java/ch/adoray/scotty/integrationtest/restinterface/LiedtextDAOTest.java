@@ -134,4 +134,30 @@ public class LiedtextDAOTest {
         //clean up
         liedFixture.cleanUp();
     }
+
+    @Test
+    public void create_refrainSelected_rowCreatedWithKeyToRefrain() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
+        String stropheKey = "Strophe";
+        String liedIdKey = "lied_id";
+        String refrainIdKey = "refrain_id";
+        String strophe = "Strophe mit Link zu Refrain.";
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
+        // act
+        JavaScriptPage result = interactor//
+            .setField(stropheKey, strophe)//
+            .setField(liedIdKey, liedId)//
+            .setField(refrainIdKey, refrainId)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIEDTEXT, response.getFirstId());
+        assertEquals(refrainId, record.get(refrainIdKey));
+        //clean up
+        liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
+        liedFixture.cleanUp();
+    }
 }
