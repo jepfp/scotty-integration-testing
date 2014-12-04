@@ -160,4 +160,25 @@ public class LiedtextDAOTest {
         liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
         liedFixture.cleanUp();
     }
+    
+    @Test
+    public void create_refrainSelectedButNoStrophe_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
+        String liedIdKey = "lied_id";
+        String refrainIdKey = "refrain_id";
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
+        // act
+        JavaScriptPage result = interactor//
+            .setField(liedIdKey, liedId)//
+            .setField(refrainIdKey, refrainId)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        //clean up
+        liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
+        liedFixture.cleanUp();
+    }
 }
