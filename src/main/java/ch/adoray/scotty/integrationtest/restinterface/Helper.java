@@ -1,5 +1,6 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
+import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
@@ -9,9 +10,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONParser;
 
+import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 
+import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 public class Helper {
     public static Object extractAttributeValueAt(JSONArray inputData, String attributeKey, int at) throws JSONException {
         JSONObject singleEntry = (JSONObject) inputData.get(at);
@@ -79,7 +83,7 @@ public class Helper {
         }
     }
 
-    public static String removeInDataNode(String input, String... nodeToRemove){
+    public static String removeInDataNode(String input, String... nodeToRemove) {
         JSONObject json = parseJson(input);
         try {
             JSONArray data = (JSONArray) json.get("data");
@@ -93,5 +97,15 @@ public class Helper {
             throw new RuntimeException("No data node found inside " + input);
         }
         return json.toString();
+    }
+
+    public static JSONObject readWithFkAttributeFilter(String controller, String filterAttribute, String value) {
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/" + controller);
+        Map<String, String> filter = Maps.newHashMap();
+        filter.put(filterAttribute, String.valueOf(value));
+        Helper.addFilterParameter(filter, config);
+        JavaScriptPage result = Interactor.performRequest(config);
+        JSONObject json = (JSONObject) parseJson(result.getContent());
+        return json;
     }
 }

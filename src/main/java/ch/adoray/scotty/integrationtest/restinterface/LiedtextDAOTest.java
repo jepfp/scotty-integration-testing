@@ -4,9 +4,11 @@ import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,7 +30,12 @@ import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixt
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Longs;
 public class LiedtextDAOTest {
+    private static final String LIED_ID_KEY = "lied_id";
+    private static final String REFRAIN_ID_KEY = "refrain_id";
+    private static final String STROPHE_KEY = "Strophe";
+
     @Test
     public void read_LiedId6_correctOrderOfReihenfolge() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -61,21 +68,26 @@ public class LiedtextDAOTest {
     }
 
     @Test
-    @Ignore
-    public void insertLiedtext_insertLiedtextWithoutReihenfolgeWithOtherLiedtexts_triggerSetsReihenfolgeToMax() {
-        fail("Implement");
-    }
-
-    @Test
-    @Ignore
-    public void insertLiedtext_insertLiedtextWithoutReihenfolgeWithoutOtherLiedtexts_triggerSetsReihenfolgeTo1() {
-        fail("Implement");
-    }
-
-    @Test
-    @Ignore
-    public void insertLiedtext_insertLiedtextWithReihenfolge_triggerDoesntChangeReihenfolge() {
-        fail("Implement");
+    public void insertLiedtext_insertLiedtextWithoutReihenfolgeWithOtherLiedtexts_reihenfolgeToMax() {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
+        // act
+        JavaScriptPage result = interactor//
+            .setField(LIED_ID_KEY, liedId)//
+            .setField(REFRAIN_ID_KEY, refrainId)//
+            .performRequest();
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        // assert
+        RestResponse allLiedtexts = RestResponse.createFromResponse(Helper.readWithFkAttributeFilter("liedtext", "lied_id", liedId));
+        List<Long> expectedOrderOfIds = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT);
+        expectedOrderOfIds.add(response.getFirstId());
+        allLiedtexts.assertIdsInOrder(Longs.toArray(expectedOrderOfIds));
+        //clean up
+        liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
+        liedFixture.cleanUp();
     }
 
     @Test
@@ -83,19 +95,17 @@ public class LiedtextDAOTest {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String stropheKey = "Strophe";
-        String liedIdKey = "lied_id";
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
         String liedId = String.valueOf(liedFixture.getLiedId());
         // act
         JavaScriptPage result = interactor//
-            .setField(stropheKey, strophe)//
-            .setField(liedIdKey, liedId)//
+            .setField(STROPHE_KEY, strophe)//
+            .setField(LIED_ID_KEY, liedId)//
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
-        assertEquals(liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(liedIdKey));
-        assertEquals(strophe, response.getDataValueByKeyFromFirst(stropheKey));
+        assertEquals(liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
         assertNull(response.getDataValueByKeyFromFirst("refrain_id"));
         assertDbLogEntry(liedFixture.getLiedId());
         //clean up
@@ -106,9 +116,9 @@ public class LiedtextDAOTest {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
         String expectedMessage =
-            "3 ## correct@login.ch ## liedtext ## INSERT INTO liedtext (Strophe, refrain_id, lied_id) VALUES (?, ?, ?) ## sss, Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet., , "
+            "3 ## correct@login.ch ## liedtext ## INSERT INTO liedtext (Strophe, refrain_id, lied_id, Reihenfolge) VALUES (?, ?, ?, ?) ## ssss, Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet., , "
                 + String.valueOf(liedId);
-        assertEquals("Format correct?", expectedMessage, message);
+        assertTrue("Does\n" + message + "\ncontain\n" + expectedMessage, message.contains(expectedMessage));
     }
 
     @Test
@@ -116,15 +126,13 @@ public class LiedtextDAOTest {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String stropheKey = "Strophe";
-        String liedIdKey = "lied_id";
         String refrainIdKey = "refrain_id";
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
         String liedId = String.valueOf(liedFixture.getLiedId());
         // act
         JavaScriptPage result = interactor//
-            .setField(stropheKey, strophe)//
-            .setField(liedIdKey, liedId)//
+            .setField(STROPHE_KEY, strophe)//
+            .setField(LIED_ID_KEY, liedId)//
             .setField(refrainIdKey, "0")//
             .performRequest();
         // assert
@@ -140,40 +148,35 @@ public class LiedtextDAOTest {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String stropheKey = "Strophe";
-        String liedIdKey = "lied_id";
-        String refrainIdKey = "refrain_id";
         String strophe = "Strophe mit Link zu Refrain.";
         String liedId = String.valueOf(liedFixture.getLiedId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
         JavaScriptPage result = interactor//
-            .setField(stropheKey, strophe)//
-            .setField(liedIdKey, liedId)//
-            .setField(refrainIdKey, refrainId)//
+            .setField(STROPHE_KEY, strophe)//
+            .setField(LIED_ID_KEY, liedId)//
+            .setField(REFRAIN_ID_KEY, refrainId)//
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIEDTEXT, response.getFirstId());
-        assertEquals(refrainId, record.get(refrainIdKey));
+        assertEquals(refrainId, record.get(REFRAIN_ID_KEY));
         //clean up
         liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
         liedFixture.cleanUp();
     }
-    
+
     @Test
     public void create_refrainSelectedButNoStrophe_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String liedIdKey = "lied_id";
-        String refrainIdKey = "refrain_id";
         String liedId = String.valueOf(liedFixture.getLiedId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
         JavaScriptPage result = interactor//
-            .setField(liedIdKey, liedId)//
-            .setField(refrainIdKey, refrainId)//
+            .setField(LIED_ID_KEY, liedId)//
+            .setField(REFRAIN_ID_KEY, refrainId)//
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());

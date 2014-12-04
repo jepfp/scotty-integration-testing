@@ -76,25 +76,13 @@ public class ChangeOrder {
     }
 
     private JSONArray loadLiedtexts(long liedId) throws JSONException {
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedtext");
-        Map<String, String> filter = Maps.newHashMap();
-        filter.put("lied_id", String.valueOf(liedId));
-        Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = Helper.readWithFkAttributeFilter("liedtext", "lied_id", String.valueOf(liedId));
         JSONArray data = (JSONArray) json.get("data");
         return data;
     }
 
     private JSONArray loadRefrains(long liedId) throws JSONException {
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/refrain");
-        Map<String, String> filter = Maps.newHashMap();
-        filter.put("lied_id", String.valueOf(liedId));
-        Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = Helper.readWithFkAttributeFilter("refrain", "lied_id", String.valueOf(liedId));
         JSONArray data = (JSONArray) json.get("data");
         return data;
     }
@@ -174,7 +162,7 @@ public class ChangeOrder {
         // clean up
         liedFixture.cleanUp();
     }
-    
+
     @Test
     public void moveDown_moveDownRefrain_lastEditUserIdCorrect() throws Exception {
         // arrange

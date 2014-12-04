@@ -1,5 +1,8 @@
 package ch.adoray.scotty.integrationtest.common.response;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +36,7 @@ public class RestResponse {
         return type;
     }
 
-    public static RestResponse createFromResponse(String response) {
-        JSONObject json = parseJson(response);
+    public static RestResponse createFromResponse(JSONObject json) {
         try {
             boolean success = (boolean) json.get(KEY_SUCCESS);
             String type = (String) json.get(KEY_TYPE);
@@ -45,6 +47,11 @@ public class RestResponse {
         } catch (JSONException e) {
             throw new RuntimeException("Error while creating RestUnsuccessfulResponse.", e);
         }
+    }
+
+    public static RestResponse createFromResponse(String response) {
+        JSONObject json = parseJson(response);
+        return createFromResponse(json);
     }
 
     private static JSONObject parseJson(String jsonString) {
@@ -86,5 +93,22 @@ public class RestResponse {
     public long getFirstId() {
         Integer idObject = (Integer) getDataValueAtByKey(0, "id");
         return new Long(idObject);
+    }
+
+    public void assertIdsInOrder(long... orderOfIds) {
+        if(orderOfIds.length > data.length()){
+            fail("Response contains only " + data.length() + " entries in data node but there are " + orderOfIds.length + " to check.");
+        }
+        try {
+            for (int i = 0; i < data.length(); i++) {
+                int id = ((JSONObject) data.get(i)).getInt("id");
+                if (i >= orderOfIds.length) {
+                    return;
+                }
+                assertEquals("Wrong order of ids at position (zero based) " + i, orderOfIds[i], id);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException("Assert of IDs in order failed.", e);
+        }
     }
 }

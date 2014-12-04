@@ -28,7 +28,7 @@ public class DatabaseAccess {
         String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ")";
         return executeStatement(sqlStatement);
     }
-    
+
     public static Map<String, String> getSecondLastRecord(String table) throws SQLException, ClassNotFoundException {
         String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ") - 1";
         return executeStatement(sqlStatement);
@@ -48,14 +48,14 @@ public class DatabaseAccess {
     private static Map<String, String> executeStatement(String sqlStatement) throws SQLException, ClassNotFoundException {
         try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
             ResultSetMetaData metaData = resultSet.getMetaData();
-            if(resultSet.last()){
-            int columnCount = metaData.getColumnCount();
-            Map<String, String> tuple = new LinkedHashMap<String, String>();
-            for (int i = 1; i <= columnCount; i++) {
-                tuple.put(metaData.getColumnLabel(i), resultSet.getString(i));
-            }
-            return tuple;
-            }else{
+            if (resultSet.last()) {
+                int columnCount = metaData.getColumnCount();
+                Map<String, String> tuple = new LinkedHashMap<String, String>();
+                for (int i = 1; i <= columnCount; i++) {
+                    tuple.put(metaData.getColumnLabel(i), resultSet.getString(i));
+                }
+                return tuple;
+            } else {
                 return null;
             }
         }
