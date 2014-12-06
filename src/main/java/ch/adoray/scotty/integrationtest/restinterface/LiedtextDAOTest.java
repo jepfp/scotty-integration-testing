@@ -68,7 +68,7 @@ public class LiedtextDAOTest {
     }
 
     @Test
-    public void insertLiedtext_insertLiedtextWithoutReihenfolgeWithOtherLiedtexts_reihenfolgeToMax() {
+    public void create_withoutReihenfolge_reihenfolgeToMax() {
         //arrange
         LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");

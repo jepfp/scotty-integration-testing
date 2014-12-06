@@ -28,10 +28,10 @@ abstract class ExtRestInteractor {
         this.id = Optional.empty();
     }
 
-    public ExtRestInteractor(String controller, long id) {
+    public ExtRestInteractor(String controller, Long id) {
         this.controller = controller;
         this.id = Optional.of(String.valueOf(id));
-        this.url = config().getRestInterfaceUrl() + "/controller/" + id;
+        this.url = config().getRestInterfaceUrl() + "/" + controller + "/" + id;
     }
 
     public String getController() {
@@ -76,7 +76,7 @@ abstract class ExtRestInteractor {
     public void setFailOnJsonSuccessFalse(boolean value) {
         this.failOnJsonSuccessFalse = value;
     }
-    
+
     public void setThrowExceptionOnFailingStatusCode(boolean value) {
         this.throwExceptionOnFailingStatusCode = value;
     }
