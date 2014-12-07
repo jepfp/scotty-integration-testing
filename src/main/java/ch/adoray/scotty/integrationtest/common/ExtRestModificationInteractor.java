@@ -36,7 +36,7 @@ public abstract class ExtRestModificationInteractor extends ExtRestInteractor {
         try {
             JSONObject request = new JSONObject();
             for (Map.Entry<String, String> p : modelFields.entrySet()) {
-                request.put(p.getKey(), p.getValue());
+                request.put(p.getKey(), p.getValue() != null ? p.getValue() : JSONObject.NULL);
             }
             return request.toString();
         } catch (JSONException e) {

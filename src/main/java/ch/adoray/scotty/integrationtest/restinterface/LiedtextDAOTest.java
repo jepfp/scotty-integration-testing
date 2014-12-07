@@ -21,6 +21,7 @@ import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
+import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.Tables;
@@ -182,6 +183,53 @@ public class LiedtextDAOTest {
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         //clean up
         liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
+        liedFixture.cleanUp();
+    }
+
+    @Test
+    public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(3);
+        Long refrainIdToSet = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
+        String strophe = "Geänderte Strophe";
+        // act
+        JavaScriptPage result = interactor//
+            .setField(STROPHE_KEY, strophe)//
+            .setField(REFRAIN_ID_KEY, String.valueOf(refrainIdToSet))//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
+        assertEquals("lied_Id must not be changed!", liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals("refrain_id must habe changed!", refrainIdToSet, response.getDataValueByKeyFromFirstAsLong(REFRAIN_ID_KEY));
+        assertUpdateDbLogEntry(liedtextIdToUpdate, refrainIdToSet);
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    private void assertUpdateDbLogEntry(long liedtextId, long refrainId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage = "3 ## correct@login.ch ## liedtext ## UPDATE liedtext SET Strophe = ?, refrain_id= ? WHERE id = ? ## sss, Geänderte Strophe, " + refrainId + ", " + liedtextId;
+        assertEquals(expectedMessage, message);
+    }
+
+    @Test
+    public void update_refrainIdSetToNull_rowUpdatedAndRefrainIdNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
+        // act
+        JavaScriptPage result = interactor//
+            .setField(REFRAIN_ID_KEY, null)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals("refrain_id must be null!", null, response.getDataValueByKeyFromFirstAsLong(REFRAIN_ID_KEY));
+        //clean up
         liedFixture.cleanUp();
     }
 }
