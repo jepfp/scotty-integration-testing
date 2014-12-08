@@ -22,7 +22,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.Interactor.RpcInteractorConfiguration;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
-import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 import ch.adoray.scotty.integrationtest.restinterface.Helper;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
@@ -152,7 +152,7 @@ public class ChangeOrder {
     @Test
     public void moveDown_moveDownRefrain_ReihenfolgeChanged() throws Exception {
         // arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         List<Long> refrainIds = liedFixture.getCreatedIdsByTable(REFRAIN_TABLE);
         // act
         boolean methodResult = moveDown(Tables.REFRAIN, refrainIds.get(0));
@@ -166,7 +166,7 @@ public class ChangeOrder {
     @Test
     public void moveDown_moveDownRefrain_lastEditUserIdCorrect() throws Exception {
         // arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         List<Long> refrainIds = liedFixture.getCreatedIdsByTable(REFRAIN_TABLE);
         long lastEditUserIdBefore = loadLastEditUserId(liedFixture.getLiedId());
         assertTrue("The fixture should have set lastEditUser_id to 1. Fix this to have the test working properly!", lastEditUserIdBefore != 3);

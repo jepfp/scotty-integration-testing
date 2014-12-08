@@ -27,7 +27,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
-import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.Maps;
@@ -55,7 +55,7 @@ public class LiedtextDAOTest {
     @Test
     public void destroy_liedtext_liedtextDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         long liedtextIdToDelete = LiedtextHelper.createLiedtext(liedFixture.getLiedId(), 100, "This is to be deleted.", Optional.empty());
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedtext/" + liedtextIdToDelete);
@@ -71,7 +71,7 @@ public class LiedtextDAOTest {
     @Test
     public void create_withoutReihenfolge_reihenfolgeToMax() {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String liedId = String.valueOf(liedFixture.getLiedId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
@@ -94,7 +94,7 @@ public class LiedtextDAOTest {
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
         String liedId = String.valueOf(liedFixture.getLiedId());
@@ -125,7 +125,7 @@ public class LiedtextDAOTest {
     @Test
     public void create_noRefrainSelectedWhichMeansRefrainId0_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String refrainIdKey = "refrain_id";
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
@@ -147,7 +147,7 @@ public class LiedtextDAOTest {
     @Test
     public void create_refrainSelected_rowCreatedWithKeyToRefrain() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Strophe mit Link zu Refrain.";
         String liedId = String.valueOf(liedFixture.getLiedId());
@@ -170,7 +170,7 @@ public class LiedtextDAOTest {
     @Test
     public void create_refrainSelectedButNoStrophe_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String liedId = String.valueOf(liedFixture.getLiedId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
@@ -189,7 +189,7 @@ public class LiedtextDAOTest {
     @Test
     public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(3);
         Long refrainIdToSet = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
@@ -219,7 +219,7 @@ public class LiedtextDAOTest {
     @Test
     public void update_refrainIdSetToNull_rowUpdatedAndRefrainIdNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
         // act

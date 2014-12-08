@@ -18,10 +18,10 @@ import org.skyscreamer.jsonassert.JSONParser;
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
-import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
-import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixture;
+import ch.adoray.scotty.integrationtest.common.Tables;
+import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.ImmutableMap;
@@ -85,7 +85,7 @@ public class NumberInBookDAOTest {
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
         String liednrKey = "Liednr";
         String liedIdKey = "lied_id";

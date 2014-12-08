@@ -8,10 +8,10 @@ import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
-public class LiedWithLiedtextsAndRefrainsFixture extends AbstractFixture {
+public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture {
     private long liedId;
 
-    public LiedWithLiedtextsAndRefrainsFixture() {
+    public LiedWithLiedtextsRefrainsAndNumbersInBookFixture() {
         try {
             createLied();
             createRefrains();
