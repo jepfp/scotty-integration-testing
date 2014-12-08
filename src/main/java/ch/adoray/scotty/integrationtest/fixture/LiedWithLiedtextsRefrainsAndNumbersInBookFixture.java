@@ -26,6 +26,15 @@ public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFi
         addTableIdTuple(Tables.LIED, getLiedId());
     }
 
+    public void addTwoNumberInBookAssociations() {
+        final long dirSingenWir2Id = 2;
+        final long adonaiZugHeftId = 3;
+        long assocId = LiedHelper.addNumberInBookToLied(liedId, dirSingenWir2Id, "12");
+        addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
+        assocId = LiedHelper.addNumberInBookToLied(liedId, adonaiZugHeftId, "102");
+        addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
+    }
+
     private void createRefrains() throws ClassNotFoundException, SQLException {
         for (int i = 0; i < 3; i++) {
             long createdId = RefrainHelper.createRefrain(getLiedId(), i, "Dummy-Refrain Nr " + i);

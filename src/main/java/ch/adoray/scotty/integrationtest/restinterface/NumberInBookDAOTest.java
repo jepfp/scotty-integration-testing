@@ -17,16 +17,19 @@ import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
+import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class NumberInBookDAOTest {
+    private final static String LIEDNR_KEY = "Liednr";
     @Test
     public void read_LiedId1_correctBookNumbers() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -87,14 +90,13 @@ public class NumberInBookDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
-        String liednrKey = "Liednr";
         String liedIdKey = "lied_id";
         String liederbuchIdKey = "liederbuch_id";
         String liednr = "8888";
         String liedId = String.valueOf(liedFixture.getLiedId());
         String liederbuchId = "3";
         // act
-        JavaScriptPage result = interactor.setField(liednrKey, liednr)//
+        JavaScriptPage result = interactor.setField(LIEDNR_KEY, liednr)//
             .setField(liedIdKey, liedId)//
             .setField(liederbuchIdKey, liederbuchId)//
             .performRequest();
@@ -117,5 +119,32 @@ public class NumberInBookDAOTest {
         String expectedMessage =
             "3 ## correct@login.ch ## fkliederbuchlied ## INSERT INTO fkliederbuchlied (Liednr, lied_id, liederbuch_id) VALUES (?, ?, ?) ## sss, 8888, " + String.valueOf(liedId) + ", 3";
         assertEquals("Format correct?", expectedMessage, message);
+    }
+    
+    @Test
+    public void update_changeExistingEntry_updated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        liedFixture.addTwoNumberInBookAssociations();
+        Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
+        String neueLiedNr = "12345";
+        // act
+        JavaScriptPage result = interactor//
+            .setField(LIEDNR_KEY, neueLiedNr)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals(neueLiedNr, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
+        assertUpdateDbLogEntry(numberInBookIdToUpdate);
+        //clean up
+        liedFixture.cleanUp();
+    }
+    
+    private void assertUpdateDbLogEntry(long numberInBookId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## UPDATE fkliederbuchlied SET Liednr= ? WHERE id = ? ## ss, 12345, " + numberInBookId;
+        assertEquals(expectedMessage, message);
     }
 }

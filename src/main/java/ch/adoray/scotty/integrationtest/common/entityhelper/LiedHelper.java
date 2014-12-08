@@ -21,7 +21,7 @@ public class LiedHelper {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static Date getDateCreatedAtOf(long liedId) {
         try {
             Map<String, String> record = DatabaseAccess.getRecordById("lied", liedId);
@@ -52,7 +52,7 @@ public class LiedHelper {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static long createDummyLied() throws SQLException, ClassNotFoundException {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO lied (Titel, rubrik_id, lastEditUser_id, tonality) VALUES (?, ?, ?, ?);")) {
             statement.setString(1, "Dummy-Lied");
@@ -65,6 +65,22 @@ public class LiedHelper {
                 generatedKeys.next();
                 return generatedKeys.getLong(1);
             }
+        }
+    }
+
+    public static long addNumberInBookToLied(long liedId, long liederbuchId, String liedNr) {
+        try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO fkliederbuchlied (lied_id, liederbuch_id, LiedNr) VALUES (?, ?, ?);")) {
+            statement.setLong(1, liedId);
+            statement.setLong(2, liederbuchId);
+            statement.setString(3, liedNr);
+            int rowCount = statement.executeUpdate();
+            assertEquals("must have created one row", 1, rowCount);
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                generatedKeys.next();
+                return generatedKeys.getLong(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error while adding numberInBook association to Lied.", e);
         }
     }
 }
