@@ -1,4 +1,3 @@
-
 --
 -- Host: localhost    Database: scottyinttest
 -- ------------------------------------------------------
@@ -44,16 +43,16 @@ DROP TABLE IF EXISTS `fkliederbuchlied`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `fkliederbuchlied` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `liederbuch_id` bigint(20) DEFAULT NULL,
-  `lied_id` bigint(20) DEFAULT NULL,
-  `Liednr` varchar(20) DEFAULT NULL,
+  `liederbuch_id` bigint(20) NOT NULL,
+  `lied_id` bigint(20) NOT NULL,
+  `Liednr` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `PreventFromHavingTheSameLiedNrTwiceInOneSongbook` (`liederbuch_id`,`Liednr`),
   UNIQUE KEY `PreventFromDifferentLiedNrForTheSameSongInASongbook` (`liederbuch_id`,`lied_id`),
   KEY `lied_idx` (`lied_id`),
   KEY `liederbuch_idx` (`liederbuch_id`),
   CONSTRAINT `fkLiederbuchLiedLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fkLiederbuchLiedLiederbuch` FOREIGN KEY (`liederbuch_id`) REFERENCES `liederbuch` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fkLiederbuchLiedLiederbuch` FOREIGN KEY (`liederbuch_id`) REFERENCES `liederbuch` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -506,7 +505,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100009');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100010');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -613,4 +612,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-02 20:13:59
+-- Dump completed on 2014-12-08  9:35:18
