@@ -14,6 +14,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
+import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
@@ -24,6 +25,10 @@ import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsAndRefrainsFixt
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 public class LiedDAOTest {
+    private static final String TITEL_KEY = "Titel";
+    private static final String RUBRIK_ID_KEY = "rubrik_id";
+    private static final String TONALITY_KEY = "tonality";
+
     @Test
     public void destroy_lied_liedDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
@@ -55,9 +60,9 @@ public class LiedDAOTest {
         //arrange
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("lied");
         // act
-        interactor.setField("Titel", "Lied mit Zeitstempeln")//
-            .setField("rubrik_id", "3")//
-            .setField("tonality", "E")//
+        interactor.setField(TITEL_KEY, "Lied mit Zeitstempeln")//
+            .setField(RUBRIK_ID_KEY, "3")//
+            .setField(TONALITY_KEY, "E")//
             .setField("created_at", "foo")//
             .setField("updated_at", "bar");
         interactor.setFailOnJsonSuccessFalse(false);
@@ -74,16 +79,13 @@ public class LiedDAOTest {
     public void create_happyCase_liedCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("lied");
-        String titelKey = "Titel";
-        String rubrikIdKey = "rubrik_id";
-        String tonalityKey = "tonality";
         String titel = "My Int-Testi-Song";
         String rubrikId = "3";
         String tonality = "E";
         // act
-        JavaScriptPage result = interactor.setField(titelKey, titel)//
-            .setField(rubrikIdKey, rubrikId)//
-            .setField(tonalityKey, tonality)//
+        JavaScriptPage result = interactor.setField(TITEL_KEY, titel)//
+            .setField(RUBRIK_ID_KEY, rubrikId)//
+            .setField(TONALITY_KEY, tonality)//
             .performRequest();
         // assert
         String testData = removeIdAndTimestamps(ResourceLoader.loadTestData());
@@ -91,9 +93,9 @@ public class LiedDAOTest {
         JSONAssert.assertEquals(testData, removeIdAndTimestamps(content), false);
         Long id = new Long((int) Helper.extractAttributeValueAt(Helper.extractData(content), "id", 0));
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, id);
-        assertEquals(titel, record.get(titelKey));
-        assertEquals(rubrikId, record.get(rubrikIdKey));
-        assertEquals(tonality, record.get(tonalityKey));
+        assertEquals(titel, record.get(TITEL_KEY));
+        assertEquals(rubrikId, record.get(RUBRIK_ID_KEY));
+        assertEquals(tonality, record.get(TONALITY_KEY));
         assertDbLogEntry();
     }
 
@@ -106,5 +108,33 @@ public class LiedDAOTest {
         String message = record.get("message");
         String expectedMessage = "3 ## correct@login.ch ## lied ## INSERT INTO lied (Titel, rubrik_id, lastEditUser_id, tonality) VALUES (?, ?, ?, ?) ## ssss, My Int-Testi-Song, 3, 3, E";
         assertEquals("Format correct?", expectedMessage, message);
+    }
+
+    @Test
+    public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsAndRefrainsFixture liedFixture = new LiedWithLiedtextsAndRefrainsFixture();
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        String titel = "Geänderter Titel";
+        Integer rubrikId = 12;
+        // act
+        JavaScriptPage result = interactor//
+            .setField(TITEL_KEY, titel)//
+            .setField(RUBRIK_ID_KEY, String.valueOf(rubrikId))//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals(titel, response.getDataValueByKeyFromFirst(TITEL_KEY));
+        assertEquals(rubrikId, response.getDataValueByKeyFromFirst(RUBRIK_ID_KEY));
+        assertUpdateDbLogEntry(liedFixture.getLiedId(), new Long(rubrikId));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    private void assertUpdateDbLogEntry(Long liedId, Long rubrikId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id= ? WHERE id = ? ## sss, Geänderter Titel, " + rubrikId + ", " + liedId;
+        assertEquals(expectedMessage, message);
     }
 }
