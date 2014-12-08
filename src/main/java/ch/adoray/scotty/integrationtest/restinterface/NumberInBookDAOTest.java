@@ -22,6 +22,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
@@ -30,6 +31,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class NumberInBookDAOTest {
     private final static String LIEDNR_KEY = "Liednr";
+
     @Test
     public void read_LiedId1_correctBookNumbers() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
@@ -120,15 +122,19 @@ public class NumberInBookDAOTest {
             "3 ## correct@login.ch ## fkliederbuchlied ## INSERT INTO fkliederbuchlied (Liednr, lied_id, liederbuch_id) VALUES (?, ?, ?) ## sss, 8888, " + String.valueOf(liedId) + ", 3";
         assertEquals("Format correct?", expectedMessage, message);
     }
-    
+
     @Test
     public void update_changeExistingEntry_updated() throws JSONException, ClassNotFoundException, SQLException, IOException {
-        //arrange
+        String neueLiedNr = "12345";
+        changeExistingEntry(neueLiedNr);
+    }
+
+    private void changeExistingEntry(String neueLiedNr) throws ClassNotFoundException, SQLException {
+        // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
-        String neueLiedNr = "12345";
         // act
         JavaScriptPage result = interactor//
             .setField(LIEDNR_KEY, neueLiedNr)//
@@ -136,15 +142,58 @@ public class NumberInBookDAOTest {
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         assertEquals(neueLiedNr, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
-        assertUpdateDbLogEntry(numberInBookIdToUpdate);
+        assertUpdateDbLogEntry(numberInBookIdToUpdate, neueLiedNr);
         //clean up
         liedFixture.cleanUp();
     }
-    
-    private void assertUpdateDbLogEntry(long numberInBookId) throws ClassNotFoundException, SQLException {
+
+    private void assertUpdateDbLogEntry(long numberInBookId, String liednr) throws ClassNotFoundException, SQLException {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
-        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## UPDATE fkliederbuchlied SET Liednr= ? WHERE id = ? ## ss, 12345, " + numberInBookId;
+        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## UPDATE fkliederbuchlied SET Liednr= ? WHERE id = ? ## ss, " + (liednr != null ? liednr : "") + ", " + numberInBookId;
         assertEquals(expectedMessage, message);
+    }
+
+    @Test
+    public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        String neueLiedNr = null;
+        changeExistingEntry(neueLiedNr);
+    }
+
+    @Test
+    public void update_changeExistingEntrySetToEmpty_entryIsTransformedToNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        liedFixture.addTwoNumberInBookAssociations();
+        Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
+        // act
+        JavaScriptPage result = interactor//
+            .setField(LIEDNR_KEY, "")//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertEquals(null, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    @Test
+    /**
+     * A UNIQUE index creates a constraint such that all values in the index must be distinct.
+     * An error occurs if you try to add a new row with a key value that matches an existing row.
+     * For all engines, a UNIQUE index allows multiple NULL values for columns that can contain NULL.
+     * 
+     */
+    public void update_change2ExistingEntriesSetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        // act
+        LiedHelper.addNumberInBookToLied(liedFixture1.getLiedId(), 1, null);
+        LiedHelper.addNumberInBookToLied(liedFixture2.getLiedId(), 1, null);
+        //clean up
+        liedFixture1.cleanUp();
+        liedFixture2.cleanUp();
     }
 }

@@ -18,6 +18,7 @@
 -- Temporary table structure for view `every_lied_in_every_liederbuch_view`
 --
 
+
 DROP TABLE IF EXISTS `every_lied_in_every_liederbuch_view`;
 /*!50001 DROP VIEW IF EXISTS `every_lied_in_every_liederbuch_view`*/;
 SET @saved_cs_client     = @@character_set_client;
@@ -45,10 +46,10 @@ CREATE TABLE `fkliederbuchlied` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `liederbuch_id` bigint(20) NOT NULL,
   `lied_id` bigint(20) NOT NULL,
-  `Liednr` varchar(20) NOT NULL,
+  `Liednr` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `PreventFromHavingTheSameLiedNrTwiceInOneSongbook` (`liederbuch_id`,`Liednr`),
   UNIQUE KEY `PreventFromDifferentLiedNrForTheSameSongInASongbook` (`liederbuch_id`,`lied_id`),
+  UNIQUE KEY `PreventFromHavingTheSameLiedNrTwiceInOneSongbook` (`liederbuch_id`,`Liednr`),
   KEY `lied_idx` (`lied_id`),
   KEY `liederbuch_idx` (`liederbuch_id`),
   CONSTRAINT `fkLiederbuchLiedLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -505,7 +506,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100010');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100011');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -612,4 +613,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-08  9:35:18
+-- Dump completed on 2014-12-08 17:54:00
