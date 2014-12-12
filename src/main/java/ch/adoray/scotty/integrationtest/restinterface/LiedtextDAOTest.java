@@ -3,7 +3,6 @@ package ch.adoray.scotty.integrationtest.restinterface;
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
