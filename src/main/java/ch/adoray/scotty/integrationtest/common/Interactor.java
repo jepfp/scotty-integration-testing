@@ -119,11 +119,11 @@ public class Interactor {
             return json;
         } catch (JSONException e) {
             createErrorHtml(content);
+            System.err.println("Warning, parsing as json failed:");
+            System.out.println(content);
             if (failOnUnparsableJson) {
                 throw new RuntimeException("Parsing json failed. Page text is:\n" + content);
             } else {
-                System.err.println("Warning, parsing as json failed:");
-                System.out.println(content);
                 return null;
             }
         }

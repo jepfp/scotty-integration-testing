@@ -34,7 +34,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_showAll_amountLiedViewAndLiedEqual() throws JSONException, ClassNotFoundException, SQLException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
         JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
@@ -62,7 +62,7 @@ public class LiedViewDAOTest {
     }
 
     private JavaScriptPage viewBlessTheLord() {
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview/1");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView/1");
         JavaScriptPage result = Interactor.performRequest(config);
         return result;
     }
@@ -88,7 +88,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_orderByTonality_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         Helper.addSortParameter("Tonality", true, config);
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -100,7 +100,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_orderByLiednrDesc_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         Helper.addSortParameter("Liednr", false, config);
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -112,7 +112,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_quicksearchLiednr_found1Entry() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "1001");
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -124,7 +124,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_quicksearchForTitelPart_found3Entries() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "le");
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -137,7 +137,7 @@ public class LiedViewDAOTest {
     @Test
     public void read_quicksearchForHalleluja_found1Entry() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "Halleluja");
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -151,7 +151,7 @@ public class LiedViewDAOTest {
     //here especially the braces in the select statement are tested. We look for a Liednr in another liederbuch.
     public void read_quicksearch100_noEntryFound() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview");
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "100");
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
@@ -164,7 +164,7 @@ public class LiedViewDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedview/" + liedFixture.getLiedId());
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView/" + liedFixture.getLiedId());
         config.setMethodDelete();
         Interactor.performRequest(config);
         // assert
