@@ -22,6 +22,7 @@
 			<arg value="--complete-insert=true" />
 			<arg value="--user=${db.username}" />
 			<arg value="--password=${db.password}" />
+			<arg value="--host=${db.host}" />
 			<arg value="${db.name}" />
 		</exec>
 	</target>
