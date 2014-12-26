@@ -32,6 +32,10 @@ public class Configuration {
 		return getBaseUrl() + "/src/ext-direct-router.php";
 	}
 	
+	public String getSqliteDbDumpUrl(){
+        return getBaseUrl() + "/src/sqlite-db.php";
+    }
+	
 	public String getRestInterfaceUrl(){
 		return getBaseUrl() + "/src/ext-rest-interface.php";
 	}

@@ -52,7 +52,7 @@ public class RefrainDAOTest {
     @Test
     public void destroy_refrain_refrainDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         long refrainIdToDelete = RefrainHelper.createRefrain(liedFixture.getLiedId(), 100, "This is to be deleted.");
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/refrain/" + refrainIdToDelete);
@@ -68,7 +68,7 @@ public class RefrainDAOTest {
     @Test
     public void create_withoutReihenfolge_reihenfolgeToMax() {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String liedId = String.valueOf(liedFixture.getLiedId());
         // act
@@ -89,7 +89,7 @@ public class RefrainDAOTest {
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String refrain = "Testcase, der das Hinzufügen eines Refrains testet.";
         String liedId = String.valueOf(liedFixture.getLiedId());
@@ -119,7 +119,7 @@ public class RefrainDAOTest {
     @Test
     public void create_withoutRefrain_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
@@ -140,7 +140,7 @@ public class RefrainDAOTest {
     @Test
     public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         Long refrainIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", refrainIdToUpdate);
         String refrain = "Geänderter Refrain";
@@ -167,7 +167,7 @@ public class RefrainDAOTest {
     @Test
     public void update_idNull_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", null);
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
@@ -186,7 +186,7 @@ public class RefrainDAOTest {
     @Test
     public void update_id0_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", new Long(0));
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);

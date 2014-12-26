@@ -7,12 +7,10 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.UserHelper;
 public class UserFixture extends AbstractFixture {
     private long id;
 
-    public UserFixture() {
-        try {
-            createUser();
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException("Error while creating " + this.getClass().getSimpleName(), e);
-        }
+    public static UserFixture setupAndCreate(){
+        UserFixture fixture = new UserFixture();
+        fixture.create();
+        return fixture;
     }
 
     private void createUser() throws SQLException, ClassNotFoundException {
@@ -22,5 +20,15 @@ public class UserFixture extends AbstractFixture {
 
     public long getId() {
         return id;
+    }
+
+    @Override
+    public long create() {
+        try {
+            createUser();
+            return id;
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Error while creating " + this.getClass().getSimpleName(), e);
+        }
     }
 }

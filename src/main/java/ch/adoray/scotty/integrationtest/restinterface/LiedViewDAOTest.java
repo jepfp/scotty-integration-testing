@@ -162,7 +162,7 @@ public class LiedViewDAOTest {
     @Test
     public void destroy_liedview_liedDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView/" + liedFixture.getLiedId());
         config.setMethodDelete();
@@ -175,7 +175,7 @@ public class LiedViewDAOTest {
     @Test
     public void update_changeExistingEntry_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), 1, "199");
         String neueLiedNr = "2997";
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);
@@ -197,7 +197,7 @@ public class LiedViewDAOTest {
     @Test
     public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), 1, "199");
         String neueLiedNr = null;
         // act
@@ -222,7 +222,7 @@ public class LiedViewDAOTest {
     @Test
     public void update_noEntryExists_redirectToCreateAndCreateNewEntry() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         String neueLiedNr = "8797";
         switchToLiederbuch(ID_DIR_SINGEN_WIR_2);
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);

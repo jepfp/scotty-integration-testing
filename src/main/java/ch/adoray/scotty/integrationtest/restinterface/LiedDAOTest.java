@@ -32,7 +32,7 @@ public class LiedDAOTest {
     @Test
     public void destroy_lied_liedDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/lied/" + liedFixture.getLiedId());
         config.setMethodDelete();
@@ -47,7 +47,7 @@ public class LiedDAOTest {
         //arrange
         Date testStartTime = new Date();
         // act
-        long idCreatedRow = LiedHelper.createDummyLied();
+        long idCreatedRow = LiedHelper.createDummyLied("Dummy-Lied");
         // assert
         Date createdAt = LiedHelper.getDateCreatedAtOf(idCreatedRow);
         assertCreatedAtAfterOrEqualsTestStartTime(createdAt, testStartTime);
@@ -113,7 +113,7 @@ public class LiedDAOTest {
     @Test
     public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
         String titel = "Geänderter Titel";
         Integer rubrikId = 12;

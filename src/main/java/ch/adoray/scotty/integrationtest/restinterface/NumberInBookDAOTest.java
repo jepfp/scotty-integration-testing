@@ -90,7 +90,7 @@ public class NumberInBookDAOTest {
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
         String liedIdKey = "lied_id";
         String liederbuchIdKey = "liederbuch_id";
@@ -131,7 +131,7 @@ public class NumberInBookDAOTest {
 
     private void changeExistingEntry(String neueLiedNr) throws ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
@@ -163,7 +163,7 @@ public class NumberInBookDAOTest {
     @Test
     public void update_changeExistingEntrySetToEmpty_entryIsTransformedToNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
@@ -187,8 +187,8 @@ public class NumberInBookDAOTest {
      */
     public void update_change2ExistingEntriesSetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         // act
         LiedHelper.addNumberInBookToLied(liedFixture1.getLiedId(), 1, null);
         LiedHelper.addNumberInBookToLied(liedFixture2.getLiedId(), 1, null);

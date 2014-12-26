@@ -152,7 +152,7 @@ public class ChangeOrder {
     @Test
     public void moveDown_moveDownRefrain_ReihenfolgeChanged() throws Exception {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         List<Long> refrainIds = liedFixture.getCreatedIdsByTable(REFRAIN_TABLE);
         // act
         boolean methodResult = moveDown(Tables.REFRAIN, refrainIds.get(0));
@@ -166,7 +166,7 @@ public class ChangeOrder {
     @Test
     public void moveDown_moveDownRefrain_lastEditUserIdCorrect() throws Exception {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         List<Long> refrainIds = liedFixture.getCreatedIdsByTable(REFRAIN_TABLE);
         long lastEditUserIdBefore = loadLastEditUserId(liedFixture.getLiedId());
         assertTrue("The fixture should have set lastEditUser_id to 1. Fix this to have the test working properly!", lastEditUserIdBefore != 3);

@@ -206,7 +206,7 @@ public class AbstractDAOTest {
     @Test
     public void destroy_user_userDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        UserFixture fixture = new UserFixture();
+        UserFixture fixture = UserFixture.setupAndCreate();
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user/" + fixture.getId());
         config.setMethodDelete();

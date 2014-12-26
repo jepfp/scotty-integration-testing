@@ -10,6 +10,8 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import com.google.common.collect.Lists;
 abstract class AbstractFixture {
     private List<TableIdTuple> tableIdTuples = Lists.newArrayList();
+    
+    public abstract long create();
 
     public void cleanUp() {
         try {

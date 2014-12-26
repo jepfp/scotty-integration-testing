@@ -39,10 +39,15 @@ public class DatabaseAccess {
         return executeStatement(sqlStatement);
     }
 
-    public static int determineAmountOfEntriesInTable(String table) throws ClassNotFoundException, SQLException {
-        String sqlStatement = "select count(*) as count from " + table;
-        Map<String, String> result = executeStatement(sqlStatement);
-        return Integer.parseInt(result.get("count"));
+    public static int determineAmountOfEntriesInTable(String table) {
+        try {
+            String sqlStatement = "select count(*) as count from " + table;
+            Map<String, String> result;
+            result = executeStatement(sqlStatement);
+            return Integer.parseInt(result.get("count"));
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Error while determining amount of entries in table " + table, e);
+        }
     }
 
     private static Map<String, String> executeStatement(String sqlStatement) throws SQLException, ClassNotFoundException {

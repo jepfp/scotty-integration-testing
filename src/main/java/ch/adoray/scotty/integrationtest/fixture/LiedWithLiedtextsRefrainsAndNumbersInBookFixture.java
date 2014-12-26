@@ -10,19 +10,36 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
 public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture {
     private long liedId;
+    private String titel = "Dummy-Lied";
 
-    public LiedWithLiedtextsRefrainsAndNumbersInBookFixture() {
+    public String getTitel() {
+        return titel;
+    }
+
+    public void setTitel(String liedTitle) {
+        this.titel = liedTitle;
+    }
+
+    public static LiedWithLiedtextsRefrainsAndNumbersInBookFixture setupAndCreate() {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture = new LiedWithLiedtextsRefrainsAndNumbersInBookFixture();
+        fixture.create();
+        return fixture;
+    }
+
+    @Override
+    public long create() {
         try {
             createLied();
             createRefrains();
             createLiedtexts();
+            return liedId;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException("Error while creating " + this.getClass().getSimpleName(), e);
         }
     }
 
     private void createLied() throws SQLException, ClassNotFoundException {
-        liedId = LiedHelper.createDummyLied();
+        liedId = LiedHelper.createDummyLied(titel);
         addTableIdTuple(Tables.LIED, getLiedId());
     }
 

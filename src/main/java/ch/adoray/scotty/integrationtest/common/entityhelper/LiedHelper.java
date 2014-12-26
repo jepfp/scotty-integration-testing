@@ -52,10 +52,10 @@ public class LiedHelper {
             throw new RuntimeException(e);
         }
     }
-
-    public static long createDummyLied() throws SQLException, ClassNotFoundException {
+    
+    public static long createDummyLied(String titel) throws SQLException, ClassNotFoundException {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO lied (Titel, rubrik_id, lastEditUser_id, tonality) VALUES (?, ?, ?, ?);")) {
-            statement.setString(1, "Dummy-Lied");
+            statement.setString(1, titel);
             statement.setInt(2, 3);
             statement.setInt(3, 1);
             statement.setString(4, "E");
