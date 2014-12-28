@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -90,18 +91,9 @@ public class NumberInBookDAOTest {
     @Test
     public void create_happyCase_rowCreated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
-        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
-        String liedIdKey = "lied_id";
-        String liederbuchIdKey = "liederbuch_id";
-        String liednr = "8888";
-        String liedId = String.valueOf(liedFixture.getLiedId());
-        String liederbuchId = "3";
-        // act
-        JavaScriptPage result = interactor.setField(LIEDNR_KEY, liednr)//
-            .setField(liedIdKey, liedId)//
-            .setField(liederbuchIdKey, liederbuchId)//
-            .performRequest();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        //act
+        JavaScriptPage result = createNewNumberInBookAssociation(liedFixture);
         // assert
         String testData = removeIdAndLiedId(ResourceLoader.loadTestData());
         String content = result.getContent();
@@ -109,6 +101,20 @@ public class NumberInBookDAOTest {
         assertDbLogEntry(liedFixture.getLiedId());
         //clean up
         liedFixture.cleanUp();
+    }
+
+    private JavaScriptPage createNewNumberInBookAssociation(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture) {
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
+        String liedIdKey = "lied_id";
+        String liederbuchIdKey = "liederbuch_id";
+        String liednr = "8888";
+        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liederbuchId = "3";
+        JavaScriptPage result = interactor.setField(LIEDNR_KEY, liednr)//
+            .setField(liedIdKey, liedId)//
+            .setField(liederbuchIdKey, liederbuchId)//
+            .performRequest();
+        return result;
     }
 
     private String removeIdAndLiedId(String jsonString) {
@@ -131,7 +137,7 @@ public class NumberInBookDAOTest {
 
     private void changeExistingEntry(String neueLiedNr) throws ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
@@ -163,7 +169,7 @@ public class NumberInBookDAOTest {
     @Test
     public void update_changeExistingEntrySetToEmpty_entryIsTransformedToNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
@@ -187,13 +193,57 @@ public class NumberInBookDAOTest {
      */
     public void update_change2ExistingEntriesSetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         // act
         LiedHelper.addNumberInBookToLied(liedFixture1.getLiedId(), 1, null);
         LiedHelper.addNumberInBookToLied(liedFixture2.getLiedId(), 1, null);
         //clean up
         liedFixture1.cleanUp();
         liedFixture2.cleanUp();
+    }
+
+    @Test
+    public void update_updateNumberToFoo_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        String newLiedNr = "foo";
+        updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
+    }
+
+    private void updateLiedNrAndAssertUpdatedAtOnLied(String newLiedNr) {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        liedFixture.addTwoNumberInBookAssociations();
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
+        // act
+        interactor.setField(LIEDNR_KEY, newLiedNr).performRequest();
+        // assert
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    @Test
+    public void update_updateNumberToNull_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        String newLiedNr = null;
+        updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
+    }
+
+    @Test
+    public void create_createNewLiedNrFoo_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        // act
+        createNewNumberInBookAssociation(liedFixture);
+        // assert
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        //clean up
+        liedFixture.cleanUp();
     }
 }

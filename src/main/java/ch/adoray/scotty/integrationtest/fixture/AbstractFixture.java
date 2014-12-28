@@ -10,7 +10,7 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import com.google.common.collect.Lists;
 abstract class AbstractFixture {
     private List<TableIdTuple> tableIdTuples = Lists.newArrayList();
-    
+
     public abstract long create();
 
     public void cleanUp() {
@@ -38,5 +38,12 @@ abstract class AbstractFixture {
             .filter(t -> t.getTable() == table)//
             .map(t -> new Long(t.getId()))//
             .collect(Collectors.toList());
+    }
+
+    public void removeTableIdTuple(String table, long id) {
+        boolean success = tableIdTuples.remove(new TableIdTuple(table, id));
+        if (!success) {
+            throw new RuntimeException("Could not remove table id tuple: table '" + table + "', id " + id);
+        }
     }
 }

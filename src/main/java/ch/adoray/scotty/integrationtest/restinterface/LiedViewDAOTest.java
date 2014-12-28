@@ -2,10 +2,13 @@ package ch.adoray.scotty.integrationtest.restinterface;
 
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -162,7 +165,7 @@ public class LiedViewDAOTest {
     @Test
     public void destroy_liedview_liedDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView/" + liedFixture.getLiedId());
         config.setMethodDelete();
@@ -175,7 +178,8 @@ public class LiedViewDAOTest {
     @Test
     public void update_changeExistingEntry_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        ;
         LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), 1, "199");
         String neueLiedNr = "2997";
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);
@@ -197,7 +201,7 @@ public class LiedViewDAOTest {
     @Test
     public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), 1, "199");
         String neueLiedNr = null;
         // act
@@ -208,7 +212,7 @@ public class LiedViewDAOTest {
         liedFixture.cleanUp();
     }
 
-    private RestResponse changeLiedNrAndAssertNr(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String neueLiedNr) throws ClassNotFoundException, SQLException {
+    private RestResponse changeLiedNrAndAssertNr(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String neueLiedNr) {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture.getLiedId());
         JavaScriptPage result = interactor//
             .setField(LIEDNR_KEY, neueLiedNr)//
@@ -220,9 +224,9 @@ public class LiedViewDAOTest {
     }
 
     @Test
-    public void update_noEntryExists_redirectToCreateAndCreateNewEntry() throws JSONException, ClassNotFoundException, SQLException {
+    public void update_noEntryExistsAndNotDefaultLiederbuch_redirectToCreateAndCreateNewEntry() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String neueLiedNr = "8797";
         switchToLiederbuch(ID_DIR_SINGEN_WIR_2);
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);
@@ -238,5 +242,40 @@ public class LiedViewDAOTest {
         String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## INSERT INTO fkliederbuchlied (Liednr, lied_id, liederbuch_id) VALUES (?, ?, ?) ## sss, " //
             + (liednr != null ? liednr : "") + ", " + liedId + ", " + liederbuchId;
         assertEquals(expectedMessage, message);
+    }
+
+    @Test
+    public void update_updateNumberToFoo_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        liedFixture.addTwoNumberInBookAssociations();
+        String newLiedNr = "foo";
+        updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
+    }
+
+    private void updateLiedNrAndAssertUpdatedAtOnLied(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String newLiedNr) {
+        //arrange
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        changeLiedNrAndAssertNr(liedFixture, newLiedNr);
+        // assert
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    @Test
+    public void update_updateNumberToNull_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        liedFixture.addTwoNumberInBookAssociations();
+        String newLiedNr = null;
+        updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
+    }
+
+    @Test
+    public void create_createNewNumber_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String newLiedNr = "something new";
+        updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
     }
 }

@@ -7,17 +7,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.Tables;
 public class LiedHelper {
     public static Date getDateUpdatedAtOf(int liedId) {
         try {
             Map<String, String> record = DatabaseAccess.getRecordById("lied", liedId);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return df.parse((String) record.get("updated_at"));
-        } catch (ParseException | ClassNotFoundException | SQLException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -27,7 +30,7 @@ public class LiedHelper {
             Map<String, String> record = DatabaseAccess.getRecordById("lied", liedId);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             return df.parse((String) record.get("created_at"));
-        } catch (ParseException | ClassNotFoundException | SQLException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
@@ -41,7 +44,7 @@ public class LiedHelper {
      * @param liedId
      *            ID of the lied to update.
      */
-    public static void setUpdatedAtToFarBehind(int liedId) {
+    public static void setUpdatedAtToFarBehind(long liedId) {
         PreparedStatement statement = DatabaseAccess.prepareStatement("UPDATE lied SET updated_at = ? where id = ?");
         try {
             statement.setDate(1, java.sql.Date.valueOf("2014-09-16"));
@@ -82,5 +85,11 @@ public class LiedHelper {
         } catch (SQLException e) {
             throw new RuntimeException("Error while adding numberInBook association to Lied.", e);
         }
+    }
+
+    public static LocalDateTime determineUpdatedAtOfLiedById(Long liedId) {
+        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+        return LocalDateTime.parse(record.get("updated_at"), formatter);
     }
 }

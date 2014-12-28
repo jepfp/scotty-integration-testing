@@ -34,9 +34,13 @@ public class DatabaseAccess {
         return executeStatement(sqlStatement);
     }
 
-    public static Map<String, String> getRecordById(String table, long id) throws SQLException, ClassNotFoundException {
-        String sqlStatement = "select * from " + table + " where id = " + id;
-        return executeStatement(sqlStatement);
+    public static Map<String, String> getRecordById(String table, long id) {
+        try {
+            String sqlStatement = "select * from " + table + " where id = " + id;
+            return executeStatement(sqlStatement);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Error while determining record with id " + id + " from table " + table + ".", e);
+        }
     }
 
     public static int determineAmountOfEntriesInTable(String table) {
