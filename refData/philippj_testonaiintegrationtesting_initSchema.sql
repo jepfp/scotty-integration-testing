@@ -1,7 +1,8 @@
+-- MySQL dump 10.13  Distrib 5.6.16, for Win32 (x86)
 --
--- Host: %    Database: philippj_tinte
+-- Host: philippjenni.ch    Database: philippj_testonaiintegrationtesting
 -- ------------------------------------------------------
--- Server version	5.6.16
+-- Server version	5.5.40-cll
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -17,7 +18,6 @@
 --
 -- Temporary table structure for view `every_lied_in_every_liederbuch_view`
 --
-
 
 DROP TABLE IF EXISTS `every_lied_in_every_liederbuch_view`;
 /*!50001 DROP VIEW IF EXISTS `every_lied_in_every_liederbuch_view`*/;
@@ -147,7 +147,7 @@ CREATE TABLE `lied` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `externalLink` text,
   `lastEditUser_id` bigint(20) NOT NULL,
-  `tonality` varchar(3) DEFAULT NULL,
+  `tonality` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `rubrik_idx` (`rubrik_id`),
   KEY `lastEditUser_idx` (`lastEditUser_id`),
@@ -506,7 +506,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100011');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100013');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -613,4 +613,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-08 17:54:00
+-- Dump completed on 2015-01-08 23:24:11

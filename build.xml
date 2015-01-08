@@ -25,6 +25,8 @@
 			<arg value="--host=${db.host}" />
 			<arg value="${db.name}" />
 		</exec>
+
+		<replaceregexp file="${initSchemaPath}" match=".*Warning\: Using a password on the command line interface can be insecure.*" replace="" byline="true" />
 	</target>
 
 	<target name="restore_db">
