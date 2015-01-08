@@ -1,9 +1,9 @@
 
-
 --
 -- Host: localhost    Database: scottyinttest
 -- ------------------------------------------------------
 -- Server version	5.6.16
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -47,7 +47,7 @@ CREATE TABLE `fkliederbuchlied` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `liederbuch_id` bigint(20) NOT NULL,
   `lied_id` bigint(20) NOT NULL,
-  `Liednr` varchar(20) DEFAULT NULL,
+  `Liednr` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `PreventFromDifferentLiedNrForTheSameSongInASongbook` (`liederbuch_id`,`lied_id`),
   UNIQUE KEY `PreventFromHavingTheSameLiedNrTwiceInOneSongbook` (`liederbuch_id`,`Liednr`),
@@ -55,7 +55,7 @@ CREATE TABLE `fkliederbuchlied` (
   KEY `liederbuch_idx` (`liederbuch_id`),
   CONSTRAINT `fkLiederbuchLiedLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fkLiederbuchLiedLiederbuch` FOREIGN KEY (`liederbuch_id`) REFERENCES `liederbuch` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,14 +81,14 @@ DROP TABLE IF EXISTS `fkliedlied`;
 CREATE TABLE `fkliedlied` (
   `lied1_id` bigint(20) NOT NULL,
   `lied2_id` bigint(20) NOT NULL,
-  `comment` text,
+  `comment` text COLLATE utf8_unicode_ci,
   `type` int(11) DEFAULT NULL,
   KEY `PrimaryKey` (`lied1_id`,`lied2_id`),
   KEY `fkLiedLiedLied1_idx` (`lied1_id`),
   KEY `fkLiedLiedLied2_idx` (`lied2_id`),
   CONSTRAINT `fkLiedLiedLied1` FOREIGN KEY (`lied1_id`) REFERENCES `lied` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fkLiedLiedLied2` FOREIGN KEY (`lied2_id`) REFERENCES `lied` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,12 +109,12 @@ DROP TABLE IF EXISTS `language`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `language` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `code` varchar(5) NOT NULL,
-  `name` varchar(45) DEFAULT NULL,
+  `code` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_UNIQUE` (`code`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,21 +140,21 @@ DROP TABLE IF EXISTS `lied`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `lied` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `Titel` text NOT NULL,
+  `Titel` text COLLATE utf8_unicode_ci NOT NULL,
   `rubrik_id` bigint(20) DEFAULT NULL,
-  `Stichwoerter` text,
-  `Bemerkungen` text,
+  `Stichwoerter` text COLLATE utf8_unicode_ci,
+  `Bemerkungen` text COLLATE utf8_unicode_ci,
   `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `externalLink` text,
+  `externalLink` text COLLATE utf8_unicode_ci,
   `lastEditUser_id` bigint(20) NOT NULL,
-  `tonality` varchar(30) DEFAULT NULL,
+  `tonality` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `rubrik_idx` (`rubrik_id`),
   KEY `lastEditUser_idx` (`lastEditUser_id`),
   CONSTRAINT `liedLastEditUser` FOREIGN KEY (`lastEditUser_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `liedRubrik` FOREIGN KEY (`rubrik_id`) REFERENCES `rubrik` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -169,6 +169,7 @@ INSERT INTO `lied` (`id`, `Titel`, `rubrik_id`, `Stichwoerter`, `Bemerkungen`, `
 INSERT INTO `lied` (`id`, `Titel`, `rubrik_id`, `Stichwoerter`, `Bemerkungen`, `created_at`, `updated_at`, `externalLink`, `lastEditUser_id`, `tonality`) VALUES (6,'Lobe den Herrn, meine Seele',4,NULL,NULL,'2014-06-11 22:06:48','2014-10-02 11:59:14',NULL,3,'E');
 /*!40000 ALTER TABLE `lied` ENABLE KEYS */;
 UNLOCK TABLES;
+ALTER DATABASE `scottyinttest` CHARACTER SET latin1 COLLATE latin1_swedish_ci ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -184,6 +185,7 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+ALTER DATABASE `scottyinttest` CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
 --
 -- Temporary table structure for view `lied_table_view`
@@ -212,12 +214,12 @@ DROP TABLE IF EXISTS `liederbuch`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `liederbuch` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `Buchname` text,
-  `Beschreibung` text,
-  `mnemonic` varchar(5) NOT NULL,
+  `Buchname` text COLLATE utf8_unicode_ci,
+  `Beschreibung` text COLLATE utf8_unicode_ci,
+  `mnemonic` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -244,9 +246,9 @@ DROP TABLE IF EXISTS `liedtext`;
 CREATE TABLE `liedtext` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `lied_id` bigint(20) NOT NULL,
-  `Ueberschrift` text,
-  `UeberschriftTyp` text,
-  `Strophe` text,
+  `Ueberschrift` text COLLATE utf8_unicode_ci,
+  `UeberschriftTyp` text COLLATE utf8_unicode_ci,
+  `Strophe` text COLLATE utf8_unicode_ci,
   `refrain_id` bigint(20) DEFAULT NULL,
   `Reihenfolge` int(11) DEFAULT NULL,
   `language_id` bigint(20) DEFAULT NULL,
@@ -257,7 +259,7 @@ CREATE TABLE `liedtext` (
   CONSTRAINT `liedtextLanguage` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `liedtextLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `liedtextRefrain` FOREIGN KEY (`refrain_id`) REFERENCES `refrain` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,19 +305,19 @@ DROP TABLE IF EXISTS `logging`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `logging` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `table` varchar(45) DEFAULT NULL,
-  `message` text,
+  `table` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci,
   `user_id` bigint(20) DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
-  `logger` varchar(256) DEFAULT NULL,
-  `level` varchar(32) DEFAULT NULL,
+  `logger` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `level` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
   `thread` int(11) DEFAULT NULL,
-  `file` varchar(255) DEFAULT NULL,
-  `line` varchar(10) DEFAULT NULL,
+  `file` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `line` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `loggingUser` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -376,12 +378,12 @@ DROP TABLE IF EXISTS `media`;
 CREATE TABLE `media` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `lied_id` bigint(20) NOT NULL,
-  `path` text NOT NULL,
-  `remark` text,
+  `path` text COLLATE utf8_unicode_ci NOT NULL,
+  `remark` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   KEY `mediaLied` (`lied_id`),
   CONSTRAINT `mediaLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -402,13 +404,13 @@ DROP TABLE IF EXISTS `pdf`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pdf` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `path` text,
+  `path` text COLLATE utf8_unicode_ci,
   `export` tinyint(1) DEFAULT NULL,
   `lied_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `pdfLied` (`lied_id`),
   CONSTRAINT `pdfLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -431,14 +433,14 @@ CREATE TABLE `refrain` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `lied_id` bigint(20) DEFAULT NULL,
   `Reihenfolge` int(11) DEFAULT NULL,
-  `Refrain` text,
+  `Refrain` text COLLATE utf8_unicode_ci,
   `language_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `language_id` (`language_id`),
   KEY `lied_idx` (`lied_id`),
   CONSTRAINT `refrainLanguage` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `refrainLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -460,10 +462,10 @@ DROP TABLE IF EXISTS `rubrik`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `rubrik` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `Rubrik` text,
+  `Rubrik` text COLLATE utf8_unicode_ci,
   `Reihenfolge` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,10 +497,10 @@ DROP TABLE IF EXISTS `settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `settings` (
-  `key` varchar(50) NOT NULL,
-  `value` text,
+  `key` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `value` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -507,7 +509,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100013');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100014');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -520,16 +522,16 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `email` varchar(150) DEFAULT NULL,
-  `hash` varchar(200) DEFAULT NULL,
-  `firstname` varchar(100) DEFAULT NULL,
-  `lastname` varchar(100) DEFAULT NULL,
-  `rights` text,
-  `additionalInfos` text,
+  `email` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `hash` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `rights` text COLLATE utf8_unicode_ci,
+  `additionalInfos` text COLLATE utf8_unicode_ci,
   `active` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,4 +616,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-08 23:32:45
+-- Dump completed on 2015-01-09  0:06:13

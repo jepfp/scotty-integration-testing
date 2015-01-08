@@ -137,4 +137,39 @@ public class LiedDAOTest {
         String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id= ? WHERE id = ? ## sss, Geänderter Titel, " + rubrikId + ", " + liedId;
         assertEquals(expectedMessage, message);
     }
+    
+    @Test
+    public void update_tonalityWithUtf8Character_updatedWithUtf8Character() throws JSONException, ClassNotFoundException, SQLException, IOException {
+      //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        String tonality = "E / cis (4♯)";
+        // act
+        RestResponse response = changeTonality(liedFixture, tonality);
+        // assert
+        assertEquals(tonality, response.getDataValueByKeyFromFirst(TONALITY_KEY));
+        //clean up
+        liedFixture.cleanUp();
+    }
+    
+    @Test
+    public void update_tonalitySetToEmpty_tonalityIsNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        String tonality = "";
+        // act
+        RestResponse response = changeTonality(liedFixture, tonality);
+        // assert
+        assertNull(response.getDataValueByKeyFromFirst(TONALITY_KEY));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    private RestResponse changeTonality(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String tonality) {
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        JavaScriptPage result = interactor//
+            .setField(TONALITY_KEY, tonality)//
+            .performRequest();
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        return response;
+    }
 }
