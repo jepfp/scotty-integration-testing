@@ -36,6 +36,10 @@ public class Configuration {
         return getBaseUrl() + "/src/sqlite-db.php";
     }
 	
+	public String getLastUpdateUrl(){
+        return getBaseUrl() + "/src/last-update.php";
+    }
+	
 	public String getRestInterfaceUrl(){
 		return getBaseUrl() + "/src/ext-rest-interface.php";
 	}
