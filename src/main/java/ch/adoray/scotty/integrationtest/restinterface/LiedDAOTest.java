@@ -1,7 +1,9 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,11 +15,12 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
-import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
+import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
@@ -67,7 +70,10 @@ public class LiedDAOTest {
             .setField("updated_at", "bar");
         interactor.setFailOnJsonSuccessFalse(false);
         RestResponse response = RestResponse.createFromResponse(interactor.performRequest().getContent());
+        // assert
         assertTrue(response.isSuccess());
+        // clean up
+        DatabaseAccess.deleteRow(Tables.LIED, response.getFirstId());
     }
 
     private void assertCreatedAtAfterOrEqualsTestStartTime(Date createdAt, Date testStartTime) {
@@ -97,6 +103,8 @@ public class LiedDAOTest {
         assertEquals(rubrikId, record.get(RUBRIK_ID_KEY));
         assertEquals(tonality, record.get(TONALITY_KEY));
         assertDbLogEntry();
+        // clean up
+        DatabaseAccess.deleteRow(Tables.LIED, id);
     }
 
     private String removeIdAndTimestamps(String jsonString) {
@@ -113,7 +121,7 @@ public class LiedDAOTest {
     @Test
     public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
         String titel = "Geänderter Titel";
         Integer rubrikId = 12;
@@ -137,11 +145,11 @@ public class LiedDAOTest {
         String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id= ? WHERE id = ? ## sss, Geänderter Titel, " + rubrikId + ", " + liedId;
         assertEquals(expectedMessage, message);
     }
-    
+
     @Test
     public void update_tonalityWithUtf8Character_updatedWithUtf8Character() throws JSONException, ClassNotFoundException, SQLException, IOException {
-      //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String tonality = "E / cis (4♯)";
         // act
         RestResponse response = changeTonality(liedFixture, tonality);
@@ -150,11 +158,11 @@ public class LiedDAOTest {
         //clean up
         liedFixture.cleanUp();
     }
-    
+
     @Test
     public void update_tonalitySetToEmpty_tonalityIsNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String tonality = "";
         // act
         RestResponse response = changeTonality(liedFixture, tonality);
@@ -171,5 +179,25 @@ public class LiedDAOTest {
             .performRequest();
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         return response;
+    }
+
+    @Test
+    public void read_all_dataCorrect() throws Exception {
+        // arrange
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied");
+        // act
+        JavaScriptPage result = interactor.performRequest();
+        // assert
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    @Test
+    public void read_withId_dataCorrect() throws Exception {
+        // arrange
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied", (long) 6);
+        // act
+        JavaScriptPage result = interactor.performRequest();
+        // assert
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
     }
 }

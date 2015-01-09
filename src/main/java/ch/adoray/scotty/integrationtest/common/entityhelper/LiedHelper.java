@@ -15,7 +15,7 @@ import java.util.Map;
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.Tables;
 public class LiedHelper {
-    public static Date getDateUpdatedAtOf(int liedId) {
+    public static Date getDateUpdatedAtOf(long liedId) {
         try {
             Map<String, String> record = DatabaseAccess.getRecordById("lied", liedId);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

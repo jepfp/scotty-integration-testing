@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
+
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
@@ -63,6 +65,11 @@ abstract class ExtRestInteractor {
         } catch (Exception e) {
             throw new RuntimeException("Performing http request failed.", e);
         }
+    }
+
+    public RestResponse performRequestAsRestResponse() {
+        JavaScriptPage page = this.performRequest();
+        return RestResponse.createFromResponse(page.getContent());
     }
 
     private <P extends Page> P getPage(WebRequest request) throws IOException {
