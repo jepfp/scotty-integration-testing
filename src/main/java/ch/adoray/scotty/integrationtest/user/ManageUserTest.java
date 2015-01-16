@@ -12,6 +12,7 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
+import ch.adoray.scotty.integrationtest.common.Tables;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 public class ManageUserTest {
@@ -75,5 +76,7 @@ public class ManageUserTest {
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
         Map<String, String> record = DatabaseAccess.getLastRecord("user");
         assertEquals(expectedEmail, record.get("email"));
+        // clean up
+        DatabaseAccess.deleteRow(Tables.USER, new Long(record.get("id")));
     }
 }
