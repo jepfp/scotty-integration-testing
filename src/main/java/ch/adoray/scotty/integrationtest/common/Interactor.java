@@ -154,8 +154,8 @@ public class Interactor {
             String action = "Authentication";
             String method = "login";
             InteractorConfigurationWithParams config = new RpcFormInteractorConfiguration(action, method)//
-                .addParam("email", "correct@login.ch")//
-                .addParam("password", "jfjf");
+                .addParam("email", config().getTesterEmail())//
+                .addParam("password", config().getTesterPassword());
             JavaScriptPage result = performRequest(config);
             JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
             JSONObject loginResult = (JSONObject) json.get("result");
