@@ -43,19 +43,21 @@ public class LiedHelper {
      * 
      * @param liedId
      *            ID of the lied to update.
+     * @return time which has been set.
      */
-    public static void setUpdatedAtToFarBehind(long liedId) {
+    public static LocalDateTime setUpdatedAtToFarBehind(long liedId) {
         PreparedStatement statement = DatabaseAccess.prepareStatement("UPDATE lied SET updated_at = ? where id = ?");
         try {
             statement.setDate(1, java.sql.Date.valueOf("2014-09-16"));
             statement.setLong(2, liedId);
             int affectedRows = statement.executeUpdate();
             assertEquals("Update updated_at must have touched 1 row!", 1, affectedRows);
+            return determineUpdatedAtOfLiedById(liedId);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     public static long createDummyLied(String titel) throws SQLException, ClassNotFoundException {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO lied (Titel, rubrik_id, lastEditUser_id, tonality) VALUES (?, ?, ?, ?);")) {
             statement.setString(1, titel);
@@ -87,9 +89,15 @@ public class LiedHelper {
         }
     }
 
+    // TODO: remove method and use the one from above maybe better with this code.
     public static LocalDateTime determineUpdatedAtOfLiedById(Long liedId) {
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
         return LocalDateTime.parse(record.get("updated_at"), formatter);
+    }
+
+    public static String getValueForIdAndColumn(Long liedId, String column) {
+        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
+        return record.get(column);
     }
 }

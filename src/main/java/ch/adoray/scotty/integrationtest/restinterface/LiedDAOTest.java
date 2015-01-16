@@ -2,11 +2,13 @@ package ch.adoray.scotty.integrationtest.restinterface;
 
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -139,10 +141,27 @@ public class LiedDAOTest {
         liedFixture.cleanUp();
     }
 
+    @Test
+    public void update_lastUpdateWasFarBehing_triggerUpdatesUpdatedAtField() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LocalDateTime updatedAtBefore = LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        String titel = "Geänderter Titel";
+        // act
+        interactor//
+            .setField(TITEL_KEY, titel)//
+            .performRequest();
+        // assert
+        assertFalse("Trigger should have changed value of updated_at.", updatedAtBefore.equals(LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId())));
+        //clean up
+        liedFixture.cleanUp();
+    }
+
     private void assertUpdateDbLogEntry(Long liedId, Long rubrikId) throws ClassNotFoundException, SQLException {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
-        String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id= ? WHERE id = ? ## sss, Geänderter Titel, " + rubrikId + ", " + liedId;
+        String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id = ?, lastEditUser_id= ? WHERE id = ? ## ssss, Geänderter Titel, " + rubrikId + ", " + Helper.determineTesterId() + ", " + liedId;
         assertEquals(expectedMessage, message);
     }
 
@@ -199,5 +218,28 @@ public class LiedDAOTest {
         JavaScriptPage result = interactor.performRequest();
         // assert
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+    }
+
+    @Test
+    public void update_titelChanged_updatedAtAndLastEditUserIdChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.getValueForIdAndColumn(liedFixture.getLiedId(), "lastEditUser_id");
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        String titel = "Geänderter Titel";
+        // act
+        interactor//
+            .setField(TITEL_KEY, titel)//
+            .performRequest();
+        // assert
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        String lastEditUserIdAfter = LiedHelper.getValueForIdAndColumn(liedFixture.getLiedId(), "lastEditUser_id");
+        assertFalse(lastEditUserIdBefore.equals(lastEditUserIdAfter));
+        assertEquals("3", lastEditUserIdAfter);
+        //clean up
+        liedFixture.cleanUp();
     }
 }

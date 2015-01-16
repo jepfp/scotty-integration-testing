@@ -26,18 +26,18 @@ public class DatabaseAccess {
 
     public static Map<String, String> getLastRecord(String table) throws SQLException, ClassNotFoundException {
         String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ")";
-        return executeStatement(sqlStatement);
+        return executeStatementAndReturnLastResult(sqlStatement);
     }
 
     public static Map<String, String> getSecondLastRecord(String table) throws SQLException, ClassNotFoundException {
         String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ") - 1";
-        return executeStatement(sqlStatement);
+        return executeStatementAndReturnLastResult(sqlStatement);
     }
 
     public static Map<String, String> getRecordById(String table, long id) {
         try {
             String sqlStatement = "select * from " + table + " where id = " + id;
-            return executeStatement(sqlStatement);
+            return executeStatementAndReturnLastResult(sqlStatement);
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException("Error while determining record with id " + id + " from table " + table + ".", e);
         }
@@ -47,14 +47,14 @@ public class DatabaseAccess {
         try {
             String sqlStatement = "select count(*) as count from " + table;
             Map<String, String> result;
-            result = executeStatement(sqlStatement);
+            result = executeStatementAndReturnLastResult(sqlStatement);
             return Integer.parseInt(result.get("count"));
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException("Error while determining amount of entries in table " + table, e);
         }
     }
 
-    private static Map<String, String> executeStatement(String sqlStatement) throws SQLException, ClassNotFoundException {
+    public static Map<String, String> executeStatementAndReturnLastResult(String sqlStatement) throws SQLException, ClassNotFoundException {
         try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             if (resultSet.last()) {

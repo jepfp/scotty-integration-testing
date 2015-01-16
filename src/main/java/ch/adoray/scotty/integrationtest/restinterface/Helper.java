@@ -12,6 +12,7 @@ import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
+import ch.adoray.scotty.integrationtest.common.entityhelper.UserHelper;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.ImmutableMap;
@@ -107,5 +108,10 @@ public class Helper {
         JavaScriptPage result = Interactor.performRequest(config);
         JSONObject json = (JSONObject) parseJson(result.getContent());
         return json;
+    }
+    
+    public static long determineTesterId(){
+        String testerEmail = config().getTesterEmail();
+        return new Long(UserHelper.getUserEntryByEmail(testerEmail).get("id"));
     }
 }

@@ -5,9 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
@@ -27,6 +24,15 @@ public class UserHelper {
                 generatedKeys.next();
                 return generatedKeys.getLong(1);
             }
+        }
+    }
+
+    public static Map<String, String> getUserEntryByEmail(String email) {
+        try {
+            String sqlStatement = "select * from " + Tables.USER + " where email = '" + email + "'";
+            return DatabaseAccess.executeStatementAndReturnLastResult(sqlStatement);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException("Error while fetching user with email '" + email + "' from database.", e);
         }
     }
 }
