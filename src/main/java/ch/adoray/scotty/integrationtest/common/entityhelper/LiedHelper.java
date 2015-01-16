@@ -1,6 +1,8 @@
 package ch.adoray.scotty.integrationtest.common.entityhelper;
 
+import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -99,5 +101,16 @@ public class LiedHelper {
     public static String getValueForIdAndColumn(Long liedId, String column) {
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
         return record.get(column);
+    }
+    
+    public static void assertLastUserHasChangedToCurrentTestUser(long liedId, String lastEditUserIdBefore) {
+        String lastEditUserIdAfter = determineLastEditUserId(liedId);
+        assertFalse(lastEditUserIdBefore.equals(lastEditUserIdAfter));
+        String testerUserId = UserHelper.getUserEntryByEmail(config().getTesterEmail()).get("id");
+        assertEquals(testerUserId, lastEditUserIdAfter);
+    }
+
+    public static String determineLastEditUserId(long liedId) {
+        return getValueForIdAndColumn(liedId, "lastEditUser_id");
     }
 }

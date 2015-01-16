@@ -204,7 +204,7 @@ public class NumberInBookDAOTest {
     }
 
     @Test
-    public void update_updateNumberToFoo_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_updateNumberToFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         String newLiedNr = "foo";
         updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
     }
@@ -215,6 +215,7 @@ public class NumberInBookDAOTest {
         liedFixture.addTwoNumberInBookAssociations();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
@@ -222,27 +223,30 @@ public class NumberInBookDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void update_updateNumberToNull_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_updateNumberToNull_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         String newLiedNr = null;
         updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
     }
 
     @Test
-    public void create_createNewLiedNrFoo_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void create_createNewLiedNrFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         // act
         createNewNumberInBookAssociation(liedFixture);
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }

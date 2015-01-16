@@ -206,11 +206,12 @@ public class RefrainDAOTest {
     }
     
     @Test
-    public void update_updateText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_updateText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         Long refrainIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", refrainIdToUpdate);
         String refrain = "Geänderter Refrain";
@@ -221,16 +222,18 @@ public class RefrainDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void create_createText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void create_createText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String refrain = "Because of me the field updated at of Lied should change.";
         // act
@@ -241,16 +244,18 @@ public class RefrainDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void delete_deleteText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void delete_deleteText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         Long refrainIdToDelete = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(2);
         ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("refrain", refrainIdToDelete);
         // act
@@ -258,6 +263,7 @@ public class RefrainDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.removeTableIdTuple(Tables.REFRAIN, refrainIdToDelete);
         liedFixture.cleanUp();

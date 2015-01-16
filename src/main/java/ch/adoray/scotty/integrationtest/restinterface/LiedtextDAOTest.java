@@ -1,7 +1,10 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -233,11 +236,12 @@ public class LiedtextDAOTest {
     }
 
     @Test
-    public void update_updateText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_updateText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
         String strophe = "Geänderte Strophe";
@@ -248,16 +252,18 @@ public class LiedtextDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void create_createText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void create_createText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Because of me the field updated at of Lied should change.";
         // act
@@ -268,16 +274,18 @@ public class LiedtextDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void delete_deleteText_updatedAtOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void delete_deleteText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
         LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
         Long liedtextIdToDelete = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("liedtext", liedtextIdToDelete);
         // act
@@ -285,6 +293,7 @@ public class LiedtextDAOTest {
         // assert
         LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
         //clean up
         liedFixture.removeTableIdTuple(Tables.LIEDTEXT, liedtextIdToDelete);
         liedFixture.cleanUp();
