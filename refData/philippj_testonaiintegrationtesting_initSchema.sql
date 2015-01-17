@@ -32,7 +32,9 @@ SET character_set_client = utf8;
   `Rubrik` tinyint NOT NULL,
   `tonality` tinyint NOT NULL,
   `created_at` tinyint NOT NULL,
-  `updated_at` tinyint NOT NULL
+  `updated_at` tinyint NOT NULL,
+  `lastEditUser_id` tinyint NOT NULL,
+  `email` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -199,7 +201,9 @@ SET character_set_client = utf8;
   `Rubrik` tinyint NOT NULL,
   `tonality` tinyint NOT NULL,
   `created_at` tinyint NOT NULL,
-  `updated_at` tinyint NOT NULL
+  `updated_at` tinyint NOT NULL,
+  `lastEditUser_id` tinyint NOT NULL,
+  `email` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -290,7 +294,9 @@ SET character_set_client = utf8;
   `Rubrik` tinyint NOT NULL,
   `tonality` tinyint NOT NULL,
   `created_at` tinyint NOT NULL,
-  `updated_at` tinyint NOT NULL
+  `updated_at` tinyint NOT NULL,
+  `lastEditUser_id` tinyint NOT NULL,
+  `email` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 
@@ -507,7 +513,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100014');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100015');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -562,7 +568,7 @@ UNLOCK TABLES;
 /*!50001 SET collation_connection      = latin1_swedish_ci */;
 /*!50001 CREATE ALGORITHM=MERGE */
 /*!50013 DEFINER=`philippj_tinte`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `every_lied_in_every_liederbuch_view` AS select `l`.`id` AS `id`,`l`.`Titel` AS `Titel`,`b`.`id` AS `id_liederbuch`,`b`.`Buchname` AS `Buchname`,`l`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at` from (`lied_table_view` `l` join `liederbuch` `b`) */;
+/*!50001 VIEW `every_lied_in_every_liederbuch_view` AS select `l`.`id` AS `id`,`l`.`Titel` AS `Titel`,`b`.`id` AS `id_liederbuch`,`b`.`Buchname` AS `Buchname`,`l`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at`,`l`.`lastEditUser_id` AS `lastEditUser_id`,`l`.`email` AS `email` from (`lied_table_view` `l` join `liederbuch` `b`) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -581,7 +587,7 @@ UNLOCK TABLES;
 /*!50001 SET collation_connection      = latin1_swedish_ci */;
 /*!50001 CREATE ALGORITHM=MERGE */
 /*!50013 DEFINER=`philippj_tinte`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `lied_table_view` AS select `l`.`id` AS `id`,`l`.`Titel` AS `Titel`,`r`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at` from (`lied` `l` left join `rubrik` `r` on((`l`.`rubrik_id` = `r`.`id`))) */;
+/*!50001 VIEW `lied_table_view` AS select `l`.`id` AS `id`,`l`.`Titel` AS `Titel`,`r`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at`,`l`.`lastEditUser_id` AS `lastEditUser_id`,`u`.`email` AS `email` from ((`lied` `l` join `user` `u` on((`l`.`lastEditUser_id` = `u`.`id`))) left join `rubrik` `r` on((`l`.`rubrik_id` = `r`.`id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -600,7 +606,7 @@ UNLOCK TABLES;
 /*!50001 SET collation_connection      = latin1_swedish_ci */;
 /*!50001 CREATE ALGORITHM=MERGE */
 /*!50013 DEFINER=`philippj_tinte`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `liedview` AS select `l`.`id` AS `id`,`ll`.`Liednr` AS `Liednr`,`l`.`Titel` AS `Titel`,`l`.`id_liederbuch` AS `id_liederbuch`,`l`.`Buchname` AS `Buchname`,`l`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at` from (`every_lied_in_every_liederbuch_view` `l` left join `fkliederbuchlied` `ll` on(((`l`.`id` = `ll`.`lied_id`) and (`l`.`id_liederbuch` = `ll`.`liederbuch_id`)))) */;
+/*!50001 VIEW `liedview` AS select `l`.`id` AS `id`,`ll`.`Liednr` AS `Liednr`,`l`.`Titel` AS `Titel`,`l`.`id_liederbuch` AS `id_liederbuch`,`l`.`Buchname` AS `Buchname`,`l`.`Rubrik` AS `Rubrik`,`l`.`tonality` AS `tonality`,`l`.`created_at` AS `created_at`,`l`.`updated_at` AS `updated_at`,`l`.`lastEditUser_id` AS `lastEditUser_id`,`l`.`email` AS `email` from (`every_lied_in_every_liederbuch_view` `l` left join `fkliederbuchlied` `ll` on(((`l`.`id` = `ll`.`lied_id`) and (`l`.`id_liederbuch` = `ll`.`liederbuch_id`)))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -614,4 +620,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-09  0:05:38
+-- Dump completed on 2015-01-16 22:12:21
