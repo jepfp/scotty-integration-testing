@@ -9,6 +9,7 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 
 import com.google.common.collect.Lists;
 abstract class AbstractFixture {
+    protected long id;
     private List<TableIdTuple> tableIdTuples = Lists.newArrayList();
 
     public abstract long create();
@@ -45,5 +46,9 @@ abstract class AbstractFixture {
         if (!success) {
             throw new RuntimeException("Could not remove table id tuple: table '" + table + "', id " + id);
         }
+    }
+    
+    public Long getId() {
+        return id;
     }
 }

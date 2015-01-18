@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.UserHelper;
 public class UserFixture extends AbstractFixture {
-    private long id;
-
     public static UserFixture setupAndCreate(){
         UserFixture fixture = new UserFixture();
         fixture.create();
@@ -16,10 +14,6 @@ public class UserFixture extends AbstractFixture {
     private void createUser() throws SQLException, ClassNotFoundException {
         id = UserHelper.createDummyUser();
         addTableIdTuple(Tables.USER, id);
-    }
-
-    public long getId() {
-        return id;
     }
 
     @Override

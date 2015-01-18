@@ -33,20 +33,20 @@ public class ChangeOrder {
     public void moveUpLiedtext_textNotAtTop_movedUpAndUpdatedAtChanged() throws Exception {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        Date dateUpdatedAtBefore = LiedHelper.getDateUpdatedAtOf(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        Date dateUpdatedAtBefore = LiedHelper.getDateUpdatedAtOf(liedFixture.getId());
         List<Long> liedtextIds = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT);
         // act
         boolean methodResult = moveUp(LIEDTEXT_TABLE, String.valueOf(liedtextIds.get(1)));
         // assert
         assertTrue("RPC function returned false!", methodResult);
-        Helper.assertIdsInOrder(loadLiedtexts(liedFixture.getLiedId()), //
+        Helper.assertIdsInOrder(loadLiedtexts(liedFixture.getId()), //
             liedtextIds.get(1), //
             liedtextIds.get(0), //
             liedtextIds.get(2), //
             liedtextIds.get(3), //
             liedtextIds.get(4));
-        Date dateUpdatedAtAfter = LiedHelper.getDateUpdatedAtOf(liedFixture.getLiedId());
+        Date dateUpdatedAtAfter = LiedHelper.getDateUpdatedAtOf(liedFixture.getId());
         assertFalse(dateUpdatedAtBefore.equals(dateUpdatedAtAfter));
         // clean up
         liedFixture.cleanUp();
@@ -113,20 +113,20 @@ public class ChangeOrder {
     public void moveDownLiedtext_textNotAtBottom_movedDownAndUpdatedAtChanged() throws Exception {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        Date dateUpdatedAtBefore = LiedHelper.getDateUpdatedAtOf(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        Date dateUpdatedAtBefore = LiedHelper.getDateUpdatedAtOf(liedFixture.getId());
         List<Long> liedtextIds = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT);
         // act
         boolean methodResult = moveUp(LIEDTEXT_TABLE, String.valueOf(liedtextIds.get(4)));
         // assert
         assertTrue("RPC function returned false!", methodResult);
-        Helper.assertIdsInOrder(loadLiedtexts(liedFixture.getLiedId()), //
+        Helper.assertIdsInOrder(loadLiedtexts(liedFixture.getId()), //
             liedtextIds.get(0), //
             liedtextIds.get(1), //
             liedtextIds.get(2), //
             liedtextIds.get(4), //
             liedtextIds.get(3));
-        Date dateUpdatedAtAfter = LiedHelper.getDateUpdatedAtOf(liedFixture.getLiedId());
+        Date dateUpdatedAtAfter = LiedHelper.getDateUpdatedAtOf(liedFixture.getId());
         assertFalse(dateUpdatedAtBefore.equals(dateUpdatedAtAfter));
         // clean up
         liedFixture.cleanUp();
@@ -151,7 +151,7 @@ public class ChangeOrder {
         boolean methodResult = moveDown(Tables.REFRAIN, refrainIds.get(0));
         // assert
         assertTrue("RPC function returned false!", methodResult);
-        Helper.assertIdsInOrder(loadRefrains(liedFixture.getLiedId()), refrainIds.get(1), refrainIds.get(0));
+        Helper.assertIdsInOrder(loadRefrains(liedFixture.getId()), refrainIds.get(1), refrainIds.get(0));
         // clean up
         liedFixture.cleanUp();
     }
@@ -161,13 +161,13 @@ public class ChangeOrder {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         List<Long> refrainIds = liedFixture.getCreatedIdsByTable(REFRAIN_TABLE);
-        long lastEditUserIdBefore = loadLastEditUserId(liedFixture.getLiedId());
+        long lastEditUserIdBefore = loadLastEditUserId(liedFixture.getId());
         assertTrue("The fixture should have set lastEditUser_id to 1. Fix this to have the test working properly!", lastEditUserIdBefore != 3);
         // act
         boolean methodResult = moveDown(Tables.REFRAIN, refrainIds.get(0));
         // assert
         assertTrue("RPC function returned false!", methodResult);
-        assertTrue("After moving down the int test user (id 3) has to be set!", loadLastEditUserId(liedFixture.getLiedId()) == 3);
+        assertTrue("After moving down the int test user (id 3) has to be set!", loadLastEditUserId(liedFixture.getId()) == 3);
         // clean up
         liedFixture.cleanUp();
     }

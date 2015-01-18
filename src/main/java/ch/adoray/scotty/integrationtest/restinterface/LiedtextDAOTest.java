@@ -58,7 +58,7 @@ public class LiedtextDAOTest {
     public void destroy_liedtext_liedtextDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        long liedtextIdToDelete = LiedtextHelper.createLiedtext(liedFixture.getLiedId(), 100, "This is to be deleted.", Optional.empty());
+        long liedtextIdToDelete = LiedtextHelper.createLiedtext(liedFixture.getId(), 100, "This is to be deleted.", Optional.empty());
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedtext/" + liedtextIdToDelete);
         config.setMethodDelete();
@@ -75,7 +75,7 @@ public class LiedtextDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
         JavaScriptPage result = interactor//
@@ -99,7 +99,7 @@ public class LiedtextDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         // act
         JavaScriptPage result = interactor//
             .setField(STROPHE_KEY, strophe)//
@@ -107,10 +107,10 @@ public class LiedtextDAOTest {
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
-        assertEquals(liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals(liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
         assertNull(response.getDataValueByKeyFromFirst("refrain_id"));
-        assertDbLogEntry(liedFixture.getLiedId());
+        assertDbLogEntry(liedFixture.getId());
         //clean up
         liedFixture.cleanUp();
     }
@@ -131,7 +131,7 @@ public class LiedtextDAOTest {
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String refrainIdKey = "refrain_id";
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         // act
         JavaScriptPage result = interactor//
             .setField(STROPHE_KEY, strophe)//
@@ -152,7 +152,7 @@ public class LiedtextDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Strophe mit Link zu Refrain.";
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
         JavaScriptPage result = interactor//
@@ -174,7 +174,7 @@ public class LiedtextDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
         JavaScriptPage result = interactor//
@@ -204,7 +204,7 @@ public class LiedtextDAOTest {
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
-        assertEquals("lied_Id must not be changed!", liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals("lied_Id must not be changed!", liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals("refrain_id must have changed!", refrainIdToSet, response.getDataValueByKeyFromFirstAsLong(REFRAIN_ID_KEY));
         assertUpdateDbLogEntry(liedtextIdToUpdate, refrainIdToSet);
         //clean up
@@ -239,9 +239,9 @@ public class LiedtextDAOTest {
     public void update_updateText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
         String strophe = "Geänderte Strophe";
@@ -250,9 +250,9 @@ public class LiedtextDAOTest {
             .setField(STROPHE_KEY, strophe)//
             .performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
@@ -261,20 +261,20 @@ public class LiedtextDAOTest {
     public void create_createText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("liedtext");
         String strophe = "Because of me the field updated at of Lied should change.";
         // act
         interactor//
             .setField(STROPHE_KEY, strophe)//
-            .setField(LIED_ID_KEY, liedFixture.getLiedId().toString())//
+            .setField(LIED_ID_KEY, liedFixture.getId().toString())//
             .performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
@@ -283,17 +283,17 @@ public class LiedtextDAOTest {
     public void delete_deleteText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         Long liedtextIdToDelete = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("liedtext", liedtextIdToDelete);
         // act
         interactor.performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.removeTableIdTuple(Tables.LIEDTEXT, liedtextIdToDelete);
         liedFixture.cleanUp();

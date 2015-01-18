@@ -47,7 +47,7 @@ public class SqliteDbDumpTest {
         // act
         SqliteDatabaseAccess db = downloadDatabaseAndOpenConnection();
         // assert
-        Map<String, String> record = db.getById(Tables.LIED, liedFixture.getLiedId());
+        Map<String, String> record = db.getById(Tables.LIED, liedFixture.getId());
         assertEquals(liedTitel, record.get("Titel"));
         // clean up
         liedFixture.cleanUp();

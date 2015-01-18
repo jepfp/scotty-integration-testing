@@ -98,7 +98,7 @@ public class NumberInBookDAOTest {
         String testData = removeIdAndLiedId(ResourceLoader.loadTestData());
         String content = result.getContent();
         JSONAssert.assertEquals(testData, removeIdAndLiedId(content), false);
-        assertDbLogEntry(liedFixture.getLiedId());
+        assertDbLogEntry(liedFixture.getId());
         //clean up
         liedFixture.cleanUp();
     }
@@ -108,7 +108,7 @@ public class NumberInBookDAOTest {
         String liedIdKey = "lied_id";
         String liederbuchIdKey = "liederbuch_id";
         String liednr = "8888";
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         String liederbuchId = "3";
         JavaScriptPage result = interactor.setField(LIEDNR_KEY, liednr)//
             .setField(liedIdKey, liedId)//
@@ -196,8 +196,8 @@ public class NumberInBookDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         // act
-        LiedHelper.addNumberInBookToLied(liedFixture1.getLiedId(), 1, null);
-        LiedHelper.addNumberInBookToLied(liedFixture2.getLiedId(), 1, null);
+        LiedHelper.addNumberInBookToLied(liedFixture1.getId(), 1, null);
+        LiedHelper.addNumberInBookToLied(liedFixture2.getId(), 1, null);
         //clean up
         liedFixture1.cleanUp();
         liedFixture2.cleanUp();
@@ -213,17 +213,17 @@ public class NumberInBookDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
         interactor.setField(LIEDNR_KEY, newLiedNr).performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
@@ -238,15 +238,15 @@ public class NumberInBookDAOTest {
     public void create_createNewLiedNrFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         // act
         createNewNumberInBookAssociation(liedFixture);
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }

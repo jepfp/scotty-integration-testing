@@ -9,7 +9,6 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
 public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture {
-    private long liedId;
     private String titel = "Dummy-Lied";
 
     public String getTitel() {
@@ -32,29 +31,29 @@ public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFi
             createLied();
             createRefrains();
             createLiedtexts();
-            return liedId;
+            return id;
         } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException("Error while creating " + this.getClass().getSimpleName(), e);
         }
     }
 
     private void createLied() throws SQLException, ClassNotFoundException {
-        liedId = LiedHelper.createDummyLied(titel);
-        addTableIdTuple(Tables.LIED, getLiedId());
+        id = LiedHelper.createDummyLied(titel);
+        addTableIdTuple(Tables.LIED, getId());
     }
 
     public void addTwoNumberInBookAssociations() {
         final long dirSingenWir2Id = 2;
         final long adonaiZugHeftId = 3;
-        long assocId = LiedHelper.addNumberInBookToLied(liedId, dirSingenWir2Id, "12");
+        long assocId = LiedHelper.addNumberInBookToLied(id, dirSingenWir2Id, "12");
         addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
-        assocId = LiedHelper.addNumberInBookToLied(liedId, adonaiZugHeftId, "102");
+        assocId = LiedHelper.addNumberInBookToLied(id, adonaiZugHeftId, "102");
         addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
     }
 
     private void createRefrains() throws ClassNotFoundException, SQLException {
         for (int i = 0; i < 3; i++) {
-            long createdId = RefrainHelper.createRefrain(getLiedId(), i, "Dummy-Refrain Nr " + i);
+            long createdId = RefrainHelper.createRefrain(getId(), i, "Dummy-Refrain Nr " + i);
             addTableIdTuple(Tables.REFRAIN, createdId);
         }
     }
@@ -64,12 +63,8 @@ public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFi
         for (int i = 0; i < 5; i++) {
             //2 with a refrain + leave one refrain without any liedtext + 2 without any refrain
             Optional<Long> refrainId = (i < 2 ? Optional.of(refrainIds.get(i)) : Optional.empty());
-            long createdId = LiedtextHelper.createLiedtext(getLiedId(), i, "Dummy-Strophe Nr " + i, refrainId);
+            long createdId = LiedtextHelper.createLiedtext(getId(), i, "Dummy-Strophe Nr " + i, refrainId);
             addTableIdTuple(Tables.LIEDTEXT, createdId);
         }
-    }
-
-    public Long getLiedId() {
-        return liedId;
     }
 }

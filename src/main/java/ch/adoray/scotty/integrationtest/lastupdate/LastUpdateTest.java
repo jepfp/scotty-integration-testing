@@ -30,7 +30,7 @@ public class LastUpdateTest {
     public void readLastUpdate_changeANumber_readLastUpdatedChanges() {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
         Long liedtextIdToDelete = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("liedtext", liedtextIdToDelete);
         String before = readLastUpdateFromServer();

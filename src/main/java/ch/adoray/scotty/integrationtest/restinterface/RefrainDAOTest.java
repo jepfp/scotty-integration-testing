@@ -56,7 +56,7 @@ public class RefrainDAOTest {
     public void destroy_refrain_refrainDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
-        long refrainIdToDelete = RefrainHelper.createRefrain(liedFixture.getLiedId(), 100, "This is to be deleted.");
+        long refrainIdToDelete = RefrainHelper.createRefrain(liedFixture.getId(), 100, "This is to be deleted.");
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/refrain/" + refrainIdToDelete);
         config.setMethodDelete();
@@ -73,7 +73,7 @@ public class RefrainDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         // act
         JavaScriptPage result = interactor//
             .setField(LIED_ID_KEY, liedId)//
@@ -95,7 +95,7 @@ public class RefrainDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();;
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String refrain = "Testcase, der das Hinzufügen eines Refrains testet.";
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         // act
         JavaScriptPage result = interactor//
             .setField(REFRAIN_KEY, refrain)//
@@ -103,9 +103,9 @@ public class RefrainDAOTest {
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
-        assertEquals(liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals(liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals(refrain, response.getDataValueByKeyFromFirst(REFRAIN_KEY));
-        assertDbLogEntry(liedFixture.getLiedId());
+        assertDbLogEntry(liedFixture.getId());
         //clean up
         liedFixture.cleanUp();
     }
@@ -126,7 +126,7 @@ public class RefrainDAOTest {
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
-        String liedId = String.valueOf(liedFixture.getLiedId());
+        String liedId = String.valueOf(liedFixture.getId());
         // act
         JavaScriptPage result = interactor//
             .setField(REFRAIN_KEY, null)//
@@ -154,7 +154,7 @@ public class RefrainDAOTest {
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         assertEquals(refrain, response.getDataValueByKeyFromFirst(REFRAIN_KEY));
-        assertEquals("lied_Id must not be changed!", liedFixture.getLiedId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
+        assertEquals("lied_Id must not be changed!", liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertUpdateDbLogEntry(refrainIdToUpdate);
         //clean up
         liedFixture.cleanUp();
@@ -209,9 +209,9 @@ public class RefrainDAOTest {
     public void update_updateText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         Long refrainIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", refrainIdToUpdate);
         String refrain = "Geänderter Refrain";
@@ -220,9 +220,9 @@ public class RefrainDAOTest {
             .setField(REFRAIN_KEY, refrain)//
             .performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
@@ -231,20 +231,20 @@ public class RefrainDAOTest {
     public void create_createText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String refrain = "Because of me the field updated at of Lied should change.";
         // act
         interactor//
             .setField(REFRAIN_KEY, refrain)//
-            .setField(LIED_ID_KEY, liedFixture.getLiedId().toString())//
+            .setField(LIED_ID_KEY, liedFixture.getId().toString())//
             .performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.cleanUp();
     }
@@ -253,17 +253,17 @@ public class RefrainDAOTest {
     public void delete_deleteText_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
         Long refrainIdToDelete = liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(2);
         ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("refrain", refrainIdToDelete);
         // act
         interactor.performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getLiedId(), lastEditUserIdBefore);
+        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
         //clean up
         liedFixture.removeTableIdTuple(Tables.REFRAIN, refrainIdToDelete);
         liedFixture.cleanUp();

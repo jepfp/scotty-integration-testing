@@ -39,11 +39,11 @@ public class LiedDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/lied/" + liedFixture.getLiedId());
+        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/lied/" + liedFixture.getId());
         config.setMethodDelete();
         Interactor.performRequest(config);
         // assert
-        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedFixture.getLiedId());
+        Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedFixture.getId());
         assertNull("Record must not be found", record);
     }
 
@@ -124,7 +124,7 @@ public class LiedDAOTest {
     public void update_happyCase_rowUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
         String titel = "Geänderter Titel";
         Integer rubrikId = 12;
         // act
@@ -136,7 +136,7 @@ public class LiedDAOTest {
         RestResponse response = RestResponse.createFromResponse(result.getContent());
         assertEquals(titel, response.getDataValueByKeyFromFirst(TITEL_KEY));
         assertEquals(rubrikId, response.getDataValueByKeyFromFirst(RUBRIK_ID_KEY));
-        assertUpdateDbLogEntry(liedFixture.getLiedId(), new Long(rubrikId));
+        assertUpdateDbLogEntry(liedFixture.getId(), new Long(rubrikId));
         //clean up
         liedFixture.cleanUp();
     }
@@ -145,15 +145,15 @@ public class LiedDAOTest {
     public void update_lastUpdateWasFarBehing_triggerUpdatesUpdatedAtField() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LocalDateTime updatedAtBefore = LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        LocalDateTime updatedAtBefore = LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
         String titel = "Geänderter Titel";
         // act
         interactor//
             .setField(TITEL_KEY, titel)//
             .performRequest();
         // assert
-        assertFalse("Trigger should have changed value of updated_at.", updatedAtBefore.equals(LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId())));
+        assertFalse("Trigger should have changed value of updated_at.", updatedAtBefore.equals(LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId())));
         //clean up
         liedFixture.cleanUp();
     }
@@ -192,7 +192,7 @@ public class LiedDAOTest {
     }
 
     private RestResponse changeTonality(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String tonality) {
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
         JavaScriptPage result = interactor//
             .setField(TONALITY_KEY, tonality)//
             .performRequest();
@@ -224,19 +224,19 @@ public class LiedDAOTest {
     public void update_titelChanged_updatedAtAndLastEditUserIdChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getLiedId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
-        String lastEditUserIdBefore = LiedHelper.getValueForIdAndColumn(liedFixture.getLiedId(), "lastEditUser_id");
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getLiedId());
+        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
+        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
+        String lastEditUserIdBefore = LiedHelper.getValueForIdAndColumn(liedFixture.getId(), "lastEditUser_id");
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
         String titel = "Geänderter Titel";
         // act
         interactor//
             .setField(TITEL_KEY, titel)//
             .performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getLiedId());
+        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
         assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        String lastEditUserIdAfter = LiedHelper.getValueForIdAndColumn(liedFixture.getLiedId(), "lastEditUser_id");
+        String lastEditUserIdAfter = LiedHelper.getValueForIdAndColumn(liedFixture.getId(), "lastEditUser_id");
         assertFalse(lastEditUserIdBefore.equals(lastEditUserIdAfter));
         assertEquals("3", lastEditUserIdAfter);
         //clean up
