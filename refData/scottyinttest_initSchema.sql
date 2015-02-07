@@ -39,6 +39,35 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Table structure for table `file`
+--
+
+DROP TABLE IF EXISTS `file`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `file` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `lied_id` bigint(20) NOT NULL,
+  `data` mediumblob NOT NULL,
+  `filename` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `filesize` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `filetype` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fkLied_idx` (`lied_id`),
+  CONSTRAINT `fkLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `file`
+--
+
+LOCK TABLES `file` WRITE;
+/*!40000 ALTER TABLE `file` DISABLE KEYS */;
+/*!40000 ALTER TABLE `file` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `fkliederbuchlied`
 --
 
@@ -515,7 +544,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100015');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100016');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -622,4 +651,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-09 17:32:03
+-- Dump completed on 2015-01-19  8:35:23

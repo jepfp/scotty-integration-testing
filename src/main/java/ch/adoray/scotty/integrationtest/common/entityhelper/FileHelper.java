@@ -1,0 +1,61 @@
+package ch.adoray.scotty.integrationtest.common.entityhelper;
+
+import static org.junit.Assert.assertEquals;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ResourceLoader;
+import ch.adoray.scotty.integrationtest.common.Tables;
+public class FileHelper {
+    public static long createDummyFile(long liedId, String pdfResourceName) {
+        try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO file (lied_id, data, filename, filesize, filetype) VALUES (?, ?, ?, ?, ?);")) {
+            statement.setLong(1, liedId);
+            statement.setBlob(2, loadPdfInputStream(pdfResourceName));
+            statement.setString(3, "aFilename.pdf");
+            statement.setString(4, "FILESIZE");
+            statement.setString(5, "pdf");
+            int rowCount = statement.executeUpdate();
+            assertEquals("must have created one row", 1, rowCount);
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                generatedKeys.next();
+                return generatedKeys.getLong(1);
+            }
+        } catch (SQLException | FileNotFoundException e) {
+            throw new RuntimeException("Error while creating dummy file.", e);
+        }
+    }
+
+    private static InputStream loadPdfInputStream(String pdfResourceName) throws FileNotFoundException {
+        InputStream stream = new FileInputStream(getPdfResourcePathByName(pdfResourceName));
+        return stream;
+    }
+
+    public static String getPdfResourcePathByName(String pdfResourceName) {
+        URL url = ResourceLoader.class.getClassLoader().getResource(pdfResourceName);
+        return url.getPath();
+    }
+
+    public static void readFileById(long id, Path path) {
+        String sqlStatement = "SELECT data FROM " + Tables.FILE + " WHERE id = " + id;
+        try (PreparedStatement statement = DatabaseAccess.prepareStatement(sqlStatement); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
+            if (!resultSet.next()) {
+                throw new RuntimeException("DB record with id " + id + " not found. Statement: " + sqlStatement);
+            }
+            try (InputStream binaryStream = resultSet.getBinaryStream(1)) {
+                Files.copy(binaryStream, path);
+            }
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException("Error while reading file from database.", e);
+        }
+    }
+}

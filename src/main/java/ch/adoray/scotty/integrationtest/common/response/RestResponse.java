@@ -63,8 +63,12 @@ public class RestResponse {
         }
     }
 
-    public Object getDataValueByKeyFromFirst(String key) {
-        return getDataValueAtByKey(0, key);
+    public String getDataValueByKeyFromFirst(String key) {
+        Object value = getDataValueAtByKey(0, key);
+        if (value == null) {
+            return null;
+        }
+        return value.toString();
     }
 
     public Long getDataValueByKeyFromFirstAsLong(String key) {
@@ -96,7 +100,7 @@ public class RestResponse {
     }
 
     public void assertIdsInOrder(long... orderOfIds) {
-        if(orderOfIds.length > data.length()){
+        if (orderOfIds.length > data.length()) {
             fail("Response contains only " + data.length() + " entries in data node but there are " + orderOfIds.length + " to check.");
         }
         try {

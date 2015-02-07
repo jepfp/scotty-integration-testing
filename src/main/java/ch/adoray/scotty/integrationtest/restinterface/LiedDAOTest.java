@@ -126,11 +126,11 @@ public class LiedDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
         String titel = "Geänderter Titel";
-        Integer rubrikId = 12;
+        String rubrikId = "12";
         // act
         JavaScriptPage result = interactor//
             .setField(TITEL_KEY, titel)//
-            .setField(RUBRIK_ID_KEY, String.valueOf(rubrikId))//
+            .setField(RUBRIK_ID_KEY, rubrikId)//
             .performRequest();
         // assert
         RestResponse response = RestResponse.createFromResponse(result.getContent());
