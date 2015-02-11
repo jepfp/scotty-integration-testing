@@ -1,5 +1,6 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -14,12 +15,12 @@ import org.junit.rules.TemporaryFolder;
 
 import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.FileFixture;
 public class FileDAOTest {
-    
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
-    
+
     @Test
     public void createFileByFixture_bigger10mb_storeAndReadSuccessful() throws IOException {
         // arrange
@@ -36,10 +37,18 @@ public class FileDAOTest {
     }
 
     @Test
-    public void select_1_pdfContentCorrect() {
+    public void select_testPdfFile_metadataCorrectAndDataNotIncluded() {
         // arrange
-        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file", (long) 1);
+        FileFixture fileFixture = FileFixture.setupAndCreate();
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file", fileFixture.getId());
         // act
+        RestResponse response = interactor.performRequestAsRestResponse();
         // assert
+        assertEquals("aFilename.pdf", response.getDataValueByKeyFromFirst("filename"));
+        // TODO: For the moment we don't really save the size. Either store it or remove the column
+        assertEquals("FILESIZE", response.getDataValueByKeyFromFirst("filesize"));
+        assertEquals("pdf", response.getDataValueByKeyFromFirst("filetype"));
+        // clean up
+        fileFixture.cleanUp();
     }
 }
