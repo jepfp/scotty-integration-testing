@@ -52,15 +52,18 @@ abstract class ExtRestInteractor {
 
     abstract void setRequestBody(WebRequest request);
 
-    public JavaScriptPage performRequest() {
+    public <P extends Page> P performRequest() {
         try {
             String requestUrl = url + (addDebugParam ? "?" + debugParamString : "");
             WebRequest request = new WebRequest(new URL(requestUrl), getHttpMethod());
             request.setAdditionalHeader("Content-Type", "application/json");
             request.setCharset("utf-8");
             setRequestBody(request);
-            JavaScriptPage page = getPage(request);
-            Interactor.printAndValidate(page.getContent(), failOnUnparsableJson, failOnJsonSuccessFalse);
+            P page = getPage(request);
+            if (page instanceof JavaScriptPage) {
+                JavaScriptPage jsPage = (JavaScriptPage) page;
+                Interactor.printAndValidate(jsPage.getContent(), failOnUnparsableJson, failOnJsonSuccessFalse);
+            }
             return page;
         } catch (Exception e) {
             throw new RuntimeException("Performing http request failed.", e);

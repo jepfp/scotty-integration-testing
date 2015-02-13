@@ -45,7 +45,7 @@ public class RestResponse {
             RestResponse r = new RestResponse(type, success, message, data);
             return r;
         } catch (JSONException e) {
-            throw new RuntimeException("Error while creating RestUnsuccessfulResponse.", e);
+            throw new RuntimeException("Error while creating RestResponse.", e);
         }
     }
 

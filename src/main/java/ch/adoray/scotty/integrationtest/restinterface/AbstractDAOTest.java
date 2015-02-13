@@ -228,7 +228,8 @@ public class AbstractDAOTest {
     public void read_notExistingController_noSuccess() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/notExistingController")//
-            .disableFailOnJsonSuccessFalse();
+            .disableFailOnJsonSuccessFalse()//
+            .disableThrowExceptionOnFailingStatusCode();
         JavaScriptPage result = Interactor.performRequest(config);
         // assert
         JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());

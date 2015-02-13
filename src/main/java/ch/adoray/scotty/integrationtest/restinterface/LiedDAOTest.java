@@ -71,7 +71,7 @@ public class LiedDAOTest {
             .setField("created_at", "foo")//
             .setField("updated_at", "bar");
         interactor.setFailOnJsonSuccessFalse(false);
-        RestResponse response = RestResponse.createFromResponse(interactor.performRequest().getContent());
+        RestResponse response = interactor.performRequestAsRestResponse();
         // assert
         assertTrue(response.isSuccess());
         // clean up
