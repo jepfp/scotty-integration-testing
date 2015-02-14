@@ -2,6 +2,7 @@ package ch.adoray.scotty.integrationtest.common.entityhelper;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,17 +14,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.io.FilenameUtils;
+
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 public class FileHelper {
     public static long createDummyFile(long liedId, String pdfResourceName) {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO file (lied_id, data, filename, filesize, filetype) VALUES (?, ?, ?, ?, ?);")) {
+            File file = new File(getPdfResourcePathByName(pdfResourceName));
+            String filename = file.getName();
             statement.setLong(1, liedId);
-            statement.setBlob(2, loadPdfInputStream(pdfResourceName));
-            statement.setString(3, "aFilename.pdf");
-            statement.setString(4, "FILESIZE");
-            statement.setString(5, "pdf");
+            statement.setBlob(2, new FileInputStream(file));
+            statement.setString(3, filename);
+            statement.setString(4, String.valueOf(file.length()));
+            statement.setString(5, FilenameUtils.getExtension(filename));
             int rowCount = statement.executeUpdate();
             assertEquals("must have created one row", 1, rowCount);
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
@@ -33,11 +38,6 @@ public class FileHelper {
         } catch (SQLException | FileNotFoundException e) {
             throw new RuntimeException("Error while creating dummy file.", e);
         }
-    }
-
-    private static InputStream loadPdfInputStream(String pdfResourceName) throws FileNotFoundException {
-        InputStream stream = new FileInputStream(getPdfResourcePathByName(pdfResourceName));
-        return stream;
     }
 
     public static String getPdfResourcePathByName(String pdfResourceName) {
