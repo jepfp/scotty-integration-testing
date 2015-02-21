@@ -3,7 +3,7 @@
 --
 -- Host: philippjenni.ch    Database: philippj_testonaiintegrationtesting
 -- ------------------------------------------------------
--- Server version	5.5.40-cll
+-- Server version	5.5.42-cll
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -53,6 +53,7 @@ CREATE TABLE `file` (
   `filesize` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `filetype` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `lied_id_UNIQUE` (`lied_id`),
   KEY `fkLied_idx` (`lied_id`),
   CONSTRAINT `fkLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -542,7 +543,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100016');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100017');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -649,4 +650,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-02-01 13:21:39
+-- Dump completed on 2015-02-22  0:29:15

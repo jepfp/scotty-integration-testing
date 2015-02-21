@@ -47,4 +47,8 @@ public class FileFixture extends AbstractFixture {
         id = FileHelper.createDummyFile(liedId, pdfResourceName);
         addTableIdTuple(Tables.FILE, getId());
     }
+
+    public long getLiedId() {
+        return liedId;
+    }
 }

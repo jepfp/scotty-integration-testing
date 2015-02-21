@@ -45,7 +45,8 @@ public class Configuration {
         String connectionString = "jdbc:mysql://" + configFile.getProperty("db.host") + "/"//
             + configFile.getProperty("db.name") + "?"//
             + "user=" + configFile.getProperty("db.username") + "&"//
-            + "password=" + configFile.getProperty("db.password");
+            + "password=" + configFile.getProperty("db.password") //
+            + "&characterEncoding=utf8";
         return connectionString;
     }
 

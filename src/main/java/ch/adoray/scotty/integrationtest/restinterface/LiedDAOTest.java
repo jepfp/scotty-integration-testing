@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
@@ -26,6 +28,7 @@ import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
+import ch.adoray.scotty.integrationtest.fixture.FileFixture;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
@@ -33,6 +36,8 @@ public class LiedDAOTest {
     private static final String TITEL_KEY = "Titel";
     private static final String RUBRIK_ID_KEY = "rubrik_id";
     private static final String TONALITY_KEY = "tonality";
+    @Rule
+    public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Test
     public void destroy_lied_liedDeleted() throws JSONException, ClassNotFoundException, SQLException {
@@ -161,7 +166,9 @@ public class LiedDAOTest {
     private void assertUpdateDbLogEntry(Long liedId, Long rubrikId) throws ClassNotFoundException, SQLException {
         Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
         String message = record.get("message");
-        String expectedMessage = "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id = ?, lastEditUser_id= ? WHERE id = ? ## ssss, Geänderter Titel, " + rubrikId + ", " + Helper.determineTesterId() + ", " + liedId;
+        String expectedMessage =
+            "3 ## correct@login.ch ## lied ## UPDATE lied SET Titel = ?, rubrik_id = ?, lastEditUser_id= ? WHERE id = ? ## ssss, Geänderter Titel, " + rubrikId + ", " + Helper.determineTesterId()
+                + ", " + liedId;
         assertEquals(expectedMessage, message);
     }
 
@@ -241,5 +248,19 @@ public class LiedDAOTest {
         assertEquals("3", lastEditUserIdAfter);
         //clean up
         liedFixture.cleanUp();
+    }
+
+    @Test
+    public void select_liedWithFile_fileIdIsSent() throws IOException {
+        // arrange
+        FileFixture fileFixture = FileFixture.setupAndCreate();
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied", fileFixture.getLiedId());
+        // act
+        RestResponse response = interactor.performRequestAsRestResponse();
+        // assert
+        String actualFileId = response.getDataValueByKeyFromFirst("file_id");
+        assertEquals(fileFixture.getId().toString(), actualFileId);
+        // clean up
+        fileFixture.cleanUp();
     }
 }
