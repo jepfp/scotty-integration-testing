@@ -298,4 +298,22 @@ public class LiedtextDAOTest {
         liedFixture.removeTableIdTuple(Tables.LIEDTEXT, liedtextIdToDelete);
         liedFixture.cleanUp();
     }
+
+    @Test
+    public void update_noChanges_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(3);
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        // act
+        JavaScriptPage result = interactor//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertFalse(response.isSuccess());
+        //clean up
+        liedFixture.cleanUp();
+    }
 }
