@@ -25,6 +25,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.Interactor.RpcInteractorConfiguration;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdateAssertHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
@@ -179,22 +180,20 @@ public class LiedViewDAOTest {
     public void update_changeExistingEntry_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        ;
-        LiedHelper.addNumberInBookToLied(liedFixture.getId(), 1, "199");
+        long fkLiederbuchLiedId = LiedHelper.addNumberInBookToLied(liedFixture.getId(), 1, "199");
         String neueLiedNr = "2997";
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);
         // assert
-        assertUpdateDbLogEntry(neueLiedNr, liedFixture.getId(), ID_ADORAY_LIEDERORDNER);
+        assertUpdateDbLogEntry(neueLiedNr, liedFixture.getId(), ID_ADORAY_LIEDERORDNER, fkLiederbuchLiedId);
         //clean up
         liedFixture.cleanUp();
     }
 
-    private void assertUpdateDbLogEntry(String liednr, long liedId, long liederbuchId) throws ClassNotFoundException, SQLException {
-        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+    private void assertUpdateDbLogEntry(String liednr, long liedId, long liederbuchId, long fkLiederbuchLiedId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getRecordFromLogHistory(Tables.LOGGING, 2);
         String message = record.get("message");
-        String expectedMessage =
-            "3 ## correct@login.ch ## fkliederbuchlied ## UPDATE fkliederbuchlied SET Liednr = ?, lied_id = ?, liederbuch_id= ? WHERE lied_id = ? and liederbuch_id = ? ## sssss, " //
-                + (liednr != null ? liednr : "") + ", " + liedId + ", " + liederbuchId + ", " + liedId + ", " + liederbuchId;
+        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## UPDATE fkliederbuchlied SET Liednr = ?, lied_id = ?, liederbuch_id= ? WHERE id = ? ## ssss, " //
+            + liednr + ", " + liedId + ", " + liederbuchId + ", " + fkLiederbuchLiedId;
         assertEquals(expectedMessage, message);
     }
 
@@ -202,14 +201,21 @@ public class LiedViewDAOTest {
     public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.addNumberInBookToLied(liedFixture.getId(), 1, "199");
+        long createdFkLiederbuchLiedId = LiedHelper.addNumberInBookToLied(liedFixture.getId(), 1, "199");
         String neueLiedNr = null;
         // act
         changeLiedNrAndAssertNr(liedFixture, neueLiedNr);
         // assert
-        assertUpdateDbLogEntry(neueLiedNr, liedFixture.getId(), ID_ADORAY_LIEDERORDNER);
+        assertDeleteDbLogEntry(createdFkLiederbuchLiedId);
         //clean up
         liedFixture.cleanUp();
+    }
+
+    private void assertDeleteDbLogEntry(long fkLiederbuchLiedId) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getSecondLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage = "3 ## correct@login.ch ## fkliederbuchlied ## DELETE FROM fkliederbuchlied WHERE id = " + fkLiederbuchLiedId + " ## ";
+        assertEquals(expectedMessage, message);
     }
 
     private RestResponse changeLiedNrAndAssertNr(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String neueLiedNr) {
@@ -254,14 +260,10 @@ public class LiedViewDAOTest {
 
     private void updateLiedNrAndAssertUpdatedAtOnLied(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String newLiedNr) {
         //arrange
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
+        LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
         changeLiedNrAndAssertNr(liedFixture, newLiedNr);
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
+        lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
         //clean up
         liedFixture.cleanUp();
     }
@@ -269,7 +271,7 @@ public class LiedViewDAOTest {
     @Test
     public void update_updateNumberToNull_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        liedFixture.addTwoNumberInBookAssociations();
+        LiedHelper.addNumberInBookToLied(liedFixture.getId(), 1, "18999");
         String newLiedNr = null;
         updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
     }
@@ -279,5 +281,25 @@ public class LiedViewDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String newLiedNr = "something new";
         updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
+    }
+
+    @Test
+    public void create_createNewNullNumber_error() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String newLiedNr = null;
+        //act
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture.getId());
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        JavaScriptPage result = interactor//
+            .setField(LIEDNR_KEY, newLiedNr)//
+            .performRequest();
+        // assert
+        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        assertFalse(response.isSuccess());
+        assert (response.getMessage().contains("Fehler im Feld Liednr: Das Feld darf nicht leer sein."));
+        //clean up
+        liedFixture.cleanUp();
     }
 }

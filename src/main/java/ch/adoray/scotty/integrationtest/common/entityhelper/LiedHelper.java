@@ -102,7 +102,7 @@ public class LiedHelper {
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
         return record.get(column);
     }
-    
+
     public static void assertLastUserHasChangedToCurrentTestUser(long liedId, String lastEditUserIdBefore) {
         String lastEditUserIdAfter = determineLastEditUserId(liedId);
         assertFalse(lastEditUserIdBefore.equals(lastEditUserIdAfter));
@@ -112,5 +112,24 @@ public class LiedHelper {
 
     public static String determineLastEditUserId(long liedId) {
         return getValueForIdAndColumn(liedId, "lastEditUser_id");
+    }
+
+    public static class LastUpdateAssertHelper {
+        private final LocalDateTime updatedAtBefore;
+        private final String lastEditUserIdBefore;
+        private final long liedId;
+
+        public LastUpdateAssertHelper(long liedId) {
+            this.liedId = liedId;
+            setUpdatedAtToFarBehind(liedId);
+            updatedAtBefore = determineUpdatedAtOfLiedById(liedId);
+            lastEditUserIdBefore = determineLastEditUserId(liedId);
+        }
+
+        public void assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser() {
+            LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedId);
+            assertFalse(updatedAtBefore.equals(updatedAtAfter));
+            LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedId, lastEditUserIdBefore);
+        }
     }
 }

@@ -79,7 +79,7 @@ CREATE TABLE `fkliederbuchlied` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `liederbuch_id` bigint(20) NOT NULL,
   `lied_id` bigint(20) NOT NULL,
-  `Liednr` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Liednr` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `PreventFromDifferentLiedNrForTheSameSongInASongbook` (`liederbuch_id`,`lied_id`),
   UNIQUE KEY `PreventFromHavingTheSameLiedNrTwiceInOneSongbook` (`liederbuch_id`,`Liednr`),
@@ -543,7 +543,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100017');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100018');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -650,4 +650,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-02-22  0:29:15
+-- Dump completed on 2015-05-09 15:09:17

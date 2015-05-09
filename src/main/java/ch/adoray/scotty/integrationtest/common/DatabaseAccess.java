@@ -25,12 +25,15 @@ public class DatabaseAccess {
     }
 
     public static Map<String, String> getLastRecord(String table) throws SQLException, ClassNotFoundException {
-        String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ")";
-        return executeStatementAndReturnLastResult(sqlStatement);
+        return getRecordFromLogHistory(table, 0);
     }
 
     public static Map<String, String> getSecondLastRecord(String table) throws SQLException, ClassNotFoundException {
-        String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ") - 1";
+        return getRecordFromLogHistory(table, 1);
+    }
+
+    public static Map<String, String> getRecordFromLogHistory(String table, int numberOfEntriesBackFromNewest) throws SQLException, ClassNotFoundException {
+        String sqlStatement = "select * from " + table + " where id = (select max(id) from " + table + ") - " + numberOfEntriesBackFromNewest;
         return executeStatementAndReturnLastResult(sqlStatement);
     }
 

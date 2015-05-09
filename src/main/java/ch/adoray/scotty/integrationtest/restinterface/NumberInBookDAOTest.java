@@ -3,10 +3,10 @@ package ch.adoray.scotty.integrationtest.restinterface;
 import static ch.adoray.scotty.integrationtest.common.Configuration.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -17,6 +17,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestDeleteInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestPOSTInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
@@ -24,6 +25,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdateAssertHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
@@ -161,46 +163,48 @@ public class NumberInBookDAOTest {
     }
 
     @Test
-    public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_changeExistingEntrySetToNull_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
         String neueLiedNr = null;
-        changeExistingEntry(neueLiedNr);
+        changeLiedNrAndExpectError(neueLiedNr);
     }
 
-    @Test
-    public void update_changeExistingEntrySetToEmpty_entryIsTransformedToNull() throws JSONException, ClassNotFoundException, SQLException, IOException {
-        // arrange
+    private void changeLiedNrAndExpectError(String neueLiedNr) {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        interactor.setFailOnJsonSuccessFalse(false);
         // act
-        JavaScriptPage result = interactor//
-            .setField(LIEDNR_KEY, "")//
-            .performRequest();
+        RestResponse result = interactor//
+            .setField(LIEDNR_KEY, neueLiedNr)//
+            .performRequestAsRestResponse();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
-        assertEquals(null, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
+        assertFalse(result.isSuccess());
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    /**
-     * A UNIQUE index creates a constraint such that all values in the index must be distinct.
-     * An error occurs if you try to add a new row with a key value that matches an existing row.
-     * For all engines, a UNIQUE index allows multiple NULL values for columns that can contain NULL.
-     * 
-     */
-    public void update_change2ExistingEntriesSetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_changeExistingEntrySetToEmpty_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        String neueLiedNr = "";
+        changeLiedNrAndExpectError(neueLiedNr);
+    }
+
+    @Test
+    public void update_setLiedNrNullOnDb_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture1 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        // act
-        LiedHelper.addNumberInBookToLied(liedFixture1.getId(), 1, null);
-        LiedHelper.addNumberInBookToLied(liedFixture2.getId(), 1, null);
-        //clean up
-        liedFixture1.cleanUp();
-        liedFixture2.cleanUp();
+        // act & assert: expect exception
+        try {
+            LiedHelper.addNumberInBookToLied(liedFixture1.getId(), 1, null);
+            fail("Must throw an exception");
+        } catch (RuntimeException ex) {
+            //clean up
+            liedFixture1.cleanUp();
+        }
     }
 
     @Test
@@ -213,40 +217,43 @@ public class NumberInBookDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
+        LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
         interactor.setField(LIEDNR_KEY, newLiedNr).performRequest();
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
+        lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
         //clean up
         liedFixture.cleanUp();
     }
 
     @Test
-    public void update_updateNumberToNull_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
-        String newLiedNr = null;
-        updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
+    public void delete_deleteAnEntry_deletedAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        //arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        liedFixture.addTwoNumberInBookAssociations();
+        LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
+        Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
+        ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("numberInBook", numberInBookIdToUpdate);
+        //act
+        interactor.performRequest();
+        //assert
+        lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
+        //clean up
+        liedFixture.removeTableIdTuple(Tables.FK_LIEDERBUCH_LIED, numberInBookIdToUpdate); // test deletes it already
+        liedFixture.cleanUp();
     }
 
     @Test
     public void create_createNewLiedNrFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        LiedHelper.setUpdatedAtToFarBehind(liedFixture.getId());
-        LocalDateTime updatedAtBefore = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        String lastEditUserIdBefore = LiedHelper.determineLastEditUserId(liedFixture.getId());
+        LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
         // act
         createNewNumberInBookAssociation(liedFixture);
         // assert
-        LocalDateTime updatedAtAfter = LiedHelper.determineUpdatedAtOfLiedById(liedFixture.getId());
-        assertFalse(updatedAtBefore.equals(updatedAtAfter));
-        LiedHelper.assertLastUserHasChangedToCurrentTestUser(liedFixture.getId(), lastEditUserIdBefore);
+        lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
         //clean up
         liedFixture.cleanUp();
     }
