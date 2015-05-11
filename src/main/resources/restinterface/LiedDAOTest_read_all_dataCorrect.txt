@@ -4,49 +4,49 @@
       "Bemerkungen": null,
       "Stichwoerter": null,
       "Titel": "Bless the Lord my Soul",
-      "created_at": "2014-06-12 00:06:48",
+      "created_at": "12.06.2014 00:06:48",
       "externalLink": null,
       "id": 1,
       "lastEditUser_id": 1,
       "rubrik_id": 3,
       "tonality": "d",
-      "updated_at": "2014-06-12 00:06:48"
+      "updated_at": "12.06.2014 00:06:48"
     },
     {
       "Bemerkungen": null,
       "Stichwoerter": null,
       "Titel": "Adoramus Te, Domine!",
-      "created_at": "2014-06-12 00:06:48",
+      "created_at": "12.06.2014 00:06:48",
       "externalLink": null,
       "id": 2,
       "lastEditUser_id": 3,
       "rubrik_id": 3,
       "tonality": "G",
-      "updated_at": "2014-06-12 00:06:48"
+      "updated_at": "12.06.2014 00:06:48"
     },
     {
       "Bemerkungen": null,
       "Stichwoerter": null,
       "Titel": "Christus ist auferweckt, Halleluja",
-      "created_at": "2014-06-12 00:06:48",
+      "created_at": "12.06.2014 00:06:48",
       "externalLink": null,
       "id": 3,
       "lastEditUser_id": 1,
       "rubrik_id": 1,
       "tonality": "F",
-      "updated_at": "2014-06-12 00:06:48"
+      "updated_at": "12.06.2014 00:06:48"
     },
     {
       "Bemerkungen": null,
       "Stichwoerter": null,
       "Titel": "Lobe den Herrn, meine Seele",
-      "created_at": "2014-06-12 00:06:48",
+      "created_at": "12.06.2014 00:06:48",
       "externalLink": null,
       "id": 6,
       "lastEditUser_id": 3,
       "rubrik_id": 4,
       "tonality": "E",
-      "updated_at": "2014-10-02 13:59:14"
+      "updated_at": "02.10.2014 13:59:14"
     }
   ],
   "message": "Success",
