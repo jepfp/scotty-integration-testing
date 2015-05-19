@@ -16,6 +16,9 @@
 
     <modules>
         <module>scotty-integration-testing-base</module>
+		<module>scotty-integration-testing-api</module>
+		<module>scotty-acceptancetest-readonly</module>
+		<module>scotty-acceptancetest-base</module>
     </modules>
 	
 	<dependencies>
