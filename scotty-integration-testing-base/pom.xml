@@ -4,7 +4,7 @@
 	<parent>		
 		<groupId>ch.adoray.scotty.integrationtest.base</groupId>
 		<artifactId>scotty-integration-testing</artifactId>
-		<packaging>pom</packaging>
+		<version>0.0.1-SNAPSHOT</version>
     </parent>
   <artifactId>scotty-integration-testing-base</artifactId>
   <packaging>jar</packaging>
