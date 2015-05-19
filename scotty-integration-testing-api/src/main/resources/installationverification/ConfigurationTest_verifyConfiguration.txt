@@ -1,0 +1,50 @@
+{
+   "projectName":"adonai",
+   "productiveMode":false,
+   "db":{
+      "schema":"adonai",
+      "user":"root",
+      "password":"CONFIGURE ME"
+   },
+   "projectTitle":"Adoray | Adonai Datenbank",
+   "defaultProjectName":"example-scotty",
+   "log4phpConfiguration":{
+      "rootLogger":{
+         "appenders":[
+            "default"
+         ]
+      },
+      "loggers":{
+         "dbLogger":{
+            "appenders":[
+               "dbAppender"
+            ],
+            "additivity":false
+         }
+      },
+      "appenders":{
+         "default":{
+            "class":"LoggerAppenderFile",
+            "layout":{
+               "class":"LoggerLayoutPattern",
+               "params":{
+                  "conversionPattern":"%date [%logger] [%level] %message%newline"
+               }
+            },
+            "params":{
+               "file":"D:\\htdocs\\AdoraySongserver\/data\/projects\/adonai\/log\/main.log",
+               "append":true
+            }
+         },
+         "dbAppender":{
+            "class":"LoggerAppenderPDO",
+            "params":{
+               "dsn":"mysql:host=localhost;dbname=adonai",
+               "user":"exampleScotty",
+               "password":"exampleScotty",
+               "table":"logging"
+            }
+         }
+      }
+   }
+}

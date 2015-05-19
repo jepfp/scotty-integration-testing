@@ -1,0 +1,8 @@
+#local integration-testing
+server=http://integration-testing.localhost/
+rootServerFolder=adonai-database
+
+db.username=scottyinttest
+db.password=scottyinttest
+db.name=scottyinttest
+db.host=localhost

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="restore_db" name="Backup and Restore DB">
+
+	<property file="./src/main/resources/basic.properties" />
+
+	<property name="mysqlworkbench" value="C:/xampp/mysql/bin/" />
+
+	<property name="mysqldump" value="${mysqlworkbench}/mysqldump.exe" />
+	<property name="mysql" value="${mysqlworkbench}/mysql.exe" />
+	<property name="mysqladmin" value="${mysqlworkbench}/mysqladmin.exe" />
+
+
+	<property name="refData.dir" value="refData" />
+	<property name="initSchemaPath" value="${refData.dir}/${db.name}_initSchema.sql" />
+
+	<target name="backup_db">
+		<mkdir dir="${refData.dir}" />
+
+		<exec executable="${mysqldump}" output="${initSchemaPath}">
+			<arg value="--hex-blob" />
+			<arg value="--extended-insert=false" />
+			<arg value="--complete-insert=true" />
+			<arg value="--user=${db.username}" />
+			<arg value="--password=${db.password}" />
+			<arg value="--host=${db.host}" />
+			<arg value="${db.name}" />
+		</exec>
+
+		<replaceregexp file="${initSchemaPath}" match=".*Warning\: Using a password on the command line interface can be insecure.*" replace="" byline="true" />
+	</target>
+
+	<target name="restore_db">
+		<exec executable="${mysql}" input="${initSchemaPath}">
+			<arg value="--user=${db.username}" />
+			<arg value="--password=${db.password}" />
+			<arg value="--host=${db.host}" />
+			<arg value="${db.name}" />
+		</exec>
+	</target>
+
+	<target name="delete_db">
+		<exec executable="${mysqladmin}">
+			<arg value="--user=${db.username}" />
+			<arg value="--password=${db.password}" />
+			<arg value="--force" />
+			<arg value="drop" />
+			<arg value="${db.name}" />
+		</exec>
+	</target>
+
+	<target name="create_db">
+		<exec executable="${mysqladmin}">
+			<arg value="--user=${db.username}" />
+			<arg value="--password=${db.password}" />
+			<arg value="--force" />
+			<arg value="create" />
+			<arg value="${db.name}" />
+		</exec>
+	</target>
+</project>

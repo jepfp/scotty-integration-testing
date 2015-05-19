@@ -1,0 +1,57 @@
+{
+  "data": [
+    {
+      "Beschreibung": "Der grosse Liederordner, der sämtlichen Adorays der Schweiz zur Verfügung steht.",
+      "Buchname": "Adoray Liederordner",
+      "Liednr": "1000",
+      "id": 1,
+      "lied_id": 1,
+      "liederbuch_id": 1,
+      "locked": 1,
+      "mnemonic": "AL"
+    },
+    {
+      "Beschreibung": "Das klassische Grüne",
+      "Buchname": "Dir singen wir 2",
+      "Liednr": "100",
+      "id": 3,
+      "lied_id": 1,
+      "liederbuch_id": 2,
+      "locked": 1,
+      "mnemonic": "DSW2"
+    },
+    {
+      "Beschreibung": "Das Liederbuch Adonai von den Seligpreisungen Zug.",
+      "Buchname": "Adonai",
+      "Liednr": null,
+      "id": null,
+      "lied_id": 1,
+      "liederbuch_id": 3,
+      "locked": 1,
+      "mnemonic": "AI"
+    },
+    {
+      "Beschreibung": "Die eigenen Lieder des Adoray Luzern",
+      "Buchname": "Luzern",
+      "Liednr": null,
+      "id": null,
+      "lied_id": 1,
+      "liederbuch_id": 4,
+      "locked": 0,
+      "mnemonic": "LU"
+    },
+    {
+      "Beschreibung": "Die eigenen Lieder des Adoray Zug",
+      "Buchname": "Zug",
+      "Liednr": null,
+      "id": null,
+      "lied_id": 1,
+      "liederbuch_id": 5,
+      "locked": 0,
+      "mnemonic": "ZG"
+    }
+  ],
+  "message": "Success",
+  "success": true,
+  "totalCount": 5
+}

@@ -1,0 +1,1 @@
+{"type":"rpc","tid":"1","action":"ManageUser","method":"register","result":{"success":true}}

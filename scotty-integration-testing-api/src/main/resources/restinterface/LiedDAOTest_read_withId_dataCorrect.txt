@@ -1,0 +1,18 @@
+{
+  "data": [{
+    "Bemerkungen": null,
+    "Stichwoerter": null,
+    "Titel": "Lobe den Herrn, meine Seele",
+    "created_at": "12.06.2014 00:06:48",
+    "externalLink": null,
+    "id": 6,
+    "lastEditUser_id": 3,
+    "rubrik_id": 4,
+    "tonality": "E",
+    "updated_at": "02.10.2014 13:59:14"
+  }],
+  "message": "Success",
+  "success": true,
+  "totalCount": 1,
+  "type": "response"
+}

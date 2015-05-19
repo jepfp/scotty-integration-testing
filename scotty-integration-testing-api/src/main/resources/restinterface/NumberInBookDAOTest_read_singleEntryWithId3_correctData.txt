@@ -1,0 +1,16 @@
+{
+  "data": [{
+    "Beschreibung": "Das klassische Grüne",
+    "Buchname": "Dir singen wir 2",
+    "Liednr": "100",
+    "id": 3,
+    "lied_id": 1,
+    "liederbuch_id": 2,
+    "locked": 1,
+    "mnemonic": "DSW2"
+  }],
+  "message": "Success",
+  "success": true,
+  "totalCount": 1,
+  "type": "response"
+}
