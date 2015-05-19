@@ -1,0 +1,6 @@
+test-expression=**/*Test.class
+build.directory=target
+chrome.driver=drivers/chromedriver_win32_2.9/chromedriver.exe
+base.url=http\://localhost/examples/extjs
+ie.driver=drivers/IEDriverServer_Win32_2.35.3/IEDriverServer.exe
+default.timeout=25
