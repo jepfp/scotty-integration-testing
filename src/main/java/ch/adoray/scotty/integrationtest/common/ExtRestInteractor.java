@@ -1,6 +1,6 @@
 package ch.adoray.scotty.integrationtest.common;
 
-import static ch.adoray.scotty.integrationtest.common.Configuration.config;
+import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 
 import java.io.IOException;
 import java.net.URL;

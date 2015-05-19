@@ -1,6 +1,6 @@
 package ch.adoray.scotty.integrationtest.common.entityhelper;
 
-import static ch.adoray.scotty.integrationtest.common.Configuration.config;
+import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 

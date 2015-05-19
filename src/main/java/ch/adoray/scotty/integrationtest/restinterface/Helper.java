@@ -1,6 +1,6 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
-import static ch.adoray.scotty.integrationtest.common.Configuration.config;
+import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;

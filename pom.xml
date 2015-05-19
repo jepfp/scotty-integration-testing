@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.adoray.scotty.integrationtest</groupId>
-	<artifactId>scotty-integration-testing</artifactId>
+	<artifactId>scotty-integration-testing-api</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>scotty-integration-testing</name>
@@ -43,6 +43,11 @@
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.7</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.adoray.scotty.integrationtest.base</groupId>
+			<artifactId>scotty-integration-testing-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
