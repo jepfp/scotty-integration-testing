@@ -16,11 +16,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.adoray.scotty.integrationtest</groupId>
 			<artifactId>scotty-acceptancetest-base</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
