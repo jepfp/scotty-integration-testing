@@ -3,10 +3,10 @@ package ch.adoray.scotty.acceptancetest.base.macros;
 import org.openqa.selenium.WebElement;
 
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
+import ch.adoray.scotty.acceptancetest.base.model.ViewportModel;
 
 import com.appfoundation.automation.framework.BaseSeleniumTest;
 import com.appfoundation.automation.util.TestUtils;
-import com.appfoundation.automation.util.XPathUtils;
 public class LogInScreenMacros<T extends BaseSeleniumTest> {
     private T test;
     private LogInScreenModel model;
@@ -25,7 +25,6 @@ public class LogInScreenMacros<T extends BaseSeleniumTest> {
         TestUtils.waitToBeClickable(test.getDriver(), LogInScreenModel.LOGIN_BUTTON_XPATH);
         WebElement loginButton = model.findLogInButton();
         loginButton.click();
-        final String quicksearch = XPathUtils.findInputByName("quicksearch");
-        TestUtils.waitToBeClickable(test.getDriver(), quicksearch);
+        TestUtils.waitToBeClickable(test.getDriver(), ViewportModel.QUICKSEARCH_XPATH);
     }
 }
