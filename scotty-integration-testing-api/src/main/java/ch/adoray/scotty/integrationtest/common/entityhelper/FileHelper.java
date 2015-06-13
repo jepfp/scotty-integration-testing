@@ -20,11 +20,11 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 public class FileHelper {
-    public static long createDummyFile(long liedId, String pdfResourceName) {
-        try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO file (lied_id, data, filename, filesize, filetype) VALUES (?, ?, ?, ?, ?);")) {
+    public static long createDummyFile(long fileMetadataId, String pdfResourceName) {
+        try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO file (filemetadata_id, data, filename, filesize, filetype) VALUES (?, ?, ?, ?, ?);")) {
             File file = new File(getPdfResourcePathByName(pdfResourceName));
             String filename = file.getName();
-            statement.setLong(1, liedId);
+            statement.setLong(1, fileMetadataId);
             statement.setBlob(2, new FileInputStream(file));
             statement.setString(3, filename);
             statement.setString(4, String.valueOf(file.length()));

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.FileMetadataHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 public class FileFixture extends AbstractFixture {
     private long liedId;
@@ -44,7 +45,7 @@ public class FileFixture extends AbstractFixture {
     }
 
     private void createFile() throws SQLException, ClassNotFoundException {
-        id = FileHelper.createDummyFile(liedId, pdfResourceName);
+        id = FileMetadataHelper.createDummyMetadataFileWithDummyFile(liedId, pdfResourceName);
         addTableIdTuple(Tables.FILE, getId());
     }
 

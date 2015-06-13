@@ -47,15 +47,14 @@ DROP TABLE IF EXISTS `file`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `file` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `lied_id` bigint(20) NOT NULL,
+  `filemetadata_id` bigint(20) NOT NULL,
   `data` mediumblob NOT NULL,
   `filename` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `filesize` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `filetype` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `lied_id_UNIQUE` (`lied_id`),
-  KEY `fkLied_idx` (`lied_id`),
-  CONSTRAINT `fkLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `filemetadata_id_UNIQUE` (`filemetadata_id`),
+  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`filemetadata_id`) REFERENCES `filemetadata` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -66,6 +65,32 @@ CREATE TABLE `file` (
 LOCK TABLES `file` WRITE;
 /*!40000 ALTER TABLE `file` DISABLE KEYS */;
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `filemetadata`
+--
+
+DROP TABLE IF EXISTS `filemetadata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `filemetadata` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `filetype` enum('sourcepdf') COLLATE utf8_unicode_ci NOT NULL,
+  `lied_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fkLied_idx` (`lied_id`),
+  CONSTRAINT `filemetadata_ibfk_1` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `filemetadata`
+--
+
+LOCK TABLES `filemetadata` WRITE;
+/*!40000 ALTER TABLE `filemetadata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `filemetadata` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -405,60 +430,6 @@ INSERT INTO `logging` (`id`, `table`, `message`, `user_id`, `timestamp`, `logger
 UNLOCK TABLES;
 
 --
--- Table structure for table `media`
---
-
-DROP TABLE IF EXISTS `media`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `media` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `lied_id` bigint(20) NOT NULL,
-  `path` text COLLATE utf8_unicode_ci NOT NULL,
-  `remark` text COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`),
-  KEY `mediaLied` (`lied_id`),
-  CONSTRAINT `mediaLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `media`
---
-
-LOCK TABLES `media` WRITE;
-/*!40000 ALTER TABLE `media` DISABLE KEYS */;
-/*!40000 ALTER TABLE `media` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `pdf`
---
-
-DROP TABLE IF EXISTS `pdf`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pdf` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `path` text COLLATE utf8_unicode_ci,
-  `export` tinyint(1) DEFAULT NULL,
-  `lied_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `pdfLied` (`lied_id`),
-  CONSTRAINT `pdfLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `pdf`
---
-
-LOCK TABLES `pdf` WRITE;
-/*!40000 ALTER TABLE `pdf` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pdf` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `refrain`
 --
 
@@ -545,7 +516,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100018');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100020');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -652,4 +623,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-29 20:51:00
+-- Dump completed on 2015-06-13 20:59:37
