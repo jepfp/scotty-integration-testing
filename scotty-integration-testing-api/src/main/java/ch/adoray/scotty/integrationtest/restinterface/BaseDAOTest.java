@@ -26,7 +26,7 @@ import ch.adoray.scotty.integrationtest.fixture.UserFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.google.common.collect.Maps;
-public class AbstractDAOTest {
+public class BaseDAOTest {
     @Test
     public void read_findAll_atLeast4Entries() throws JSONException {
         // act
