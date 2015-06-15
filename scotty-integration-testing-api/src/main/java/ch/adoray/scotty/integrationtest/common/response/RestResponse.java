@@ -55,7 +55,7 @@ public class RestResponse {
             boolean success = (boolean) json.get(KEY_SUCCESS);
             String type = (String) json.get(KEY_TYPE);
             String message = (String) json.get(KEY_MESSAGE);
-            int totalCount = (int) json.get(KEY_TOTAL_COUNT);
+            int totalCount = json.isNull(KEY_TOTAL_COUNT) ? 0 : (int) json.get(KEY_TOTAL_COUNT);
             JSONArray data = json.isNull(KEY_DATA) ? null : (JSONArray) json.get(KEY_DATA);
             RestResponse r = new RestResponse(type, success, message, totalCount, data);
             return r;
