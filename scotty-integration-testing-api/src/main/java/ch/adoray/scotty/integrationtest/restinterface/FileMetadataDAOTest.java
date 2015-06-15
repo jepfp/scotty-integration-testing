@@ -7,18 +7,20 @@ import org.junit.Test;
 import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.FileFixture;
-public class FileMetadataDAOTest {
-    @Test
-    public void read_withId_idCorrect() throws Exception {
-        // arrange
-        FileFixture fileFixture = FileFixture.setupAndCreate();
-        ExtRestGETInteractor interactor = new ExtRestGETInteractor("fileMetadata", fileFixture.getFileMetadataId());
-        // act
-        RestResponse result = interactor.performRequestAsRestResponse();
-        // assert
-        assertEquals(fileFixture.getFileMetadataId(), result.getFirstId());
-        // clean up
-        fileFixture.cleanUp();
+public class FileMetadataDAOTest extends AbstractDAOTest<FileFixture> {
+    @Override
+    String getController() {
+        return "fileMetadata";
+    }
+
+    @Override
+    Class<FileFixture> getDefaultFixture() {
+        return FileFixture.class;
+    }
+
+    @Override
+    long getFixtureCreatedId(FileFixture fixture) {
+        return fixture.getFileMetadataId();
     }
 
     @Test

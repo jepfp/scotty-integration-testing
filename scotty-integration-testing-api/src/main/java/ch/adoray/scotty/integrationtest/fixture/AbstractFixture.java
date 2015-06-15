@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 
 import com.google.common.collect.Lists;
-abstract class AbstractFixture {
+public abstract class AbstractFixture {
     protected long id;
     private List<TableIdTuple> tableIdTuples = Lists.newArrayList();
 
