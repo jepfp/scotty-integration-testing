@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestPUTInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
@@ -92,25 +93,21 @@ public class LiedViewDAOTest {
     @Test
     public void read_orderByTonality_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
-        Helper.addSortParameter("Tonality", true, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("liedView");
+        interactor.addSortParam("Tonality", true);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        JSONArray data = (JSONArray) json.get("data");
-        Helper.assertIdsInOrder(data, 1, 6, 3, 2);
+        restResponse.assertIdsInOrder(1, 6, 3, 2);
     }
 
     @Test
     public void read_orderByLiednrDesc_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
-        Helper.addSortParameter("Liednr", false, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("liedView");
+        interactor.addSortParam("Liednr", false);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        JSONArray data = (JSONArray) json.get("data");
-        Helper.assertIdsInOrder(data, 3, 2, 1);
+        restResponse.assertIdsInOrder(3, 2, 1);
     }
 
     @Test

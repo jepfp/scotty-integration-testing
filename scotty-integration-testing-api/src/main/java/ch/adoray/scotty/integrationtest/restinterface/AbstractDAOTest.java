@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestDeleteInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
@@ -108,80 +109,68 @@ public class AbstractDAOTest {
     @Test
     public void read_orderByIdDesc_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user");
-        Helper.addSortParameter("id", false, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addSortParam("id", false);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        JSONArray data = (JSONArray) json.get("data");
-        assertEquals("The last entry must have the id 1.", 1, Helper.extractAttributeValueAtLast(data, "id"));
+        assertEquals("The last entry must have the id 1.", 1, restResponse.getDataValueAtByKey(restResponse.getDataLength() - 1, "id"));
     }
 
     @Test
     public void read_orderByLastnameAsc_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user");
-        Helper.addSortParameter("lastname", true, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addSortParam("lastname", true);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        JSONArray data = (JSONArray) json.get("data");
-        assertEquals("The first entry must have the lastname Active.", "Active", Helper.extractAttributeValueAt(data, "lastname", 0));
-        assertEquals("The second entry must have the lastname Anders.", "Anders", Helper.extractAttributeValueAt(data, "lastname", 1));
+        assertEquals("The first entry must have the lastname Active.", "Active", restResponse.getDataValueByKeyFromFirst("lastname"));
+        assertEquals("The second entry must have the lastname Anders.", "Anders", restResponse.getDataValueAtByKey(1, "lastname"));
     }
 
     @Test
     public void read_orderByInvalidParameter_correctOrder() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
-            .disableFailOnJsonSuccessFalse()//
-            .disableThrowExceptionOnFailingStatusCode();
-        Helper.addSortParameter("\" sql injection test", false, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addSortParam("\" sql injection test", false);
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        boolean successBoolean = (Boolean) json.get("success");
-        assertFalse("Must return false", successBoolean);
+        assertFalse("Must return false", restResponse.isSuccess());
     }
 
     @Test
     public void read_start1limit1_onlyTheSecondEntry() throws JSONException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
-            .addParam("start", "1")//
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addParam("start", "1") //
             .addParam("limit", "1");
-        JavaScriptPage result = Interactor.performRequest(config);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        JSONArray data = (JSONArray) json.get("data");
-        assertEquals("There must be exactly 1 entry for 'user'.", 1, data.length());
-        assertEquals("Not", Helper.extractAttributeValueAt(data, "firstname", 0));
+        assertEquals("There must be exactly 1 entry for 'user'.", 1, restResponse.getDataLength());
+        assertEquals("Not", restResponse.getDataValueByKeyFromFirst("firstname"));
     }
 
     @Test
     public void read_countWithLimits_totalCountCorrect() throws JSONException, ClassNotFoundException, SQLException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
-            .addParam("start", "1")//
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addParam("start", "1") //
             .addParam("limit", "1");
-        JavaScriptPage result = Interactor.performRequest(config);
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
         int expectedCount = DatabaseAccess.determineAmountOfEntriesInTable("user");
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        int count = (int) json.get("totalCount");
-        assertEquals("There should be " + expectedCount + " entries in table users.", expectedCount, count);
+        assertEquals("There should be " + expectedCount + " entries in table users.", expectedCount, restResponse.getTotalCount());
     }
 
     @Test
     public void read_countWithoutLimits_totalCountCorrect() throws JSONException, ClassNotFoundException, SQLException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user");
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
         int expectedCount = DatabaseAccess.determineAmountOfEntriesInTable("user");
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        int count = (int) json.get("totalCount");
-        assertEquals("There should be " + expectedCount + " entries in table users.", expectedCount, count);
+        assertEquals("There should be " + expectedCount + " entries in table users.", expectedCount, restResponse.getTotalCount());
     }
 
     @Test
@@ -204,10 +193,9 @@ public class AbstractDAOTest {
     public void destroy_user_userDeleted() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
         UserFixture fixture = UserFixture.setupAndCreate();
+        ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("user", fixture.getId());
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user/" + fixture.getId());
-        config.setMethodDelete();
-        Interactor.performRequest(config);
+        interactor.performRequest();
         // assert
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.USER, fixture.getId());
         assertNull("Record must not be found", record);

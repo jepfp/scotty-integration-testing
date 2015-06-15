@@ -24,18 +24,6 @@ public class Helper {
         return value;
     }
 
-    public static Object extractAttributeValueAtLast(JSONArray inputData, String attributeKey) throws JSONException {
-        int lastOfArray = inputData.length() - 1;
-        return Helper.extractAttributeValueAt(inputData, attributeKey, lastOfArray);
-    }
-
-    public static void addSortParameter(String property, boolean directionAsc, InteractorConfigurationWithParams config) {
-        String direction = directionAsc ? "ASC" : "DESC";
-        JSONArray sortArray = new JSONArray();
-        sortArray.put(new JSONObject(ImmutableMap.of("property", property, "direction", direction)));
-        config.addParam("sort", sortArray.toString());
-    }
-
     public static void assertIdsInOrder(JSONArray data, long... orderOfIds) throws JSONException {
         for (int i = 0; i < data.length(); i++) {
             int id = ((JSONObject) data.get(i)).getInt("id");
@@ -52,16 +40,6 @@ public class Helper {
             filter.put(new JSONObject(ImmutableMap.of("property", entry.getKey(), "value", entry.getValue())));
         }
         config.addParam("filter", filter.toString());
-    }
-
-    public static JSONArray extractData(String content) {
-        try {
-            JSONObject json = (JSONObject) JSONParser.parseJSON(content);
-            JSONArray data = (JSONArray) json.get("data");
-            return data;
-        } catch (JSONException e) {
-            throw new RuntimeException("Data part could not be extracted.");
-        }
     }
 
     /**
@@ -109,8 +87,8 @@ public class Helper {
         JSONObject json = (JSONObject) parseJson(result.getContent());
         return json;
     }
-    
-    public static long determineTesterId(){
+
+    public static long determineTesterId() {
         String testerEmail = config().getTesterEmail();
         return new Long(UserHelper.getUserEntryByEmail(testerEmail).get("id"));
     }

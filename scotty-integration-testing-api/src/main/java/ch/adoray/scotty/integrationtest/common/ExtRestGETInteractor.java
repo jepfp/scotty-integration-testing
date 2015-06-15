@@ -69,4 +69,11 @@ public class ExtRestGETInteractor extends ExtRestInteractor {
         }
         return filter.toString();
     }
+
+    public void addSortParam(String property, boolean directionAsc) {
+        String direction = directionAsc ? "ASC" : "DESC";
+        JSONArray sortArray = new JSONArray();
+        sortArray.put(new JSONObject(ImmutableMap.of("property", property, "direction", direction)));
+        addParam("sort", sortArray.toString());
+    }
 }

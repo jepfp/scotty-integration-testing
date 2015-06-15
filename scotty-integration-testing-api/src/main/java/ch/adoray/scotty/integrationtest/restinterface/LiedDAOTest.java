@@ -96,15 +96,16 @@ public class LiedDAOTest {
         String rubrikId = "3";
         String tonality = "E";
         // act
-        JavaScriptPage result = interactor.setField(TITEL_KEY, titel)//
+        JavaScriptPage page = interactor.setField(TITEL_KEY, titel)//
             .setField(RUBRIK_ID_KEY, rubrikId)//
             .setField(TONALITY_KEY, tonality)//
             .performRequest();
+        String content = page.getContent();
+        RestResponse restResponse = RestResponse.createFromResponse(content);
         // assert
         String testData = removeIdAndTimestamps(ResourceLoader.loadTestData());
-        String content = result.getContent();
         JSONAssert.assertEquals(testData, removeIdAndTimestamps(content), false);
-        Long id = new Long((int) Helper.extractAttributeValueAt(Helper.extractData(content), "id", 0));
+        Long id = new Long(restResponse.getDataValueByKeyFromFirst("id"));
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, id);
         assertEquals(titel, record.get(TITEL_KEY));
         assertEquals(rubrikId, record.get(RUBRIK_ID_KEY));
