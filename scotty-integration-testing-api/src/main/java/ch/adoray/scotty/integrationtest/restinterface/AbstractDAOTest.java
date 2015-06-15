@@ -16,9 +16,11 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.Tables;
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.UserFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
@@ -185,22 +187,17 @@ public class AbstractDAOTest {
     @Test
     public void read_countWithLimitsAndWhereParam_totalCountCorrect() throws JSONException, ClassNotFoundException, SQLException {
         // act
-        InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user")//
-            .addParam("start", "1")//
-            .addParam("limit", "1");
-        Map<String, String> filters = Maps.newHashMap();
-        filters.put("firstname", "Peter");
-        Helper.addFilterParameter(filters, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("user");
+        interactor.addParam("start", "1") //
+            .addParam("limit", "1") //
+            .addFilterParam("firstname", "Peter");
+        RestResponse restResponse = interactor.performRequestAsRestResponse();
         // assert
         int expectedCount = 2;
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
-        int count = (int) json.get("totalCount");
-        assertEquals("There should be " + expectedCount + " entries in table users.", expectedCount, count);
-        JSONArray data = (JSONArray) json.get("data");
-        assertEquals("There must be exactly 1 entry for 'user'.", 1, data.length());
-        assertEquals("Peter", Helper.extractAttributeValueAt(data, "firstname", 0));
-        assertEquals("gleicher.name@2.ch", Helper.extractAttributeValueAt(data, "email", 0));
+        assertEquals("There should be " + expectedCount + " entries in table users.", 2, restResponse.getTotalCount());
+        assertEquals("There must be exactly 1 entry for 'user'.", 1, restResponse.getDataLength());
+        assertEquals("Peter", restResponse.getDataValueByKeyFromFirst("firstname"));
+        assertEquals("gleicher.name@2.ch", restResponse.getDataValueByKeyFromFirst("email"));
     }
 
     @Test

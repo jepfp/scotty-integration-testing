@@ -28,7 +28,7 @@ public abstract class ExtRestModificationInteractor extends ExtRestInteractor {
     }
 
     @Override
-    void setRequestBody(WebRequest request) {
+    void setRequestParamsAndBody(WebRequest request) {
         request.setRequestBody(getRequestContentBody());
     }
 

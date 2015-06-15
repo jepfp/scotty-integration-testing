@@ -11,17 +11,20 @@ public class RestResponse {
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_TYPE = "type";
     public static final String KEY_SUCCESS = "success";
+    public static final String KEY_TOTAL_COUNT = "totalCount";
     private static final String KEY_DATA = "data";
     private final String message;
     private final boolean success;
     private final String type;
+    private final int totalCount;
     private final JSONArray data;
 
-    RestResponse(String type, boolean success, String message, JSONArray data) {
+    RestResponse(String type, boolean success, String message, int totalCount, JSONArray data) {
         this.type = type;
         this.success = success;
         this.message = message;
         this.data = data;
+        this.totalCount = totalCount;
     }
 
     public String getMessage() {
@@ -36,13 +39,25 @@ public class RestResponse {
         return type;
     }
 
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public int getDataLength() {
+        if (data == null) {
+            throw new RuntimeException("Data attribute is null. Why did you try to determine the size?");
+        }
+        return data.length();
+    }
+
     public static RestResponse createFromResponse(JSONObject json) {
         try {
             boolean success = (boolean) json.get(KEY_SUCCESS);
             String type = (String) json.get(KEY_TYPE);
             String message = (String) json.get(KEY_MESSAGE);
+            int totalCount = (int) json.get(KEY_TOTAL_COUNT);
             JSONArray data = json.isNull(KEY_DATA) ? null : (JSONArray) json.get(KEY_DATA);
-            RestResponse r = new RestResponse(type, success, message, data);
+            RestResponse r = new RestResponse(type, success, message, totalCount, data);
             return r;
         } catch (JSONException e) {
             throw new RuntimeException("Error while creating RestResponse.", e);

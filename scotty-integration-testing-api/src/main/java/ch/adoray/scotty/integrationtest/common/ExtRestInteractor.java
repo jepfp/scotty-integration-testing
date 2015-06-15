@@ -50,7 +50,7 @@ abstract class ExtRestInteractor {
 
     abstract HttpMethod getHttpMethod();
 
-    abstract void setRequestBody(WebRequest request);
+    abstract void setRequestParamsAndBody(WebRequest request);
 
     public <P extends Page> P performRequest() {
         try {
@@ -58,10 +58,11 @@ abstract class ExtRestInteractor {
             WebRequest request = new WebRequest(new URL(requestUrl), getHttpMethod());
             request.setAdditionalHeader("Content-Type", "application/json");
             request.setCharset("utf-8");
-            setRequestBody(request);
+            setRequestParamsAndBody(request);
             P page = getPage(request);
             if (page instanceof JavaScriptPage) {
                 JavaScriptPage jsPage = (JavaScriptPage) page;
+                System.out.println("Response:");
                 Interactor.printAndValidate(jsPage.getContent(), failOnUnparsableJson, failOnJsonSuccessFalse);
             }
             return page;
@@ -79,7 +80,10 @@ abstract class ExtRestInteractor {
         WebClient c = Interactor.getWebClient();
         c.getOptions().setThrowExceptionOnFailingStatusCode(throwExceptionOnFailingStatusCode);
         c.getCookieManager().setCookiesEnabled(enableCookies);
+        System.out.println("---------- " + this.getClass().getSimpleName() + " ----------");
         System.out.println("New " + getHttpMethod() + " request to " + controller + "/" + id.orElse("") + " (" + request.getUrl() + ")");
+        System.out.println("Request Parameters:\n" + request.getRequestParameters());
+        System.out.println("Request Body:\n" + request.getRequestBody());
         return c.getPage(request);
     }
 

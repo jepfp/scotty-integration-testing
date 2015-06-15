@@ -17,7 +17,7 @@ public class ExtRestDeleteInteractor extends ExtRestInteractor {
     }
 
     @Override
-    void setRequestBody(WebRequest request) {
+    void setRequestParamsAndBody(WebRequest request) {
         // We don't need to set anything in the body
     }
 }

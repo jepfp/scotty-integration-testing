@@ -8,12 +8,7 @@ import java.sql.SQLException;
 
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 public class FileMetadataHelper {
-    public static long createDummyMetadataFileWithDummyFile(long liedId, String pdfResourceName) {
-        long dummyMetadataFileId = createDummyMetadataFile(liedId);
-        return FileHelper.createDummyFile(dummyMetadataFileId, pdfResourceName);
-    }
-
-    private static long createDummyMetadataFile(long liedId) {
+    public static long createDummyFileMetadata(long liedId) {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("INSERT INTO filemetadata (lied_id) VALUES (?);")) {
             statement.setLong(1, liedId);
             int rowCount = statement.executeUpdate();

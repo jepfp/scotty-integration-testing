@@ -11,4 +11,5 @@ public class Tables {
     public static final String FK_LIEDERBUCH_LIED = "fkliederbuchlied";
     public static final String RUBRIK = "rubrik";
     public static final String FILE = "file";
+    public static final String FILE_METADATA = "filemetadata";
 }

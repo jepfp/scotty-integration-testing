@@ -8,6 +8,7 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.FileMetadataHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 public class FileFixture extends AbstractFixture {
     private long liedId;
+    private long fileMetadataId;
     private String pdfResourceName = "fixture/fixturePdf.pdf";
 
     public String getPdfResourceName() {
@@ -45,11 +46,17 @@ public class FileFixture extends AbstractFixture {
     }
 
     private void createFile() throws SQLException, ClassNotFoundException {
-        id = FileMetadataHelper.createDummyMetadataFileWithDummyFile(liedId, pdfResourceName);
+        fileMetadataId = FileMetadataHelper.createDummyFileMetadata(liedId);
+        addTableIdTuple(Tables.FILE_METADATA, fileMetadataId);
+        id =  FileHelper.createDummyFile(fileMetadataId, pdfResourceName);
         addTableIdTuple(Tables.FILE, getId());
     }
 
     public long getLiedId() {
         return liedId;
+    }
+    
+    public long getFileMetadataId(){
+        return fileMetadataId;
     }
 }
