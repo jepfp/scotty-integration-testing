@@ -43,7 +43,8 @@ public class FileDAOTest {
     public void select_testPdfFile_contentEqual() throws IOException {
         // arrange
         FileFixture fileFixture = FileFixture.setupAndCreate();
-        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file", fileFixture.getId());
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file");
+        interactor.addFilterParam("filemetadata_id", fileFixture.getFileMetadataId());
         Path actualFilePath = Paths.get(testFolder.getRoot().getAbsolutePath(), "fileFromDb.pdf");
         // act
         UnexpectedPage response = interactor.performRequest();
@@ -57,7 +58,8 @@ public class FileDAOTest {
     @Test
     public void select_notExistingEntry_error() throws Exception {
         // arrange
-        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file", (long) 999999);
+        ExtRestGETInteractor interactor = new ExtRestGETInteractor("file");
+        interactor.addFilterParam("filemetadata_id", (long) 999999);
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
         // act
