@@ -250,18 +250,4 @@ public class LiedDAOTest {
         //clean up
         liedFixture.cleanUp();
     }
-
-    @Test
-    public void select_liedWithFile_fileIdIsSent() throws IOException {
-        // arrange
-        FileFixture fileFixture = FileFixture.setupAndCreate();
-        ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied", fileFixture.getLiedId());
-        // act
-        RestResponse response = interactor.performRequestAsRestResponse();
-        // assert
-        String actualFileId = response.getDataValueByKeyFromFirst("file_id");
-        assertEquals(fileFixture.getId().toString(), actualFileId);
-        // clean up
-        fileFixture.cleanUp();
-    }
 }
