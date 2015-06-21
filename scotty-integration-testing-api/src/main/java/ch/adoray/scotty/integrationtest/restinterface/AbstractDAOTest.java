@@ -21,6 +21,8 @@ import ch.adoray.scotty.integrationtest.fixture.AbstractFixture;
 public abstract class AbstractDAOTest<F extends AbstractFixture> {
     abstract String getController();
 
+    abstract String getTable();
+
     abstract Class<F> getDefaultFixture();
 
     abstract long getFixtureCreatedId(F fixture);
@@ -68,9 +70,9 @@ public abstract class AbstractDAOTest<F extends AbstractFixture> {
         }
         return fixtures;
     }
-    
+
     @Test
-    public void destroy_object_objectDeleted() throws JSONException, ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
+    public void destroy_object_objectDeletedAndDeletionLogged() throws JSONException, ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
         //arrange
         Class<F> defaultFixture = getDefaultFixture();
         F fixture = defaultFixture.newInstance();
@@ -79,9 +81,17 @@ public abstract class AbstractDAOTest<F extends AbstractFixture> {
         // act
         interactor.performRequestAsRestResponse();
         // assert
-        Map<String, String> record = DatabaseAccess.getRecordById(Tables.FILE_METADATA, getFixtureCreatedId(fixture));
+        Map<String, String> record = DatabaseAccess.getRecordById(getTable(), getFixtureCreatedId(fixture));
         assertNull("Record must not be found", record);
+        assertDeletionDbLogEntry(getFixtureCreatedId(fixture));
         // clean up
         fixture.cleanUp();
+    }
+
+    private void assertDeletionDbLogEntry(long idOfDeletedRecord) throws ClassNotFoundException, SQLException {
+        Map<String, String> record = DatabaseAccess.getLastRecord(Tables.LOGGING);
+        String message = record.get("message");
+        String expectedMessage = "3 ## correct@login.ch ## " + getTable() + " ## DELETE FROM " + getTable() + " WHERE id = " + idOfDeletedRecord + " ## ";
+        assertEquals("Object deletion not logged correctly.", expectedMessage, message);
     }
 }
