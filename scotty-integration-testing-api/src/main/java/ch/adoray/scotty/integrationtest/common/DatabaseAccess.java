@@ -94,11 +94,11 @@ public class DatabaseAccess {
         }
     }
 
-    public static void deleteRow(String table, long idCreatedRow) throws SQLException {
+    public static long deleteRow(String table, long idCreatedRow) throws SQLException {
         try (PreparedStatement statement = DatabaseAccess.prepareStatement("DELETE FROM " + table + " WHERE id = ?")) {
             statement.setLong(1, idCreatedRow);
             int rowCount = statement.executeUpdate();
-            assertEquals("must have deleted one row", 1, rowCount);
+            return rowCount;
         }
     }
 }
