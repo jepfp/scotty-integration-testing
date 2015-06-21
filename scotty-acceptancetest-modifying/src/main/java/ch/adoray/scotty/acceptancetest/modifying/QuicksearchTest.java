@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
+import ch.adoray.scotty.acceptancetest.base.macros.LiedViewMacros;
 import ch.adoray.scotty.acceptancetest.base.macros.LogInScreenMacros;
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
 import ch.adoray.scotty.acceptancetest.base.model.SongModel;
@@ -18,11 +19,13 @@ public class QuicksearchTest extends BaseSeleniumTest {
     private final ViewportModel viewportModel;
     private final LogInScreenMacros<QuicksearchTest> logInMacros;
     private SongModel songModel;
+    private LiedViewMacros<QuicksearchTest> liedViewMacros;
 
     public QuicksearchTest() {
         this.logInScreenModel = new LogInScreenModel(this);
         this.viewportModel = new ViewportModel(this);
         this.songModel = new SongModel(this);
+        this.liedViewMacros = new LiedViewMacros<QuicksearchTest>(this, viewportModel);
         logInMacros = new LogInScreenMacros<QuicksearchTest>(this, logInScreenModel);
     }
 
@@ -34,23 +37,8 @@ public class QuicksearchTest extends BaseSeleniumTest {
         // act
         String songTitle = "Bless the Lord my Soul";
         assertEquals(4, viewportModel.findViewportRows().size());
-        openLiedFromFirstQuicksearchResult(songTitle);
+        liedViewMacros.openLiedFromFirstQuicksearchResult(songTitle);
         // assert
         assertEquals(songTitle, songModel.findTitelField().getAttribute("value"));
-    }
-
-    private void openLiedFromFirstQuicksearchResult(String songTitle) {
-        driver.manage().window().maximize();
-        searchAndAssertOneRow(songTitle);
-        viewportModel.findViewportRows().get(0).click();
-        this.waitToBeClickable(ViewportModel.EDIT_BUTTON_XPATH);
-        viewportModel.findEditButton().click();
-        this.waitToBeClickable(SongModel.SONG_LOADED_XPATH);
-    }
-
-    private void searchAndAssertOneRow(String search) {
-        WebElement quicksearchField = viewportModel.findQuicksearchField();
-        quicksearchField.sendKeys(search);
-        viewportModel.waitForAmountOfRowsInLiedView(1);
     }
 }
