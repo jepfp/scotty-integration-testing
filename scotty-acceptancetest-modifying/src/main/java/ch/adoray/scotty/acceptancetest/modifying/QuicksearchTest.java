@@ -37,7 +37,7 @@ public class QuicksearchTest extends BaseSeleniumTest {
         // act
         String songTitle = "Bless the Lord my Soul";
         assertEquals(4, viewportModel.findViewportRows().size());
-        liedViewMacros.openLiedFromFirstQuicksearchResult(songTitle);
+        liedViewMacros.openLiedFromQuicksearchResult(songTitle);
         // assert
         assertEquals(songTitle, songModel.findTitelField().getAttribute("value"));
     }

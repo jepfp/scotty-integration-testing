@@ -16,7 +16,7 @@ public class LiedViewMacros<T extends BaseSeleniumTest> {
         this.model = model;
     }
 
-    public void openLiedFromFirstQuicksearchResult(String songTitle) {
+    public void openLiedFromQuicksearchResult(String songTitle) {
         test.getDriver().manage().window().maximize();
         searchAndAssertOneRow(songTitle);
         model.findViewportRows().get(0).click();

@@ -9,6 +9,7 @@ import ch.adoray.scotty.acceptancetest.base.macros.LogInScreenMacros;
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
 import ch.adoray.scotty.acceptancetest.base.model.SongModel;
 import ch.adoray.scotty.acceptancetest.base.model.ViewportModel;
+import ch.adoray.scotty.integrationtest.fixture.FileFixture;
 
 import com.appfoundation.automation.framework.BaseSeleniumTest;
 public class SongsheetTest extends BaseSeleniumTest {
@@ -29,11 +30,32 @@ public class SongsheetTest extends BaseSeleniumTest {
     @Test
     public void deleteSongsheetAndVerifyNoSongsheetPresentAfterwords() {
         // arrange
+        FileFixture fileFixture = FileFixture.setupAndCreate();
         driver.get(config().getBaseUrl());
         logInMacros.login(config().getTesterEmail(), config().getTesterPassword());
-        // act
         String songTitle = "Lied with file";
-        liedViewMacros.openLiedFromFirstQuicksearchResult(songTitle);
+        liedViewMacros.openLiedFromQuicksearchResult(songTitle);
+        // verify download link available
+        this.songModel.findSongsheetDownloadLink();
+        clickDeleteSongsheetButDontConfirm();
+        deleteSongsheet();
         // assert
+        this.waitToBeClickable(SongModel.SONGSHEET_NO_SONGSHEET_AVAILABLE_XPATH);
+        // clean up
+        fileFixture.cleanUp();
+    }
+
+    private void clickDeleteSongsheetButDontConfirm() {
+        this.songModel.findSongsheetDeleteButton().click();
+        this.waitToBeClickable(SongModel.NO_BUTTON_IN_MESSAGE_BOX_XPATH);
+        this.songModel.findNoButtonInMessageBox().click();
+        this.songModel.findSongsheetDownloadLink();
+    }
+
+    private void deleteSongsheet() {
+        this.songModel.findSongsheetDeleteButton().click();
+        this.waitToBeClickable(SongModel.YES_BUTTON_IN_MESSAGE_BOX_XPATH);
+        this.songModel.findYesButtonInMessageBox().click();
+        this.waitToBeClickable(SongModel.SONGSHEET_DELETED_XPATH);
     }
 }
