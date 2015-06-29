@@ -6,7 +6,7 @@ import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.FileMetadataHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
-public class FileFixture extends AbstractFixture {
+public class FileFixture extends AbstractFixture implements LiedContainingFixture {
     private long liedId;
     private long fileMetadataId;
     private String pdfResourceName = "fixture/fixturePdf.pdf";
@@ -52,6 +52,7 @@ public class FileFixture extends AbstractFixture {
         addTableIdTuple(Tables.FILE, getId());
     }
 
+    @Override
     public long getLiedId() {
         return liedId;
     }

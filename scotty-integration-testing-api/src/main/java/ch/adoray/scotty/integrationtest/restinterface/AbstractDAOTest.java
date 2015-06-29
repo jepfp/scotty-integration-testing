@@ -59,7 +59,7 @@ public abstract class AbstractDAOTest<F extends AbstractFixture> {
         });
     }
 
-    private List<F> createFixtures(int howMany) throws InstantiationException, IllegalAccessException {
+    protected List<F> createFixtures(int howMany) throws InstantiationException, IllegalAccessException {
         Validate.isTrue(howMany > 0);
         List<F> fixtures = new ArrayList<F>();
         Class<F> defaultFixture = getDefaultFixture();

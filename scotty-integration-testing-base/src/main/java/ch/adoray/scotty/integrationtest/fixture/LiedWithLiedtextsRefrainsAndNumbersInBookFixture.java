@@ -8,7 +8,7 @@ import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
-public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture {
+public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture implements LiedContainingFixture {
     private String titel = "Dummy-Lied";
 
     public String getTitel() {
@@ -66,5 +66,10 @@ public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFi
             long createdId = LiedtextHelper.createLiedtext(getId(), i, "Dummy-Strophe Nr " + i, refrainId);
             addTableIdTuple(Tables.LIEDTEXT, createdId);
         }
+    }
+
+    @Override
+    public long getLiedId() {
+        return id;
     }
 }

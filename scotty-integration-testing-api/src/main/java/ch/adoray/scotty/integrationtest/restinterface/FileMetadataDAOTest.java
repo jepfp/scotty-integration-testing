@@ -8,7 +8,7 @@ import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.FileFixture;
-public class FileMetadataDAOTest extends AbstractDAOTest<FileFixture> {
+public class FileMetadataDAOTest extends AbstractSongBelongingDAOTest<FileFixture> {
     @Override
     String getController() {
         return "fileMetadata";
