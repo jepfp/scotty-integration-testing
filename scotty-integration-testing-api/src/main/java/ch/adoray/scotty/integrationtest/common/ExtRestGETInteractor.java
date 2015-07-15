@@ -39,12 +39,12 @@ public class ExtRestGETInteractor extends ExtRestInteractor {
     }
 
     private void setRequestParametersIfNecessary(WebRequest request) {
-        ArrayList<NameValuePair> paramsToReturn = new ArrayList<>(params);
+        ArrayList<NameValuePair> paramsToSet = new ArrayList<>(params);
         if (!filters.isEmpty()) {
-            paramsToReturn.add(new NameValuePair("filter", buildFilter()));
+            paramsToSet.add(new NameValuePair("filter", buildFilter()));
         }
-        if (!paramsToReturn.isEmpty()) {
-            request.setRequestParameters(paramsToReturn);
+        if (!paramsToSet.isEmpty()) {
+            request.setRequestParameters(paramsToSet);
         }
     }
 
