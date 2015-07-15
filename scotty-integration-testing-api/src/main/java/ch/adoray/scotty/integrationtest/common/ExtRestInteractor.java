@@ -56,7 +56,6 @@ abstract class ExtRestInteractor {
         try {
             String requestUrl = url + (addDebugParam ? "?" + debugParamString : "");
             WebRequest request = new WebRequest(new URL(requestUrl), getHttpMethod());
-            request.setAdditionalHeader("Content-Type", "application/json");
             request.setCharset("utf-8");
             setRequestParamsAndBody(request);
             P page = getPage(request);

@@ -29,6 +29,7 @@ public abstract class ExtRestModificationInteractor extends ExtRestInteractor {
 
     @Override
     void setRequestParamsAndBody(WebRequest request) {
+        request.setAdditionalHeader("Content-Type", "application/json");
         request.setRequestBody(getRequestContentBody());
     }
 
