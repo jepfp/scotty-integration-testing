@@ -11,7 +11,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
 
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -19,8 +19,8 @@ import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 public class SqliteDbDumpTest {
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void downloadDatabase_wholeDb_amountOfRowsEquals() throws IOException {
@@ -57,14 +57,14 @@ public class SqliteDbDumpTest {
         assertEquals(DatabaseAccess.determineAmountOfEntriesInTable(table), db.getAllRecords(table).size());
     }
 
-    private static SqliteDatabaseAccess downloadDatabaseAndOpenConnection() {
+    private SqliteDatabaseAccess downloadDatabaseAndOpenConnection() {
         File database = downloadDatabase();
         SqliteDatabaseAccess db = new SqliteDatabaseAccess(database.getAbsolutePath());
         db.openConnection();
         return db;
     }
 
-    private static File downloadDatabase() {
+    private File downloadDatabase() {
         try {
             URL website = new URL(config().getSqliteDbDumpUrl());
             System.out.println("Download DB from " + config().getSqliteDbDumpUrl());
