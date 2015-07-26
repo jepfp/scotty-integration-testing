@@ -140,4 +140,23 @@ public class FileDAOTest {
         // clean up
         liedFixture.cleanUp();
     }
+
+    @Test
+    public void create_uploadWordDocument_dtoException() throws IOException, JSONException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/foo.docx");
+        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
+        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "utf-8"));
+        // act
+        RestResponse response = interactor.performRequestAsRestResponse();
+        // assert
+        assertFalse(response.isSuccess());
+        assertEquals("Fehler im Feld : Die hochgeladene Datei ist keine PDF-Datei.", response.getMessage());
+        // clean up
+        liedFixture.cleanUp();
+    }
 }
