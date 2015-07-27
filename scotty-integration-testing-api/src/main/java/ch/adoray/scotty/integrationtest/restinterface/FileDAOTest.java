@@ -159,4 +159,21 @@ public class FileDAOTest {
         // clean up
         liedFixture.cleanUp();
     }
+
+    @Test
+    public void create_noFileSent_dtoException() throws IOException, JSONException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
+        // act
+        RestResponse response = interactor.performRequestAsRestResponse();
+        // assert
+        assertFalse(response.isSuccess());
+        assertEquals("Fehler im Feld $_FILES[\"file\"]: Es wurde keine hochgeladene Datei gefunden. Eventuell liegt ein Server-Konfigurationsfehler vor.", response.getMessage());
+        // clean up
+        liedFixture.cleanUp();
+    }
 }
