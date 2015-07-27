@@ -1,0 +1,7 @@
+{
+  "data": [],
+  "message": "Success",
+  "success": true,
+  "totalCount": 1,
+  "type": "response"
+}

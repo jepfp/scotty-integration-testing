@@ -37,6 +37,8 @@ import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 public class FileDAOTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
+    
+    private static final String GENERAL_NO_FILE_ERROR_MESSAGE = "Fehler im Feld $_FILES[\"file\"]: Es wurde keine hochgeladene Datei gefunden. Eventuell ist die Datei zu gross oder es liegt ein Server-Konfigurationsfehler vor.";
 
     @Test
     public void createFileByFixture_bigger10mb_storeAndReadSuccessful() throws IOException {
@@ -128,10 +130,10 @@ public class FileDAOTest {
     }
 
     @Test
-    public void create_happyCase_jsonAnswer() throws IOException, JSONException {
+    public void create_happyCase14mb_jsonAnswer() throws IOException, JSONException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/fixturePdf.pdf");
+        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/approx14mbFile.pdf");
         // act
         JavaScriptPage response = uploadFile(liedFixture, pdfPath);
         // assert
@@ -172,7 +174,26 @@ public class FileDAOTest {
         RestResponse response = interactor.performRequestAsRestResponse();
         // assert
         assertFalse(response.isSuccess());
-        assertEquals("Fehler im Feld $_FILES[\"file\"]: Es wurde keine hochgeladene Datei gefunden. Eventuell liegt ein Server-Konfigurationsfehler vor.", response.getMessage());
+        assertEquals(GENERAL_NO_FILE_ERROR_MESSAGE, response.getMessage());
+        // clean up
+        liedFixture.cleanUp();
+    }
+    
+    @Test
+    public void create_20mbFile_dtoException() throws IOException, JSONException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/dummy20mb.pdf");
+        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
+        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), "application/pdf", "utf-8"));
+        // act
+        RestResponse response = interactor.performRequestAsRestResponse();
+        // assert
+        assertFalse(response.isSuccess());
+        assertEquals(GENERAL_NO_FILE_ERROR_MESSAGE, response.getMessage());
         // clean up
         liedFixture.cleanUp();
     }
