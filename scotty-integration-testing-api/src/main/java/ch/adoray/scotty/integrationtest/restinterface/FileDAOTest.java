@@ -29,15 +29,16 @@ import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.FileFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedContainingFixture;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 public class FileDAOTest {
+    private static final String MIME_TYPE_APPLICATION_PDF = "application/pdf";
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
-    
     private static final String GENERAL_NO_FILE_ERROR_MESSAGE = "Es wurde keine hochgeladene Datei gefunden. Eventuell ist die Datei zu gross oder es liegt ein Server-Konfigurationsfehler vor.";
 
     @Test
@@ -109,7 +110,7 @@ public class FileDAOTest {
     private JavaScriptPage uploadFile(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String pdfPath) {
         ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
         interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
-        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), "application/pdf", "utf-8"));
+        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), MIME_TYPE_APPLICATION_PDF, "utf-8"));
         JavaScriptPage response = interactor.performRequest();
         return response;
     }
@@ -148,13 +149,8 @@ public class FileDAOTest {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String pdfPath = FileHelper.getPdfResourcePathByName("fixture/foo.docx");
-        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
-        interactor.setFailOnJsonSuccessFalse(false);
-        interactor.setThrowExceptionOnFailingStatusCode(false);
-        interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
-        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "utf-8"));
         // act
-        RestResponse response = interactor.performRequestAsRestResponse();
+        RestResponse response = uploadFileWithoutExceptionIfNoSuccess(liedFixture, pdfPath, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         // assert
         assertFalse(response.isSuccess());
         assertEquals("Die hochgeladene Datei ist keine PDF-Datei.", response.getMessage());
@@ -178,23 +174,42 @@ public class FileDAOTest {
         // clean up
         liedFixture.cleanUp();
     }
-    
+
     @Test
     public void create_20mbFile_dtoException() throws IOException, JSONException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String pdfPath = FileHelper.getPdfResourcePathByName("fixture/dummy20mb.pdf");
-        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
-        interactor.setFailOnJsonSuccessFalse(false);
-        interactor.setThrowExceptionOnFailingStatusCode(false);
-        interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
-        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), "application/pdf", "utf-8"));
         // act
-        RestResponse response = interactor.performRequestAsRestResponse();
+        RestResponse response = uploadFileWithoutExceptionIfNoSuccess(liedFixture, pdfPath, MIME_TYPE_APPLICATION_PDF);
         // assert
         assertFalse(response.isSuccess());
         assertEquals(GENERAL_NO_FILE_ERROR_MESSAGE, response.getMessage());
         // clean up
         liedFixture.cleanUp();
+    }
+
+    @Test
+    public void create_songAlreadyHasSongsheet_exception() throws IOException {
+        // arrange
+        FileFixture fileFixture = FileFixture.setupAndCreate();
+        // act
+        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/fixturePdf.pdf");
+        RestResponse response = uploadFileWithoutExceptionIfNoSuccess(fileFixture, pdfPath, MIME_TYPE_APPLICATION_PDF);
+        // assert
+        assertFalse(response.isSuccess());
+        assertEquals("Fehler beim Hochladen der Noten, weil bereits Noten zu diesem Lied vorhanden sind. Bitte aktualisiere die Seite und lösche zuerst vorhandene Noten.", response.getMessage());
+        // clean up
+        fileFixture.cleanUp();
+    }
+
+    private RestResponse uploadFileWithoutExceptionIfNoSuccess(LiedContainingFixture fileFixture, String pdfPath, String mimeType) {
+        ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
+        interactor.addRequestParameter("lied_id", String.valueOf(fileFixture.getLiedId()));
+        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), mimeType, "utf-8"));
+        RestResponse response = interactor.performRequestAsRestResponse();
+        return response;
     }
 }
