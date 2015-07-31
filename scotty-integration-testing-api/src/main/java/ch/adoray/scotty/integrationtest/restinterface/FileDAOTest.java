@@ -38,7 +38,7 @@ public class FileDAOTest {
     @Rule
     public TemporaryFolder testFolder = new TemporaryFolder();
     
-    private static final String GENERAL_NO_FILE_ERROR_MESSAGE = "Fehler im Feld $_FILES[\"file\"]: Es wurde keine hochgeladene Datei gefunden. Eventuell ist die Datei zu gross oder es liegt ein Server-Konfigurationsfehler vor.";
+    private static final String GENERAL_NO_FILE_ERROR_MESSAGE = "Es wurde keine hochgeladene Datei gefunden. Eventuell ist die Datei zu gross oder es liegt ein Server-Konfigurationsfehler vor.";
 
     @Test
     public void createFileByFixture_bigger10mb_storeAndReadSuccessful() throws IOException {
@@ -157,7 +157,7 @@ public class FileDAOTest {
         RestResponse response = interactor.performRequestAsRestResponse();
         // assert
         assertFalse(response.isSuccess());
-        assertEquals("Fehler im Feld : Die hochgeladene Datei ist keine PDF-Datei.", response.getMessage());
+        assertEquals("Die hochgeladene Datei ist keine PDF-Datei.", response.getMessage());
         // clean up
         liedFixture.cleanUp();
     }
