@@ -3,13 +3,16 @@ package ch.adoray.scotty.acceptancetest.modifying;
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 
 import org.junit.Test;
+import org.openqa.selenium.WebElement;
 
 import ch.adoray.scotty.acceptancetest.base.macros.LiedViewMacros;
 import ch.adoray.scotty.acceptancetest.base.macros.LogInScreenMacros;
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
 import ch.adoray.scotty.acceptancetest.base.model.SongModel;
 import ch.adoray.scotty.acceptancetest.base.model.ViewportModel;
+import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
 import ch.adoray.scotty.integrationtest.fixture.FileFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
 import com.appfoundation.automation.framework.BaseSeleniumTest;
 public class SongsheetTest extends BaseSeleniumTest {
@@ -28,6 +31,26 @@ public class SongsheetTest extends BaseSeleniumTest {
     }
 
     @Test
+    public void addSongsheetAndVerifyPresentAfterwords() {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        driver.get(config().getBaseUrl());
+        logInMacros.login(config().getTesterEmail(), config().getTesterPassword());
+        liedViewMacros.openLiedFromQuicksearchResult(fixture.getTitel());
+        this.songModel.findSongsheetNoSongsheetAvailable();
+        // act & assert
+        uploadFile();
+        // clean up
+        fixture.cleanUp();
+    }
+
+    private void uploadFile() {
+        WebElement uploadFileField = this.songModel.findSongsheetUploadFileField();
+        uploadFileField.sendKeys(FileHelper.getPdfResourcePathByName("fixture/fixturePdf.pdf"));
+        this.waitToBeClickable(SongModel.SONGSHEET_DOWNLOAD_LINK_XPATH);
+    }
+
+    @Test
     public void deleteSongsheetAndVerifyNoSongsheetPresentAfterwords() {
         // arrange
         FileFixture fileFixture = FileFixture.setupAndCreate();
@@ -37,6 +60,7 @@ public class SongsheetTest extends BaseSeleniumTest {
         liedViewMacros.openLiedFromQuicksearchResult(songTitle);
         // verify download link available
         this.songModel.findSongsheetDownloadLink();
+        // act
         clickDeleteSongsheetButDontConfirm();
         deleteSongsheet();
         // assert

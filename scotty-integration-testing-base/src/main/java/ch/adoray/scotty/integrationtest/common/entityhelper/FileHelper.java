@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +43,12 @@ public class FileHelper {
 
     public static String getPdfResourcePathByName(String pdfResourceName) {
         URL url = ResourceLoader.class.getClassLoader().getResource(pdfResourceName);
-        return url.getPath();
+        try {
+            File f = new File(url.toURI());
+            return f.getAbsolutePath();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void readFileById(long id, Path path) {
