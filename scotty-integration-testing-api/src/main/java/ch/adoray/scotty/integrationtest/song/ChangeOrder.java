@@ -23,7 +23,6 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 import ch.adoray.scotty.integrationtest.restinterface.Helper;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
 public class ChangeOrder {
     private static final String CHANGE_ORDER_ACTION = "ChangeOrder";
