@@ -15,6 +15,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.entityhelper.UserHelper;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class Helper {
@@ -83,8 +84,8 @@ public class Helper {
         Map<String, String> filter = Maps.newHashMap();
         filter.put(filterAttribute, String.valueOf(value));
         Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONObject json = (JSONObject) parseJson(result.getContent());
+        Page result = Interactor.performRequest(config);
+        JSONObject json = (JSONObject) parseJson(result.getWebResponse().getContentAsString());
         return json;
     }
 

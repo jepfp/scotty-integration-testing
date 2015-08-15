@@ -24,16 +24,16 @@ import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.UserFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.Maps;
 public class BaseDAOTest {
     @Test
     public void read_findAll_atLeast4Entries() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         assertTrue("There must be at least for entries for 'user'.", data.length() >= 4);
     }
@@ -42,9 +42,9 @@ public class BaseDAOTest {
     public void read_find2nd_2ndEntryFound() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user/3");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         assertEquals("There must be exactly one entry for 'user'.", 1, data.length());
         assertEquals("Correct-Hans", Helper.extractAttributeValueAt(data, "firstname", 0));
@@ -57,9 +57,9 @@ public class BaseDAOTest {
         Map<String, String> filter = Maps.newHashMap();
         filter.put("additionalInfos", "Luzern");
         Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         assertEquals("There must be exactly 2 entries for 'user'.", 2, data.length());
     }
@@ -72,9 +72,9 @@ public class BaseDAOTest {
         filters.put("firstname", "Peter");
         filters.put("lastname", "Schnur");
         Helper.addFilterParameter(filters, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         assertEquals("There must be exactly 1 entry for 'user'.", 1, data.length());
         assertEquals("Peter", Helper.extractAttributeValueAt(data, "firstname", 0));
@@ -85,9 +85,9 @@ public class BaseDAOTest {
     public void read_withoutOrder_correctOrder() throws JSONException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/user");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 1, 2, 3, 4, 5);
     }
@@ -99,9 +99,9 @@ public class BaseDAOTest {
             .disableCookies()//
             .disableFailOnJsonSuccessFalse()//
             .disableThrowExceptionOnFailingStatusCode();
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = json.getBoolean("success");
         assertFalse("No login --> false", success);
     }
@@ -215,9 +215,9 @@ public class BaseDAOTest {
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/notExistingController")//
             .disableFailOnJsonSuccessFalse()//
             .disableThrowExceptionOnFailingStatusCode();
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = json.getBoolean("success");
         assertFalse("Success must be false", success);
     }
@@ -228,9 +228,9 @@ public class BaseDAOTest {
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/logging")//
             .disableFailOnJsonSuccessFalse()//
             .disableThrowExceptionOnFailingStatusCode();
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = json.getBoolean("success");
         assertFalse("Success must be false", success);
     }

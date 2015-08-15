@@ -13,7 +13,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.Interactor.RpcFormInteractorConfiguration;
 import ch.adoray.scotty.integrationtest.common.Interactor.RpcInteractorConfiguration;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class SessionInfoProviderTest {
     @Test
     public void getCurrentLiederbuchId_neverSet_1() throws Exception {
@@ -26,8 +26,8 @@ public class SessionInfoProviderTest {
         String action = "SessionInfoProvider";
         String method = "getCurrentLiederbuchId";
         InteractorConfigurationWithParams config = new RpcFormInteractorConfiguration(action, method);
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        Page result = Interactor.performRequest(config);
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         int liederbuchId = json.getInt("result");
         return liederbuchId;
     }
@@ -39,9 +39,9 @@ public class SessionInfoProviderTest {
         String method = "getCurrentLiederbuchId";
         InteractorConfigurationWithParams config = new RpcFormInteractorConfiguration(action, method)//
             .disableCookies().disableFailOnJsonSuccessFalse();
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = json.getBoolean("success");
         assertFalse("No login --> false", success);
     }

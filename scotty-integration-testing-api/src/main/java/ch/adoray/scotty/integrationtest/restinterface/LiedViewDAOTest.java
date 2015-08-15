@@ -8,13 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONParser;
 
@@ -30,7 +28,7 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdat
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class LiedViewDAOTest {
     private static final int ID_DIR_SINGEN_WIR_2 = 2;
     private static final int ID_ADORAY_LIEDERORDNER = 1;
@@ -40,9 +38,9 @@ public class LiedViewDAOTest {
     public void read_showAll_amountLiedViewAndLiedEqual() throws JSONException, ClassNotFoundException, SQLException {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = (boolean) json.get("success");
         assertTrue(success);
         int totalCount = (int) json.get("totalCount");
@@ -55,7 +53,7 @@ public class LiedViewDAOTest {
         //arrange
         switchToLiederbuch(ID_ADORAY_LIEDERORDNER);
         // act & assert 1
-        JavaScriptPage result = viewBlessTheLord();
+        Page result = viewBlessTheLord();
         assertTitleAndNumber(result, "1000");
         //
         switchToLiederbuch(ID_DIR_SINGEN_WIR_2);
@@ -66,9 +64,9 @@ public class LiedViewDAOTest {
         Interactor.setupNewWebClient();
     }
 
-    private JavaScriptPage viewBlessTheLord() {
+    private Page viewBlessTheLord() {
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView/1");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         return result;
     }
 
@@ -80,8 +78,8 @@ public class LiedViewDAOTest {
         Interactor.performRawRequest(rpcconfig);
     }
 
-    private void assertTitleAndNumber(JavaScriptPage result, String expectedNr) throws JSONException {
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+    private void assertTitleAndNumber(Page result, String expectedNr) throws JSONException {
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         JSONObject singleEntry = (JSONObject) data.get(0);
         String title = singleEntry.getString("Titel");
@@ -115,9 +113,9 @@ public class LiedViewDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "1001");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 2);
     }
@@ -127,9 +125,9 @@ public class LiedViewDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "le");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 6, 1, 3);
         assertEquals("Three entries must be found", 3, (int) json.get("totalCount"));
@@ -140,9 +138,9 @@ public class LiedViewDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "Halleluja");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 3);
         assertEquals("1 entry must be found", 1, (int) json.get("totalCount"));
@@ -154,9 +152,9 @@ public class LiedViewDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/liedView");
         config.addParam("quicksearch", "100");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         assertEquals("Resultset must be empty.", 0, (int) json.get("totalCount"));
     }
 
@@ -217,11 +215,11 @@ public class LiedViewDAOTest {
 
     private RestResponse changeLiedNrAndAssertNr(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String neueLiedNr) {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture.getId());
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIEDNR_KEY, neueLiedNr)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(neueLiedNr, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
         return response;
     }
@@ -289,11 +287,11 @@ public class LiedViewDAOTest {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture.getId());
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIEDNR_KEY, newLiedNr)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertFalse(response.isSuccess());
         assert (response.getMessage().contains("Fehler im Feld Liednr: Das Feld darf nicht leer sein."));
         //clean up

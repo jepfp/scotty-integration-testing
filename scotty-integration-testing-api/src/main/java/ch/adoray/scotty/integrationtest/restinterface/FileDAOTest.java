@@ -32,7 +32,7 @@ import ch.adoray.scotty.integrationtest.fixture.FileFixture;
 import ch.adoray.scotty.integrationtest.fixture.LiedContainingFixture;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 public class FileDAOTest {
@@ -107,11 +107,11 @@ public class FileDAOTest {
         liedFixture.cleanUp();
     }
 
-    private JavaScriptPage uploadFile(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String pdfPath) {
+    private Page uploadFile(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String pdfPath) {
         ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
         interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
         interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), MIME_TYPE_APPLICATION_PDF, "utf-8"));
-        JavaScriptPage response = interactor.performRequest();
+        Page response = interactor.performRequest();
         return response;
     }
 
@@ -136,10 +136,10 @@ public class FileDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String pdfPath = FileHelper.getPdfResourcePathByName("fixture/approx14mbFile.pdf");
         // act
-        JavaScriptPage response = uploadFile(liedFixture, pdfPath);
+        Page response = uploadFile(liedFixture, pdfPath);
         // assert
         String expectedResult = ResourceLoader.loadTestData();
-        JSONAssert.assertEquals(expectedResult, response.getContent(), false);
+        JSONAssert.assertEquals(expectedResult, response.getWebResponse().getContentAsString(), false);
         // clean up
         liedFixture.cleanUp();
     }

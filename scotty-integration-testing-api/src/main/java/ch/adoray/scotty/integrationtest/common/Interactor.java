@@ -40,14 +40,14 @@ public class Interactor {
         webClient = null;
     }
 
-    public static JavaScriptPage performRequest(InteractorConfigurationWithParams config) {
+    public static Page performRequest(InteractorConfigurationWithParams config) {
         try {
             WebRequest requestSettings = new WebRequest(new URL(config.getUrl()), config.getHttpMethod());
             if (!config.getParams().isEmpty()) {
                 requestSettings.setRequestParameters(config.getParams());
             }
-            JavaScriptPage page = getPage(config, requestSettings);
-            printAndValidate(page.getContent(), config);
+            Page page = getPage(config, requestSettings);
+            printAndValidate(page.getWebResponse().getContentAsString(), config);
             return page;
         } catch (FailingHttpStatusCodeException | IOException e) {
             throw new RuntimeException("Performing http request failed.", e);
@@ -77,13 +77,13 @@ public class Interactor {
         return c.getPage(requestSettings);
     }
 
-    public static JavaScriptPage performRawRequest(RpcInteractorConfiguration config) {
+    public static Page performRawRequest(RpcInteractorConfiguration config) {
         try {
             WebRequest requestSettings = new WebRequest(new URL(config.getUrl()), config.getHttpMethod());
             requestSettings.setAdditionalHeader("Content-Type", "application/json");
             requestSettings.setRequestBody(config.getRequestContentBody());
-            JavaScriptPage page = getPage(config, requestSettings);
-            printAndValidate(page.getContent(), config);
+            Page page = getPage(config, requestSettings);
+            printAndValidate(page.getWebResponse().getContentAsString(), config);
             return page;
         } catch (Exception e) {
             throw new RuntimeException("Performing http request failed.", e);
@@ -156,8 +156,8 @@ public class Interactor {
             InteractorConfigurationWithParams config = new RpcFormInteractorConfiguration(action, method)//
                 .addParam("email", config().getTesterEmail())//
                 .addParam("password", config().getTesterPassword());
-            JavaScriptPage result = performRequest(config);
-            JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+            Page result = performRequest(config);
+            JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
             JSONObject loginResult = (JSONObject) json.get("result");
             String email = (String) loginResult.get("email");
             System.out.println("Logged in as " + email + ".");

@@ -28,10 +28,9 @@ import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
-import ch.adoray.scotty.integrationtest.fixture.FileFixture;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class LiedDAOTest {
     private static final String TITEL_KEY = "Titel";
     private static final String RUBRIK_ID_KEY = "rubrik_id";
@@ -96,11 +95,11 @@ public class LiedDAOTest {
         String rubrikId = "3";
         String tonality = "E";
         // act
-        JavaScriptPage page = interactor.setField(TITEL_KEY, titel)//
+        Page page = interactor.setField(TITEL_KEY, titel)//
             .setField(RUBRIK_ID_KEY, rubrikId)//
             .setField(TONALITY_KEY, tonality)//
             .performRequest();
-        String content = page.getContent();
+        String content = page.getWebResponse().getContentAsString();
         RestResponse restResponse = RestResponse.createFromResponse(content);
         // assert
         String testData = removeIdAndTimestamps(ResourceLoader.loadTestData());
@@ -134,12 +133,12 @@ public class LiedDAOTest {
         String titel = "Geänderter Titel";
         String rubrikId = "12";
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(TITEL_KEY, titel)//
             .setField(RUBRIK_ID_KEY, rubrikId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(titel, response.getDataValueByKeyFromFirst(TITEL_KEY));
         assertEquals(rubrikId, response.getDataValueByKeyFromFirst(RUBRIK_ID_KEY));
         assertUpdateDbLogEntry(liedFixture.getId(), new Long(rubrikId));
@@ -201,10 +200,10 @@ public class LiedDAOTest {
 
     private RestResponse changeTonality(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String tonality) {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("lied", liedFixture.getId());
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(TONALITY_KEY, tonality)//
             .performRequest();
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         return response;
     }
 
@@ -213,9 +212,9 @@ public class LiedDAOTest {
         // arrange
         ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied");
         // act
-        JavaScriptPage result = interactor.performRequest();
+        Page result = interactor.performRequest();
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
@@ -223,9 +222,9 @@ public class LiedDAOTest {
         // arrange
         ExtRestGETInteractor interactor = new ExtRestGETInteractor("lied", (long) 6);
         // act
-        JavaScriptPage result = interactor.performRequest();
+        Page result = interactor.performRequest();
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test

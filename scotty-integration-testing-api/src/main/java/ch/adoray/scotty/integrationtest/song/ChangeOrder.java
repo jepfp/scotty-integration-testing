@@ -24,6 +24,7 @@ import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumb
 import ch.adoray.scotty.integrationtest.restinterface.Helper;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class ChangeOrder {
     private static final String CHANGE_ORDER_ACTION = "ChangeOrder";
     private static final String LIEDTEXT_TABLE = "liedtext";
@@ -56,8 +57,8 @@ public class ChangeOrder {
         RpcInteractorConfiguration config = new RpcInteractorConfiguration(CHANGE_ORDER_ACTION, "moveUp");
         config.addMethodParam(table);
         config.addMethodParam(id);
-        JavaScriptPage result = Interactor.performRawRequest(config);
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        Page result = Interactor.performRawRequest(config);
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         return json.getBoolean("result");
     }
 
@@ -65,8 +66,8 @@ public class ChangeOrder {
         RpcInteractorConfiguration config = new RpcInteractorConfiguration(CHANGE_ORDER_ACTION, "moveDown");
         config.addMethodParam(table);
         config.addMethodParam(String.valueOf(id));
-        JavaScriptPage result = Interactor.performRawRequest(config);
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        Page result = Interactor.performRawRequest(config);
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         return json.getBoolean("result");
     }
 
@@ -102,9 +103,9 @@ public class ChangeOrder {
             .addMethodParam(String.valueOf(liedtextId))//
             .disableFailOnJsonSuccessFalse();
         //act
-        JavaScriptPage result = Interactor.performRawRequest(config);
+        Page result = Interactor.performRawRequest(config);
         //assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         String type = json.getString("type");
         assertEquals("RPC function must return an exception!", "exception", type);
     }

@@ -30,7 +30,7 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Longs;
 public class RefrainDAOTest {
@@ -45,9 +45,9 @@ public class RefrainDAOTest {
         Map<String, String> filter = Maps.newHashMap();
         filter.put("lied_id", "6");
         Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 1);
     }
@@ -75,11 +75,11 @@ public class RefrainDAOTest {
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("refrain");
         String liedId = String.valueOf(liedFixture.getId());
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIED_ID_KEY, liedId)//
             .setField(REFRAIN_KEY, "foo")//
             .performRequest();
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         // assert
         RestResponse allLiedtexts = RestResponse.createFromResponse(Helper.readWithFkAttributeFilter("refrain", "lied_id", liedId));
         List<Long> expectedOrderOfIds = liedFixture.getCreatedIdsByTable(Tables.REFRAIN);
@@ -97,12 +97,12 @@ public class RefrainDAOTest {
         String refrain = "Testcase, der das Hinzufügen eines Refrains testet.";
         String liedId = String.valueOf(liedFixture.getId());
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_KEY, refrain)//
             .setField(LIED_ID_KEY, liedId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals(refrain, response.getDataValueByKeyFromFirst(REFRAIN_KEY));
         assertDbLogEntry(liedFixture.getId());
@@ -128,12 +128,12 @@ public class RefrainDAOTest {
         interactor.setThrowExceptionOnFailingStatusCode(false);
         String liedId = String.valueOf(liedFixture.getId());
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_KEY, null)//
             .setField(LIED_ID_KEY, liedId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertFalse(response.isSuccess());
         assertEquals("Fehler im Feld Refrain: Das Feld darf nicht leer sein.", response.getMessage());
         //clean up
@@ -148,11 +148,11 @@ public class RefrainDAOTest {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("refrain", refrainIdToUpdate);
         String refrain = "Geänderter Refrain";
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_KEY, refrain)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(refrain, response.getDataValueByKeyFromFirst(REFRAIN_KEY));
         assertEquals("lied_Id must not be changed!", liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertUpdateDbLogEntry(refrainIdToUpdate);
@@ -175,11 +175,11 @@ public class RefrainDAOTest {
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_KEY, "foo")//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertFalse(response.isSuccess());
         assertEquals("Allgemeiner Fehler beim Zugriff auf die Daten. Falls das Problem weiterhin auftritt, melde dich bei lieder@adoray.ch.", response.getMessage());
         //clean up
@@ -194,11 +194,11 @@ public class RefrainDAOTest {
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_KEY, "foo")//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertFalse(response.isSuccess());
         assertEquals("Allgemeiner Fehler beim Zugriff auf die Daten. Falls das Problem weiterhin auftritt, melde dich bei lieder@adoray.ch.", response.getMessage());
         //clean up

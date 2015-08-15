@@ -29,7 +29,7 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdat
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class NumberInBookDAOTest {
@@ -43,9 +43,9 @@ public class NumberInBookDAOTest {
         Map<String, String> filter = Maps.newHashMap();
         filter.put("lied_id", "1");
         Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
@@ -55,9 +55,9 @@ public class NumberInBookDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/numberInBook");
         addFilterAsExtDoes(config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     // Adds the filter in the same way as ext js does: only the key is set without any "value" node.
@@ -72,9 +72,9 @@ public class NumberInBookDAOTest {
         //arrange
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/numberInBook/3");
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
@@ -83,9 +83,9 @@ public class NumberInBookDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/numberInBook");
         config.disableFailOnJsonSuccessFalse().disableThrowExceptionOnFailingStatusCode();
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         boolean success = json.getBoolean("success");
         assertFalse("no filter and no id is set --> success must be false", success);
     }
@@ -95,24 +95,24 @@ public class NumberInBookDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         //act
-        JavaScriptPage result = createNewNumberInBookAssociation(liedFixture);
+        Page result = createNewNumberInBookAssociation(liedFixture);
         // assert
         String testData = removeIdAndLiedId(ResourceLoader.loadTestData());
-        String content = result.getContent();
+        String content = result.getWebResponse().getContentAsString();
         JSONAssert.assertEquals(testData, removeIdAndLiedId(content), false);
         assertDbLogEntry(liedFixture.getId());
         //clean up
         liedFixture.cleanUp();
     }
 
-    private JavaScriptPage createNewNumberInBookAssociation(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture) {
+    private Page createNewNumberInBookAssociation(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture) {
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
         String liedIdKey = "lied_id";
         String liederbuchIdKey = "liederbuch_id";
         String liednr = "8888";
         String liedId = String.valueOf(liedFixture.getId());
         String liederbuchId = "3";
-        JavaScriptPage result = interactor.setField(LIEDNR_KEY, liednr)//
+        Page result = interactor.setField(LIEDNR_KEY, liednr)//
             .setField(liedIdKey, liedId)//
             .setField(liederbuchIdKey, liederbuchId)//
             .performRequest();
@@ -144,11 +144,11 @@ public class NumberInBookDAOTest {
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIEDNR_KEY, neueLiedNr)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(neueLiedNr, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
         assertUpdateDbLogEntry(numberInBookIdToUpdate, neueLiedNr);
         //clean up

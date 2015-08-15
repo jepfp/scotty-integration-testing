@@ -14,17 +14,18 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 
 import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class AuthTest {
 	@Test
 	public void login_wrongCredentials_noSuccess() throws Exception {
-		JavaScriptPage result = login("philippjenni@bluemail.ch", "foo");
-		JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(),
+		Page result = login("philippjenni@bluemail.ch", "foo");
+		JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(),
 				false);
 	}
 
-	private JavaScriptPage login(String email, String password) {
+	private Page login(String email, String password) {
 		InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config()
 				.getExtDirectUrl())//
 				.addParam("email", email)//
@@ -32,7 +33,7 @@ public class AuthTest {
 				.setMethodPost()//
 				.disableCookies();
 		addBasicParams(config);
-		JavaScriptPage result = Interactor.performRequest(config);
+		Page result = Interactor.performRequest(config);
 		return result;
 	}
 
@@ -46,8 +47,8 @@ public class AuthTest {
 
 	@Test
 	public void login_notActive_noSuccess() throws Exception {
-		JavaScriptPage result = login("notActive@google.com", "asdf");
-		JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(),
+		Page result = login("notActive@google.com", "asdf");
+		JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(),
 				false);
 	}
 
@@ -59,8 +60,8 @@ public class AuthTest {
 	}
 
 	private JSONObject loginWithValidCredentials() throws JSONException {
-		JavaScriptPage result = login("correct@login.ch", "jfjf");
-		JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+		Page result = login("correct@login.ch", "jfjf");
+		JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
 		JSONObject loginResult = (JSONObject) json.get("result");
 		return loginResult;
 	}

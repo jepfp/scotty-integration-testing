@@ -71,8 +71,8 @@ abstract class ExtRestInteractor {
     }
 
     public RestResponse performRequestAsRestResponse() {
-        JavaScriptPage page = this.performRequest();
-        return RestResponse.createFromResponse(page.getContent());
+        Page page = this.performRequest();
+        return RestResponse.createFromResponse(page.getWebResponse().getContentAsString());
     }
 
     private <P extends Page> P getPage(WebRequest request) throws IOException {

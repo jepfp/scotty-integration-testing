@@ -12,7 +12,7 @@ import org.skyscreamer.jsonassert.JSONParser;
 import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 
 public class RubrikDAOTest {
 
@@ -21,9 +21,9 @@ public class RubrikDAOTest {
 		// act
 		InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config()
 				.getRestInterfaceUrl() + "/rubrik");
-		JavaScriptPage result = Interactor.performRequest(config);
+		Page result = Interactor.performRequest(config);
 		// assert
-		JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+		JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
 		JSONArray data = (JSONArray) json.get("data");
 		assertTrue("There must be 12 entries for 'rubrik'.",
 				data.length() >= 12);

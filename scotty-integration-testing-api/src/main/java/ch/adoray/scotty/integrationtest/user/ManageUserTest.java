@@ -14,7 +14,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class ManageUserTest {
     @Test
     public void register_userAlreadyExists_error() throws Exception {
@@ -24,8 +24,8 @@ public class ManageUserTest {
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
         addBasicParams(config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        Page result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     private void addBasicParams(InteractorConfigurationWithParams config) {
@@ -47,8 +47,8 @@ public class ManageUserTest {
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
         addBasicParams(config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        Page result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
@@ -58,8 +58,8 @@ public class ManageUserTest {
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
         addBasicParams(config);
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        Page result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
@@ -71,9 +71,9 @@ public class ManageUserTest {
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Bern");
         addBasicParams(config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
         Map<String, String> record = DatabaseAccess.getLastRecord("user");
         assertEquals(expectedEmail, record.get("email"));
         // clean up

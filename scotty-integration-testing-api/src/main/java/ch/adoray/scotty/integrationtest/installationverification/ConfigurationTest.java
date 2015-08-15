@@ -12,22 +12,22 @@ import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 public class ConfigurationTest {
     @Test
     public void verifySubdomain() throws Exception {
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getBaseUrl() + "/integration-testing/base/subdomain/determineSubdomain.php")//
             .disableFailOnJsonSuccessFalse();
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getContent(), false);
+        Page result = Interactor.performRequest(config);
+        JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
 
     @Test
     public void verifyProjectPath() throws Exception {
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getBaseUrl() + "/integration-testing/base/determineProjectPath.php")//
             .disableFailOnJsonSuccessFalse();
-        JavaScriptPage result = Interactor.performRequest(config);
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        Page result = Interactor.performRequest(config);
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         String projectPath = (String) json.get("projectPath");
         assertTrue("Should contain data/projects/integration-testing", projectPath.matches(".*data.projects.integration-testing.*"));
     }

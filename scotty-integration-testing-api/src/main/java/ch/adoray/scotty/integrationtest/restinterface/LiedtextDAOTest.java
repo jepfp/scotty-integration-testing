@@ -31,7 +31,7 @@ import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
+import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Longs;
 public class LiedtextDAOTest {
@@ -47,9 +47,9 @@ public class LiedtextDAOTest {
         Map<String, String> filter = Maps.newHashMap();
         filter.put("lied_id", "6");
         Helper.addFilterParameter(filter, config);
-        JavaScriptPage result = Interactor.performRequest(config);
+        Page result = Interactor.performRequest(config);
         // assert
-        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getContent());
+        JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
         JSONArray data = (JSONArray) json.get("data");
         Helper.assertIdsInOrder(data, 2, 1, 3, 4);
     }
@@ -78,11 +78,11 @@ public class LiedtextDAOTest {
         String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIED_ID_KEY, liedId)//
             .setField(REFRAIN_ID_KEY, refrainId)//
             .performRequest();
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         // assert
         RestResponse allLiedtexts = RestResponse.createFromResponse(Helper.readWithFkAttributeFilter("liedtext", "lied_id", liedId));
         List<Long> expectedOrderOfIds = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT);
@@ -101,12 +101,12 @@ public class LiedtextDAOTest {
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
         String liedId = String.valueOf(liedFixture.getId());
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(STROPHE_KEY, strophe)//
             .setField(LIED_ID_KEY, liedId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
         assertNull(response.getDataValueByKeyFromFirst("refrain_id"));
@@ -133,13 +133,13 @@ public class LiedtextDAOTest {
         String strophe = "Testcase, der das Hinzufügen einer Strophe ohne Verknüpfung zu einem Refrain testet.";
         String liedId = String.valueOf(liedFixture.getId());
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(STROPHE_KEY, strophe)//
             .setField(LIED_ID_KEY, liedId)//
             .setField(refrainIdKey, "0")//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIEDTEXT, response.getFirstId());
         assertNull(record.get(refrainIdKey));
         //clean up
@@ -155,13 +155,13 @@ public class LiedtextDAOTest {
         String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(STROPHE_KEY, strophe)//
             .setField(LIED_ID_KEY, liedId)//
             .setField(REFRAIN_ID_KEY, refrainId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIEDTEXT, response.getFirstId());
         assertEquals(refrainId, record.get(REFRAIN_ID_KEY));
         //clean up
@@ -177,12 +177,12 @@ public class LiedtextDAOTest {
         String liedId = String.valueOf(liedFixture.getId());
         String refrainId = String.valueOf(liedFixture.getCreatedIdsByTable(Tables.REFRAIN).get(0));
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(LIED_ID_KEY, liedId)//
             .setField(REFRAIN_ID_KEY, refrainId)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         //clean up
         liedFixture.addTableIdTuple(Tables.LIEDTEXT, response.getFirstId());
         liedFixture.cleanUp();
@@ -197,12 +197,12 @@ public class LiedtextDAOTest {
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
         String strophe = "Geänderte Strophe";
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(STROPHE_KEY, strophe)//
             .setField(REFRAIN_ID_KEY, String.valueOf(refrainIdToSet))//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals(strophe, response.getDataValueByKeyFromFirst(STROPHE_KEY));
         assertEquals("lied_Id must not be changed!", liedFixture.getId(), response.getDataValueByKeyFromFirstAsLong(LIED_ID_KEY));
         assertEquals("refrain_id must have changed!", refrainIdToSet, response.getDataValueByKeyFromFirstAsLong(REFRAIN_ID_KEY));
@@ -225,11 +225,11 @@ public class LiedtextDAOTest {
         Long liedtextIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.LIEDTEXT).get(0);
         ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedtext", liedtextIdToUpdate);
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .setField(REFRAIN_ID_KEY, null)//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertEquals("refrain_id must be null!", null, response.getDataValueByKeyFromFirstAsLong(REFRAIN_ID_KEY));
         //clean up
         liedFixture.cleanUp();
@@ -308,10 +308,10 @@ public class LiedtextDAOTest {
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
         // act
-        JavaScriptPage result = interactor//
+        Page result = interactor//
             .performRequest();
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getContent());
+        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
         assertFalse(response.isSuccess());
         //clean up
         liedFixture.cleanUp();
