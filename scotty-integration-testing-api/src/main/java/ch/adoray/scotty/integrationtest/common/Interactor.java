@@ -61,7 +61,7 @@ public class Interactor {
         prettyPrintPageAsJson(json);
         validateJsonSuccessTrue(json, config.failOnJsonSuccessFalse);
     }
-    
+
     public static void printAndValidate(String asText, boolean failOnUnparsableJson, boolean failOnJsonSuccessFalse) {
         JSONObject json = parseJson(asText, failOnUnparsableJson);
         prettyPrintPageAsJson(json);
@@ -141,6 +141,9 @@ public class Interactor {
     }
 
     private static void prettyPrintPageAsJson(JSONObject json) {
+        if (json == null) {
+            return;
+        }
         try {
             System.out.println(json.toString(2));
         } catch (JSONException e) {
@@ -170,20 +173,20 @@ public class Interactor {
     public static DomElement findLogoutLink(HtmlPage page) {
         return page.getElementById("logoutLink");
     }
-    
-    public static class InteractorConfigurationWithParams  extends InteractorConfiguration<InteractorConfigurationWithParams>{
+
+    public static class InteractorConfigurationWithParams extends InteractorConfiguration<InteractorConfigurationWithParams> {
         protected List<NameValuePair> params = new ArrayList<NameValuePair>();
         private boolean addDebugParam = true;
 
         public InteractorConfigurationWithParams(String url) {
             super(url);
         }
-        
+
         public <T extends InteractorConfigurationWithParams> InteractorConfigurationWithParams addParam(String key, String value) {
             params.add(new NameValuePair(key, value));
             return this;
         }
-        
+
         public List<NameValuePair> getParams() {
             List<NameValuePair> paramCopy = new ArrayList<>(params);
             if (addDebugParam) {
@@ -191,7 +194,7 @@ public class Interactor {
             }
             return paramCopy;
         }
-        
+
         public <T extends InteractorConfigurationWithParams> InteractorConfigurationWithParams removeDebugParam() {
             addDebugParam = false;
             return this;
@@ -235,7 +238,6 @@ public class Interactor {
             setHttpMethod(HttpMethod.DELETE);
             return (CHILD) this;
         }
-
 
         @SuppressWarnings("unchecked")
         public CHILD disableCookies() {
@@ -306,7 +308,6 @@ public class Interactor {
             copiedParams.add(new NameValuePair("extUpload", String.valueOf(extUpload)));
             return copiedParams;
         }
-        
     }
 
     public static class RpcInteractorConfiguration extends RpcFormInteractorConfiguration {

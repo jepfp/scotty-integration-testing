@@ -59,11 +59,8 @@ abstract class ExtRestInteractor {
             request.setCharset("utf-8");
             setRequestParamsAndBody(request);
             P page = getPage(request);
-            if (page instanceof JavaScriptPage) {
-                JavaScriptPage jsPage = (JavaScriptPage) page;
-                System.out.println("Response:");
-                Interactor.printAndValidate(jsPage.getContent(), failOnUnparsableJson, failOnJsonSuccessFalse);
-            }
+            System.out.println("Response:");
+            Interactor.printAndValidate(page.getWebResponse().getContentAsString(), failOnUnparsableJson, failOnJsonSuccessFalse);
             return page;
         } catch (Exception e) {
             throw new RuntimeException("Performing http request failed.", e);
@@ -92,5 +89,9 @@ abstract class ExtRestInteractor {
 
     public void setThrowExceptionOnFailingStatusCode(boolean value) {
         this.throwExceptionOnFailingStatusCode = value;
+    }
+    
+    public void setFailOnUnparsableJson(boolean value) {
+        this.failOnUnparsableJson = value;
     }
 }

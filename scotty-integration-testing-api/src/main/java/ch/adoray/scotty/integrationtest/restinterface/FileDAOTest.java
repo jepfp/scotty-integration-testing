@@ -71,10 +71,18 @@ public class FileDAOTest {
 
     private File downloadFileFromRestInterfaceByFileMetadataId(long fileMetadataId, Path targetFilePath) throws IOException {
         ExtRestGETInteractor interactor = new ExtRestGETInteractor("file");
+        tellInteractorNotToFailWhileProcessingBinaryResponse(interactor);
         interactor.addFilterParam("filemetadata_id", fileMetadataId);
         UnexpectedPage response = interactor.performRequest();
         Files.copy(response.getInputStream(), targetFilePath);
         return new File(targetFilePath.toUri());
+    }
+
+    private void tellInteractorNotToFailWhileProcessingBinaryResponse(ExtRestGETInteractor interactor) {
+        // TODO: This is necessary, because at the moment ExtRestGETInteractor expects a valid JSON. Could be improved.
+        interactor.setFailOnUnparsableJson(false);
+        interactor.setFailOnJsonSuccessFalse(false);
+        interactor.setThrowExceptionOnFailingStatusCode(false);
     }
 
     @Test
