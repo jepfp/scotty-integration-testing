@@ -1,1 +1,1 @@
-{"type":"rpc","tid":"1","action":"ManageUser","method":"register","result":{"response":false,"message":"Es wurden nicht alle Felder ausgef\u00fchlt (nicht ausgef\u00fcllt: email)."}}
+{"type":"exception","tid":"1","action":"ManageUser","method":"register","result":{"message":"Es wurden nicht alle Felder ausgef\u00fchlt (nicht ausgef\u00fcllt: email)."}}

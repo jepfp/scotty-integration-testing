@@ -1,7 +1,6 @@
 package ch.adoray.scotty.integrationtest.session;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,8 +41,8 @@ public class SessionInfoProviderTest {
         Page result = Interactor.performRequest(config);
         // assert
         JSONObject json = (JSONObject) JSONParser.parseJSON(result.getWebResponse().getContentAsString());
-        boolean success = json.getBoolean("success");
-        assertFalse("No login --> false", success);
+        String type= json.getString("type");
+        assertEquals("exception", type);
     }
 
     @Test

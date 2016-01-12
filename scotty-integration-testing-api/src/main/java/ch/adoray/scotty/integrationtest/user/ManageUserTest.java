@@ -24,6 +24,7 @@ public class ManageUserTest {
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
         addBasicParams(config);
+        config.disableFailOnJsonSuccessFalse();
         Page result = Interactor.performRequest(config);
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
     }
@@ -46,6 +47,7 @@ public class ManageUserTest {
             .addParam("password", "asdff")//
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
+        config.disableFailOnJsonSuccessFalse();
         addBasicParams(config);
         Page result = Interactor.performRequest(config);
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
@@ -57,6 +59,7 @@ public class ManageUserTest {
             .addParam("password", "asdf")//
             .addParam("passwordRepeat", "asdf")//
             .addParam("adoray", "Luzern");
+        config.disableFailOnJsonSuccessFalse();
         addBasicParams(config);
         Page result = Interactor.performRequest(config);
         JSONAssert.assertEquals(ResourceLoader.loadTestData(), result.getWebResponse().getContentAsString(), false);
