@@ -11,7 +11,7 @@
 
 
 	<property name="refData.dir" value="refData" />
-	<property name="initSchemaPath" value="${refData.dir}/${db.name}_initSchema.sql" />
+	<property name="initSchemaPath" value="${refData.dir}/scotty-adoray-inttest.sql" />
 
 	<target name="backup_db">
 		<mkdir dir="${refData.dir}" />
@@ -23,6 +23,7 @@
 			<arg value="--user=${db.username}" />
 			<arg value="--password=${db.password}" />
 			<arg value="--host=${db.host}" />
+			<arg value="--port=${db.port}" />
 			<arg value="${db.name}" />
 		</exec>
 
@@ -34,6 +35,7 @@
 			<arg value="--user=${db.username}" />
 			<arg value="--password=${db.password}" />
 			<arg value="--host=${db.host}" />
+			<arg value="--port=${db.port}" />
 			<arg value="${db.name}" />
 		</exec>
 	</target>
@@ -42,6 +44,8 @@
 		<exec executable="${mysqladmin}">
 			<arg value="--user=${db.username}" />
 			<arg value="--password=${db.password}" />
+			<arg value="--host=${db.host}" />
+			<arg value="--port=${db.port}" />
 			<arg value="--force" />
 			<arg value="drop" />
 			<arg value="${db.name}" />
@@ -52,6 +56,8 @@
 		<exec executable="${mysqladmin}">
 			<arg value="--user=${db.username}" />
 			<arg value="--password=${db.password}" />
+			<arg value="--host=${db.host}" />
+			<arg value="--port=${db.port}" />
 			<arg value="--force" />
 			<arg value="create" />
 			<arg value="${db.name}" />

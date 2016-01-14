@@ -42,7 +42,7 @@ public class Configuration {
     }
 
     public String getConnectionString() {
-        String connectionString = "jdbc:mysql://" + configFile.getProperty("db.host") + "/"//
+        String connectionString = "jdbc:mysql://" + configFile.getProperty("db.host") + ":" + configFile.getProperty("db.port") + "/"//
             + configFile.getProperty("db.name") + "?"//
             + "user=" + configFile.getProperty("db.username") + "&"//
             + "password=" + configFile.getProperty("db.password") //
