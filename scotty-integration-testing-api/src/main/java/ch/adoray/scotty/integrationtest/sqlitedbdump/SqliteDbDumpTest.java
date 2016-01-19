@@ -1,14 +1,9 @@
 package ch.adoray.scotty.integrationtest.sqlitedbdump;
 
-import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.Map;
 
 import org.junit.Rule;
@@ -29,9 +24,10 @@ public class SqliteDbDumpTest {
         SqliteDatabaseAccess db = downloadDatabaseAndOpenConnection();
         // assert
         assertEqualAmountOfEntriesInTable(db, Tables.LIED);
-        assertEqualAmountOfEntriesInTable(db, Tables.FK_LIEDERBUCH_LIED);
+        // cannot count fk_liederbuch_lied because the data is enriched with all associations from the other songbooks
+        // assertEqualAmountOfEntriesInTable(db, Tables.FK_LIEDERBUCH_LIED);
         assertEqualAmountOfEntriesInTable(db, Tables.LANGUAGE);
-        assertEqualAmountOfEntriesInTable(db, Tables.LIEDERBUCH);
+        assertEqualAmountOfEntriesInTable(db, Tables.Liederbuch.TABLE);
         assertEqualAmountOfEntriesInTable(db, Tables.LIEDTEXT);
         assertEqualAmountOfEntriesInTable(db, Tables.REFRAIN);
         assertEqualAmountOfEntriesInTable(db, Tables.RUBRIK);
@@ -58,24 +54,9 @@ public class SqliteDbDumpTest {
     }
 
     private SqliteDatabaseAccess downloadDatabaseAndOpenConnection() {
-        File database = downloadDatabase();
+        File database = SqliteDatabaseDownloader.downloadDatabase(folder);
         SqliteDatabaseAccess db = new SqliteDatabaseAccess(database.getAbsolutePath());
         db.openConnection();
         return db;
-    }
-
-    private File downloadDatabase() {
-        try {
-            URL website = new URL(config().getSqliteDbDumpUrl());
-            System.out.println("Download DB from " + config().getSqliteDbDumpUrl());
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            File database = folder.newFile("adonai.sqlite");
-            try (FileOutputStream fos = new FileOutputStream(database)) {
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            }
-            return database;
-        } catch (Exception e) {
-            throw new RuntimeException("Error while downloading sqlite database.", e);
-        }
     }
 }

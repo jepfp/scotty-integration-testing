@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiederbuchHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedtextHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.RefrainHelper;
 public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFixture implements LiedContainingFixture {
@@ -43,11 +44,9 @@ public class LiedWithLiedtextsRefrainsAndNumbersInBookFixture extends AbstractFi
     }
 
     public void addTwoNumberInBookAssociations() {
-        final long dirSingenWir2Id = 2;
-        final long adonaiZugHeftId = 3;
-        long assocId = LiedHelper.addNumberInBookToLied(id, dirSingenWir2Id, "12");
+        long assocId = LiedHelper.addNumberInBookToLied(id, LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, "12");
         addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
-        assocId = LiedHelper.addNumberInBookToLied(id, adonaiZugHeftId, "102");
+        assocId = LiedHelper.addNumberInBookToLied(id, LiederbuchHelper.BOOKID_ADONAI_ZUG, "102");
         addTableIdTuple(Tables.FK_LIEDERBUCH_LIED, assocId);
     }
 

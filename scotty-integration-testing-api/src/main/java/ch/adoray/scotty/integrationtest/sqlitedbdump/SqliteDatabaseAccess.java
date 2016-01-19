@@ -48,7 +48,7 @@ public class SqliteDatabaseAccess {
         }
     }
 
-    private List<Map<String, String>> executeStatement(String sqlStatement) throws SQLException, ClassNotFoundException {
+    public List<Map<String, String>> executeStatement(String sqlStatement) {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>();
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -61,7 +61,9 @@ public class SqliteDatabaseAccess {
                 }
                 result.add(tuple);
             }
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("Error while executing the following statement against sqlite database: " + sqlStatement, e);
         }
-        return result;
     }
 }

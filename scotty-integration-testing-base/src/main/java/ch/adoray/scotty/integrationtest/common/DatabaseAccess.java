@@ -1,7 +1,6 @@
 package ch.adoray.scotty.integrationtest.common;
 
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
-import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +9,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 public class DatabaseAccess {
     // TODO: Database connection is not yet closed properly. Change.
@@ -73,12 +75,30 @@ public class DatabaseAccess {
         }
     }
 
+    public static List<Map<String, String>> selectAllFrom(String table) {
+        try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery("select * from " + table);) {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            List<Map<String, String>> results = new ArrayList<>();
+            int columnCount = metaData.getColumnCount();
+            while (resultSet.next()) {
+                Map<String, String> tuple = new HashMap<String, String>();
+                for (int i = 1; i <= columnCount; i++) {
+                    tuple.put(metaData.getColumnLabel(i), resultSet.getString(i));
+                }
+                results.add(tuple);
+            }
+            return results;
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException("Error while fetching reading all songbooks from database.", e);
+        }
+    }
+
     public static Map<String, String> executeUpdate(String sqlStatement) throws SQLException, ClassNotFoundException {
         try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             resultSet.last();
-            Map<String, String> tuple = new LinkedHashMap<String, String>();
+            Map<String, String> tuple = new HashMap<String, String>();
             for (int i = 1; i <= columnCount; i++) {
                 tuple.put(metaData.getColumnLabel(i), resultSet.getString(i));
             }

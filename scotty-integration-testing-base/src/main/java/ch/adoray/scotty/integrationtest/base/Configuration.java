@@ -30,7 +30,7 @@ public class Configuration {
     }
 
     public String getSqliteDbDumpUrl() {
-        return getBaseUrl() + "/src/sqlite-db.php";
+        return getBaseUrl() + "/src/sqlite-db.php?XDEBUG_SESSION_START=ECLIPSE_DBGP";
     }
 
     public String getLastUpdateUrl() {
