@@ -24,6 +24,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.Interactor.RpcInteractorConfiguration;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiederbuchHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdateAssertHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
@@ -193,6 +194,65 @@ public class LiedViewDAOTest {
     }
 
     @Test
+    public void update_changeExistingEntryToAlreadyExistingNumber_exception() throws JSONException, ClassNotFoundException, SQLException {
+        // arrange
+        String firstLiednr = "12";
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = createLiedWithNumber(firstLiednr);
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = createLiedWithNumber("12a");
+        // act
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture2.getId());
+        interactor.setFailOnJsonSuccessFalse(false);
+        RestResponse result = interactor//
+            .setField(LIEDNR_KEY, firstLiednr)//
+            .performRequestAsRestResponse();
+        // assert
+        assertFalse(result.isSuccess());
+        String expectedMessage = "Fehler im Feld Liednr: Die Nummer '12' ist in diesem Liederbuch bereits vergeben.";
+        assertEquals(expectedMessage, result.getMessage());
+        //clean up
+        liedFixture.cleanUp();
+        liedFixture2.cleanUp();
+    }
+
+    private LiedWithLiedtextsRefrainsAndNumbersInBookFixture createLiedWithNumber(String firstLiednr) {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), LiederbuchHelper.BOOKID_ADORAY_LIEDERBUCH, firstLiednr);
+        return liedFixture;
+    }
+
+    @Test
+    public void update_setNewNumberWhichAlreadyExists_exception() throws JSONException, ClassNotFoundException, SQLException {
+        // arrange
+        String firstLiednr = "12";
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = createLiedWithNumber(firstLiednr);
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        // act
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("liedView", liedFixture2.getLiedId());
+        interactor.setFailOnJsonSuccessFalse(false);
+        RestResponse result = interactor//
+            .setField(LIEDNR_KEY, firstLiednr)//
+            .performRequestAsRestResponse();
+        // assert
+        assertFalse(result.isSuccess());
+        String expectedMessage = "Fehler im Feld Liednr: Die Nummer '12' ist in diesem Liederbuch bereits vergeben.";
+        assertEquals(expectedMessage, result.getMessage());
+        //clean up
+        liedFixture.cleanUp();
+        liedFixture2.cleanUp();
+    }
+
+    @Test
+    public void update_updateNumberToTheSameNumber_success() throws JSONException, ClassNotFoundException, SQLException {
+        // arrange
+        String firstLiednr = "12";
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = createLiedWithNumber(firstLiednr);
+        // act
+        changeLiedNrAndAssertNr(liedFixture, firstLiednr);
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    @Test
     public void update_changeExistingEntrySetToNull_rowIsUpdated() throws JSONException, ClassNotFoundException, SQLException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
@@ -274,7 +334,7 @@ public class LiedViewDAOTest {
     @Test
     public void create_createNewNumber_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
-        String newLiedNr = "something new";
+        String newLiedNr = "9000";
         updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
     }
 

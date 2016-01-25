@@ -25,6 +25,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfiguratio
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
+import ch.adoray.scotty.integrationtest.common.entityhelper.LiederbuchHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper.LastUpdateAssertHelper;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
@@ -33,6 +34,8 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 public class NumberInBookDAOTest {
+    private static final String LIEDERBUCH_ID_KEY = "liederbuch_id";
+    private static final String LIED_ID_KEY = "lied_id";
     private final static String LIEDNR_KEY = "Liednr";
 
     @Test
@@ -41,7 +44,7 @@ public class NumberInBookDAOTest {
         // act
         InteractorConfigurationWithParams config = new InteractorConfigurationWithParams(config().getRestInterfaceUrl() + "/numberInBook");
         Map<String, String> filter = Maps.newHashMap();
-        filter.put("lied_id", "1");
+        filter.put(LIED_ID_KEY, "1");
         Helper.addFilterParameter(filter, config);
         Page result = Interactor.performRequest(config);
         // assert
@@ -63,7 +66,7 @@ public class NumberInBookDAOTest {
     // Adds the filter in the same way as ext js does: only the key is set without any "value" node.
     private void addFilterAsExtDoes(InteractorConfigurationWithParams config) {
         JSONArray filter = new JSONArray();
-        filter.put(new JSONObject(ImmutableMap.of("property", "lied_id")));
+        filter.put(new JSONObject(ImmutableMap.of("property", LIED_ID_KEY)));
         config.addParam("filter", filter.toString());
     }
 
@@ -95,7 +98,7 @@ public class NumberInBookDAOTest {
         //arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         //act
-        Page result = createNewNumberInBookAssociation(liedFixture);
+        Page result = createNewNumberInBookAssociation(liedFixture.getId(), LiederbuchHelper.BOOKID_ADONAI_ZUG, "8888");
         // assert
         String testData = removeIdAndLiedId(ResourceLoader.loadTestData());
         String content = result.getWebResponse().getContentAsString();
@@ -105,22 +108,17 @@ public class NumberInBookDAOTest {
         liedFixture.cleanUp();
     }
 
-    private Page createNewNumberInBookAssociation(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture) {
+    private Page createNewNumberInBookAssociation(long liedId, long liederbuchId, String liednr) {
         ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
-        String liedIdKey = "lied_id";
-        String liederbuchIdKey = "liederbuch_id";
-        String liednr = "8888";
-        String liedId = String.valueOf(liedFixture.getId());
-        String liederbuchId = "3";
         Page result = interactor.setField(LIEDNR_KEY, liednr)//
-            .setField(liedIdKey, liedId)//
-            .setField(liederbuchIdKey, liederbuchId)//
+            .setField(LIED_ID_KEY, String.valueOf(liedId))//
+            .setField(LIEDERBUCH_ID_KEY, String.valueOf(liederbuchId))//
             .performRequest();
         return result;
     }
 
     private String removeIdAndLiedId(String jsonString) {
-        return Helper.removeInDataNode(Helper.removeInDataNode(jsonString, "lied_id"), "id");
+        return Helper.removeInDataNode(Helper.removeInDataNode(jsonString, LIED_ID_KEY), "id");
     }
 
     private void assertDbLogEntry(long liedId) throws ClassNotFoundException, SQLException {
@@ -142,14 +140,10 @@ public class NumberInBookDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
-        Page result = interactor//
-            .setField(LIEDNR_KEY, neueLiedNr)//
-            .performRequest();
+        RestResponse result = performUpdateLiednrRequest(neueLiedNr, numberInBookIdToUpdate, true);
         // assert
-        RestResponse response = RestResponse.createFromResponse(result.getWebResponse().getContentAsString());
-        assertEquals(neueLiedNr, response.getDataValueByKeyFromFirst(LIEDNR_KEY));
+        assertEquals(neueLiedNr, result.getDataValueByKeyFromFirst(LIEDNR_KEY));
         assertUpdateDbLogEntry(numberInBookIdToUpdate, neueLiedNr);
         //clean up
         liedFixture.cleanUp();
@@ -169,21 +163,17 @@ public class NumberInBookDAOTest {
         changeLiedNrAndExpectError(neueLiedNr);
     }
 
-    private void changeLiedNrAndExpectError(String neueLiedNr) {
+    private RestResponse changeLiedNrAndExpectError(String neueLiedNr) {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
-        interactor.setThrowExceptionOnFailingStatusCode(false);
-        interactor.setFailOnJsonSuccessFalse(false);
         // act
-        RestResponse result = interactor//
-            .setField(LIEDNR_KEY, neueLiedNr)//
-            .performRequestAsRestResponse();
+        RestResponse result = performUpdateLiednrRequest(neueLiedNr, numberInBookIdToUpdate, false);
         // assert
         assertFalse(result.isSuccess());
         //clean up
         liedFixture.cleanUp();
+        return result;
     }
 
     @Test
@@ -219,9 +209,8 @@ public class NumberInBookDAOTest {
         liedFixture.addTwoNumberInBookAssociations();
         LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
         Long numberInBookIdToUpdate = liedFixture.getCreatedIdsByTable(Tables.FK_LIEDERBUCH_LIED).get(0);
-        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookIdToUpdate);
         // act
-        interactor.setField(LIEDNR_KEY, newLiedNr).performRequest();
+        performUpdateLiednrRequest(newLiedNr, numberInBookIdToUpdate, true);
         // assert
         lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
         //clean up
@@ -251,9 +240,83 @@ public class NumberInBookDAOTest {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         LastUpdateAssertHelper lastUpdateAssertHelper = new LiedHelper.LastUpdateAssertHelper(liedFixture.getId());
         // act
-        createNewNumberInBookAssociation(liedFixture);
+        createNewNumberInBookAssociation(liedFixture.getId(), LiederbuchHelper.BOOKID_ADONAI_ZUG, "8888");
         // assert
         lastUpdateAssertHelper.assertUpdatedAtChangedAndLastUserHasChangedToCurrentTestUser();
+        //clean up
+        liedFixture.cleanUp();
+    }
+
+    @Test
+    public void update_changeExistingEntryToNrWithSpaces_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        String neueLiedNr = "38 9";
+        RestResponse result = changeLiedNrAndExpectError(neueLiedNr);
+        // assert
+        String expectedMessage = "Fehler im Feld Liednr: Das Feld darf keine Leerzeichen enthalten.";
+        assertEquals(expectedMessage, result.getMessage());
+    }
+
+    @Test
+    public void update_changeExistingEntryToAlreadyExistingNumber_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String firstLiednr = "12";
+        LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, firstLiednr);
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        long numberInBookId = LiedHelper.addNumberInBookToLied(liedFixture2.getLiedId(), LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, "12a");
+        RestResponse result = performUpdateLiednrRequest(firstLiednr, numberInBookId, false);
+        // assert
+        assertFalse(result.isSuccess());
+        String expectedMessage = "Fehler im Feld Liednr: Die Nummer '12' ist in diesem Liederbuch bereits vergeben.";
+        assertEquals(expectedMessage, result.getMessage());
+        //clean up
+        liedFixture.cleanUp();
+        liedFixture2.cleanUp();
+    }
+
+    private RestResponse performUpdateLiednrRequest(String newLiednr, long numberInBookId, boolean failOnJsonSuccessFalse) {
+        ExtRestPUTInteractor interactor = new ExtRestPUTInteractor("numberInBook", numberInBookId);
+        interactor.setFailOnJsonSuccessFalse(failOnJsonSuccessFalse);
+        // act
+        RestResponse result = interactor//
+            .setField(LIEDNR_KEY, newLiednr)//
+            .performRequestAsRestResponse();
+        return result;
+    }
+
+    @Test
+    public void update_setNewNumberWhichAlreadyExists_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String firstLiednr = "12";
+        LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, firstLiednr);
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture2 = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        ExtRestPOSTInteractor interactor = new ExtRestPOSTInteractor("numberInBook");
+        interactor.setFailOnJsonSuccessFalse(false);
+        // act
+        RestResponse result = interactor//
+            .setField(LIEDNR_KEY, firstLiednr)//
+            .setField(LIED_ID_KEY, String.valueOf(liedFixture2.getLiedId()))//
+            .setField(LIEDERBUCH_ID_KEY, String.valueOf(LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2))//
+            .performRequestAsRestResponse();
+        // assert
+        assertFalse(result.isSuccess());
+        String expectedMessage = "Fehler im Feld Liednr: Die Nummer '12' ist in diesem Liederbuch bereits vergeben.";
+        assertEquals(expectedMessage, result.getMessage());
+        //clean up
+        liedFixture.cleanUp();
+        liedFixture2.cleanUp();
+    }
+
+    @Test
+    public void update_updateNumberToTheSameNumber_success() throws JSONException, ClassNotFoundException, SQLException {
+        // arrange
+        String firstLiednr = "12";
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedHelper.addNumberInBookToLied(liedFixture.getLiedId(), LiederbuchHelper.BOOKID_ADORAY_LIEDERBUCH, firstLiednr);
+        // act
+        performUpdateLiednrRequest(firstLiednr, LiederbuchHelper.BOOKID_ADORAY_LIEDERBUCH, false);
         //clean up
         liedFixture.cleanUp();
     }
