@@ -17,17 +17,35 @@ public class LiedViewMacros<T extends BaseSeleniumTest> {
     }
 
     public void openLiedFromQuicksearchResult(String songTitle) {
-        test.getDriver().manage().window().maximize();
-        searchAndAssertOneRow(songTitle);
+        performQuicksearch(songTitle);
         model.findViewportRows().get(0).click();
         TestUtils.waitToBeClickable(test.getDriver(), ViewportModel.EDIT_BUTTON_XPATH);
         model.findEditButton().click();
         TestUtils.waitToBeClickable(test.getDriver(), SongModel.SONG_LOADED_XPATH);
     }
 
+    public WebElement performQuicksearch(String songTitle) {
+        test.getDriver().manage().window().maximize();
+        searchAndAssertOneRow(songTitle);
+        return model.findViewportRows().get(0);
+    }
+
     private void searchAndAssertOneRow(String search) {
         WebElement quicksearchField = model.findQuicksearchField();
         quicksearchField.sendKeys(search);
         model.waitForAmountOfRowsInLiedView(1);
+    }
+
+    public void setNumberInSongbook(String liednr) {
+        WebElement inputField = model.findSongbookNumberEditFieldInFirstRow();
+        inputField.clear();
+        inputField.sendKeys(liednr);
+        inputField.sendKeys("\t");
+        clickInQuicksearchField();
+    }
+
+    public void clickInQuicksearchField() {
+        WebElement quicksearchField = model.findQuicksearchField();
+        quicksearchField.click();
     }
 }

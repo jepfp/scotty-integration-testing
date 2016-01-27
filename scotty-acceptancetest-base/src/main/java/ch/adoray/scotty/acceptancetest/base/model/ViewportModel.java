@@ -5,6 +5,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.appfoundation.automation.framework.BaseModel;
@@ -39,8 +40,24 @@ public class ViewportModel extends BaseModel {
             }
         });
     }
-    
+
     public WebElement findEditButton() {
         return this.find(EDIT_BUTTON_XPATH);
+    }
+
+    public WebElement findSongbookNumberEditFieldInFirstRow() {
+        int columnOfLiednr = 1;
+        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(1, columnOfLiednr, LIED_VIEW_TITLE);
+        WebElement cell = findElement(xpath);
+        cell.click();
+        String xpathInputField = XPathUtils.findInputByName("Liednr");
+        WebElement inputField = findElement(xpathInputField);
+        return inputField;
+    }
+
+    private WebElement findElement(String xpath) {
+        WebElement element = (new WebDriverWait(this.getTest().getDriver(), 2)) //
+            .until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
+        return element;
     }
 }

@@ -1,5 +1,8 @@
 package ch.adoray.scotty.acceptancetest.base.model;
 
+import java.util.List;
+
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.appfoundation.automation.framework.BaseModel;
@@ -36,8 +39,8 @@ public class SongModel extends BaseModel {
     public WebElement findSongsheetNoSongsheetAvailable() {
         return this.find(SONGSHEET_NO_SONGSHEET_AVAILABLE_XPATH);
     }
-    
-    public WebElement findSongsheetUploadFileField(){
+
+    public WebElement findSongsheetUploadFileField() {
         return this.find(SONGSHEET_UPLOAD_FILE_FIELD);
     }
 
@@ -51,5 +54,11 @@ public class SongModel extends BaseModel {
 
     public WebElement findNoButtonInMessageBox() {
         return this.find(NO_BUTTON_IN_MESSAGE_BOX_XPATH);
+    }
+
+    public WebElement findSongbookNumberCellByRowNr(int rowNr) {
+        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(rowNr, 2, "");
+        System.out.println("xpath: " + xpath);
+        return this.getTest().getDriver().findElement(By.xpath(xpath));
     }
 }
