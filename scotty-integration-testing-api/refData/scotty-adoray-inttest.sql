@@ -1,8 +1,8 @@
--- MySQL dump 10.16  Distrib 10.1.9-MariaDB, for Win32 (AMD64)
+-- MySQL dump 10.16  Distrib 10.1.13-MariaDB, for Win32 (AMD64)
 --
 -- Host: localhost    Database: dockerdefault
 -- ------------------------------------------------------
--- Server version	10.1.9-MariaDB
+-- Server version	10.1.13-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -79,7 +79,8 @@ CREATE TABLE `filemetadata` (
   `lied_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fkLied_idx` (`lied_id`),
-  CONSTRAINT `filemetadata_ibfk_1` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `filemetadata_ibfk_1` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fkFilemetadataLied` FOREIGN KEY (`lied_id`) REFERENCES `lied` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -513,7 +514,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100020');
+INSERT INTO `settings` (`key`, `value`) VALUES ('database.schema.version','100021');
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -620,4 +621,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-01-13 18:30:40
+-- Dump completed on 2016-08-08  6:54:14
