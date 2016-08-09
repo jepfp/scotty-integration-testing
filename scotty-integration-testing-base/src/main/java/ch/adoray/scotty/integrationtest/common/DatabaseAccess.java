@@ -40,11 +40,15 @@ public class DatabaseAccess {
     }
 
     public static Map<String, String> getRecordById(String table, long id) {
+        return getRecordByColumnAndId(table, "id", id);
+    }
+    
+    public static Map<String, String> getRecordByColumnAndId(String table, String column, long id) {
         try {
-            String sqlStatement = "select * from " + table + " where id = " + id;
+            String sqlStatement = "select * from " + table + " where " + column + " = " + id;
             return executeStatementAndReturnLastResult(sqlStatement);
         } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException("Error while determining record with id " + id + " from table " + table + ".", e);
+            throw new RuntimeException("Error while determining record with " + column + "=" + id + " from table " + table + ".", e);
         }
     }
 

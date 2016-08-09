@@ -9,14 +9,22 @@ public class Tables {
     public static final String LOGGING = "logging";
     public static final String FK_LIEDERBUCH_LIED = "fkliederbuchlied";
     public static final String RUBRIK = "rubrik";
-    public static final String FILE = "file";
-    public static final String FILE_METADATA = "filemetadata";
 
     public class FkLiederbuchLied {
         public static final String TABLE = "fkliederbuchlied";
         public static final String LIEDNR = "Liednr";
         public static final String LIEDERBUCH_ID = "liederbuch_id";
         public static final String LIED_ID = "lied_id";
+    }
+    
+    public class FileMetadata {
+        public static final String TABLE = "filemetadata";
+        public static final String LIED_ID = "lied_id";
+    }
+    
+    public class File {
+        public static final String TABLE = "file";
+        public static final String LIED_ID = "filemetadata_id";
     }
 
     public class Liederbuch {

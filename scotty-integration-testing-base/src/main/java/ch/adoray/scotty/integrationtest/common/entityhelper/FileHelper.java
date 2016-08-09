@@ -51,8 +51,8 @@ public class FileHelper {
         }
     }
 
-    public static void readFileById(long id, Path path) {
-        String sqlStatement = "SELECT data FROM " + Tables.FILE + " WHERE id = " + id;
+    public static void readFileByIdAndSaveTo(long id, Path path) {
+        String sqlStatement = "SELECT data FROM " + Tables.File.TABLE + " WHERE id = " + id;
         try (PreparedStatement statement = DatabaseAccess.prepareStatement(sqlStatement); ResultSet resultSet = statement.executeQuery();) {
             if (!resultSet.next()) {
                 throw new RuntimeException("DB record with id " + id + " not found. Statement: " + sqlStatement);

@@ -50,7 +50,7 @@ public class FileDAOTest {
         fileFixture.create();
         // assert
         Path actualFilePath = Paths.get(testFolder.getRoot().getAbsolutePath(), "fileFromDb.pdf");
-        FileHelper.readFileById(fileFixture.getId(), actualFilePath);
+        FileHelper.readFileByIdAndSaveTo(fileFixture.getId(), actualFilePath);
         assertTrue(FileUtils.contentEquals(new File(fileFixture.getPdfResourcePath()), new File(actualFilePath.toUri())));
         // clean up
         fileFixture.cleanUp();

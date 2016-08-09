@@ -47,9 +47,9 @@ public class FileFixture extends AbstractFixture implements LiedContainingFixtur
 
     private void createFile() throws SQLException, ClassNotFoundException {
         fileMetadataId = FileMetadataHelper.createDummyFileMetadata(liedId);
-        addTableIdTuple(Tables.FILE_METADATA, fileMetadataId);
+        addTableIdTuple(Tables.FileMetadata.TABLE, fileMetadataId);
         id =  FileHelper.createDummyFile(fileMetadataId, pdfResourceName);
-        addTableIdTuple(Tables.FILE, getId());
+        addTableIdTuple(Tables.File.TABLE, getId());
     }
 
     @Override

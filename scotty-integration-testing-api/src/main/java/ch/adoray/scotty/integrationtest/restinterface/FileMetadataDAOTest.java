@@ -2,8 +2,11 @@ package ch.adoray.scotty.integrationtest.restinterface;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
+import ch.adoray.scotty.integrationtest.common.ExtRestDeleteInteractor;
 import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
@@ -16,7 +19,7 @@ public class FileMetadataDAOTest extends AbstractSongBelongingDAOTest<FileFixtur
 
     @Override
     String getTable() {
-        return Tables.FILE_METADATA;
+        return Tables.FileMetadata.TABLE;
     }
 
     @Override
@@ -43,5 +46,29 @@ public class FileMetadataDAOTest extends AbstractSongBelongingDAOTest<FileFixtur
         // clean up
         fileFixture.cleanUp();
         fileFixtureAdditional.cleanUp();
+    }
+    
+    @Test
+    public void destroyLied_liedHasSongsheet_fileMetadataAndFileAreDeletedToo() throws Exception {
+        // arrange
+        FileFixture fileFixture = FileFixture.setupAndCreate();
+        ExtRestDeleteInteractor interactor = new ExtRestDeleteInteractor("lied", fileFixture.getLiedId());
+        assertFileAndFileMetadataPresent(fileFixture.getFileMetadataId(), fileFixture.getId());
+        // act
+        interactor.performRequestAsRestResponse();
+        // assert
+        assertFileAndFileMetadataNotPresent(fileFixture.getFileMetadataId(), fileFixture.getId());
+        // clean up
+        fileFixture.cleanUp();
+    }
+
+    private void assertFileAndFileMetadataPresent(long fileMetadataId, Long fileId) {
+        Assert.assertNotNull(DatabaseAccess.getRecordById(Tables.FileMetadata.TABLE, fileMetadataId));
+        Assert.assertNotNull(DatabaseAccess.getRecordById(Tables.File.TABLE, fileId));
+    }
+    
+    private void assertFileAndFileMetadataNotPresent(long fileMetadataId, Long fileId) {
+        Assert.assertNull(DatabaseAccess.getRecordById(Tables.FileMetadata.TABLE, fileMetadataId));
+        Assert.assertNull(DatabaseAccess.getRecordById(Tables.File.TABLE, fileId));
     }
 }
