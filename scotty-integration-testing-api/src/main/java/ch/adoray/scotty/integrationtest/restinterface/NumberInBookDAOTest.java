@@ -9,9 +9,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONParser;
@@ -199,7 +202,7 @@ public class NumberInBookDAOTest {
 
     @Test
     public void update_updateNumberToFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
-        String newLiedNr = "foo";
+        String newLiedNr = "1foo";
         updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
     }
 
@@ -255,6 +258,16 @@ public class NumberInBookDAOTest {
         // assert
         String expectedMessage = "Fehler im Feld Liednr: Das Feld darf keine Leerzeichen enthalten.";
         assertEquals(expectedMessage, result.getMessage());
+    }
+    
+    @Test
+    public void update_changeExistingEntryToNrWithBeginningCharacter_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        String neueLiedNr = "Lu29";
+        RestResponse result = changeLiedNrAndExpectError(neueLiedNr);
+        // assert
+        String expectedMessagePart = "Die Liednummer muss mit einer Zahl beginnen.";
+        Assert.assertThat(result.getMessage(), CoreMatchers.containsString(expectedMessagePart));
     }
 
     @Test

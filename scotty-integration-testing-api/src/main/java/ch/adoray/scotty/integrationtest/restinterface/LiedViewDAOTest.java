@@ -309,7 +309,7 @@ public class LiedViewDAOTest {
     public void update_updateNumberToFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         liedFixture.addTwoNumberInBookAssociations();
-        String newLiedNr = "foo";
+        String newLiedNr = "1foo";
         updateLiedNrAndAssertUpdatedAtOnLied(liedFixture, newLiedNr);
     }
 
