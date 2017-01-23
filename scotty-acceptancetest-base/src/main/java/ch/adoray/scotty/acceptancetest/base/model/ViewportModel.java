@@ -15,7 +15,7 @@ import com.appfoundation.automation.util.XPathUtils;
 import com.google.common.base.Predicate;
 public class ViewportModel extends BaseModel {
     public static final String QUICKSEARCH_XPATH = XPathUtils.findInputByName("quicksearch");
-    public static final String LIED_VIEW_TITLE = "Integration-Testing Scotty Project - Willkommen Correct";
+    public static final String LIED_VIEW_TITLE = "Integration-Testing Scotty Project - Willkommen Correct-Hans";
     public static final String EDIT_BUTTON_XPATH = ExtJs5XPathUtils.findButtonByText("Bearbeiten");
 
     public ViewportModel(BaseSeleniumTest test) {
@@ -28,7 +28,8 @@ public class ViewportModel extends BaseModel {
 
     public List<WebElement> findViewportRows() {
         String xpath = ExtJs5XPathUtils.findRowsInGridByHeaderText(LIED_VIEW_TITLE);
-        return this.getTest().getDriver().findElements(By.xpath(xpath));
+        List<WebElement> elements = this.getTest().getDriver().findElements(By.xpath(xpath));
+        return elements;
     }
 
     public void waitForAmountOfRowsInLiedView(int amountOfRows) {

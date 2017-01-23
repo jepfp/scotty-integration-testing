@@ -41,7 +41,6 @@ public class LiedViewMacros<T extends BaseSeleniumTest> {
         inputField.clear();
         inputField.sendKeys(liednr);
         inputField.sendKeys("\t");
-        clickInQuicksearchField();
     }
 
     public void clickInQuicksearchField() {

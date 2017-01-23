@@ -3,6 +3,8 @@ package ch.adoray.scotty.acceptancetest.modifying;
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
@@ -36,7 +38,7 @@ public class QuicksearchTest extends BaseSeleniumTest {
         logInMacros.login(config().getTesterEmail(), config().getTesterPassword());
         // act
         String songTitle = "Bless the Lord my Soul";
-        assertEquals(4, viewportModel.findViewportRows().size());
+        viewportModel.waitForAmountOfRowsInLiedView(4);
         liedViewMacros.openLiedFromQuicksearchResult(songTitle);
         // assert
         assertEquals(songTitle, songModel.findTitelField().getAttribute("value"));
