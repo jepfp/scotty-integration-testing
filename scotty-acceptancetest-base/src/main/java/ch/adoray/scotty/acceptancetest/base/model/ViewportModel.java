@@ -17,6 +17,7 @@ public class ViewportModel extends BaseModel {
     public static final String QUICKSEARCH_XPATH = XPathUtils.findInputByName("quicksearch");
     public static final String LIED_VIEW_TITLE = "Integration-Testing Scotty Project - Willkommen Correct-Hans";
     public static final String EDIT_BUTTON_XPATH = ExtJs5XPathUtils.findButtonByText("Bearbeiten");
+    public static final String ADD_BUTTON_XPATH = ExtJs5XPathUtils.findButtonByText("Hinzufügen");
 
     public ViewportModel(BaseSeleniumTest test) {
         super(test);
@@ -44,6 +45,10 @@ public class ViewportModel extends BaseModel {
 
     public WebElement findEditButton() {
         return this.find(EDIT_BUTTON_XPATH);
+    }
+    
+    public WebElement findAddButton() {
+        return this.find(ADD_BUTTON_XPATH);
     }
 
     public WebElement findSongbookNumberEditFieldInFirstRow() {

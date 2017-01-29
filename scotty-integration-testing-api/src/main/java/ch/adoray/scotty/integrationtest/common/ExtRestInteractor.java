@@ -9,7 +9,6 @@ import java.util.Optional;
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
 
 import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -90,7 +89,7 @@ abstract class ExtRestInteractor {
     public void setThrowExceptionOnFailingStatusCode(boolean value) {
         this.throwExceptionOnFailingStatusCode = value;
     }
-    
+
     public void setFailOnUnparsableJson(boolean value) {
         this.failOnUnparsableJson = value;
     }

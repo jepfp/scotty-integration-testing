@@ -1,17 +1,19 @@
 package ch.adoray.scotty.acceptancetest.base.model;
 
-import java.util.List;
-
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.appfoundation.automation.framework.BaseModel;
 import com.appfoundation.automation.framework.BaseSeleniumTest;
 import com.appfoundation.automation.util.ExtJs5XPathUtils;
 import com.appfoundation.automation.util.XPathUtils;
+
+import ch.adoray.scotty.acceptancetest.base.util.AwaitFinder;
 public class SongModel extends BaseModel {
     public static final String TITEL_XPATH = XPathUtils.findInputByName("Titel");
+    public static final String TONALITY_XPATH = ExtJs5XPathUtils.findComboBoxButtonByFormLabel("Tonart:");
+    public static final String RUBRIK_XPATH = ExtJs5XPathUtils.findComboBoxButtonByFormLabel("Rubrik:");
     public static final String SONG_LOADED_XPATH = XPathUtils.findDivByText("Lied vollständig geladen.");
+    public static final String SONG_SAVED_XPATH = XPathUtils.findDivByText("Änderungen am Lied gespeichert.");
     public static final String SONGSHEET_DELETED_XPATH = XPathUtils.findDivByText("Noten gelöscht.");
     public static final String SONGSHEET_DOWNLOAD_LINK_XPATH = XPathUtils.findLinkByText("Noten anzeigen.");
     public static final String SONGSHEET_NO_SONGSHEET_AVAILABLE_XPATH = XPathUtils.findDivByText("keine Noten vorhanden");
@@ -27,6 +29,10 @@ public class SongModel extends BaseModel {
     public WebElement findTitelField() {
         return this.find(TITEL_XPATH);
     }
+    
+    public WebElement findTonalityComboBox() {
+        return this.find(TONALITY_XPATH);
+    }
 
     public WebElement findSongLoadedDiv() {
         return this.find(SONG_LOADED_XPATH);
@@ -36,7 +42,7 @@ public class SongModel extends BaseModel {
         return this.find(SONGSHEET_DOWNLOAD_LINK_XPATH);
     }
 
-    public WebElement findSongsheetNoSongsheetAvailable() {
+    public WebElement findNoSongsheetAvailable() {
         return this.find(SONGSHEET_NO_SONGSHEET_AVAILABLE_XPATH);
     }
 
@@ -57,8 +63,41 @@ public class SongModel extends BaseModel {
     }
 
     public WebElement findSongbookNumberCellByRowNr(int rowNr) {
-        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(rowNr, 2, "");
-        System.out.println("xpath: " + xpath);
-        return this.getTest().getDriver().findElement(By.xpath(xpath));
+        String headerTextOfSongbookNumberGrid = ""; //empty because it has no title
+        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(rowNr, 2, headerTextOfSongbookNumberGrid);
+        return findElement(xpath);
+    }
+
+    public WebElement findSongbookNumberEditFieldByRowNr(int rowNr) {
+        String headerTextOfSongbookNumberGrid = ""; //empty because it has no title
+        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(rowNr, 2, headerTextOfSongbookNumberGrid);
+        WebElement cell = findElement(xpath);
+        cell.click();
+        String xpathInputField = XPathUtils.findInputByName("Liednr");
+        WebElement inputField = findElement(xpathInputField);
+        return inputField;
+    }
+
+    public WebElement findSpeichernButton() {
+        String xpath = ExtJs5XPathUtils.findButtonByText("Speichern");
+        return findElement(xpath);
+    }
+
+    private WebElement findElement(String xpath) {
+        return AwaitFinder.awaitFindElement(this.getTest().getDriver(), xpath);
+    }
+
+    public WebElement waitAndFindMessageBoxWithOkButton() {
+        WebElement button = findElement(ExtJs5XPathUtils.findMessageBoxButtonByText("OK"));
+        return button;
+    }
+
+    public String readMessageBoxBodyTextOfOpenMessageBox() {
+        WebElement body = findElement(ExtJs5XPathUtils.findMessageBoxBody());
+        return body.getText();
+    }
+
+    public WebElement findRubrikComboBox() {
+        return this.find(RUBRIK_XPATH);
     }
 }

@@ -1,5 +1,7 @@
 package ch.adoray.scotty.acceptancetest.base.macros;
 
+import static ch.adoray.scotty.integrationtest.base.Configuration.config;
+
 import org.openqa.selenium.WebElement;
 
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
@@ -26,5 +28,9 @@ public class LogInScreenMacros<T extends BaseSeleniumTest> {
         WebElement loginButton = model.findLogInButton();
         loginButton.click();
         TestUtils.waitToBeClickable(test.getDriver(), ViewportModel.QUICKSEARCH_XPATH);
+    }
+    
+    public void loginWithDefaults(){
+        login(config().getTesterEmail(), config().getTesterPassword());
     }
 }

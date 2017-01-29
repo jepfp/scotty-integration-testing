@@ -23,6 +23,11 @@ public class LiedViewMacros<T extends BaseSeleniumTest> {
         model.findEditButton().click();
         TestUtils.waitToBeClickable(test.getDriver(), SongModel.SONG_LOADED_XPATH);
     }
+    
+    public void addNewSong() {
+        model.findAddButton().click();
+        TestUtils.waitToBeClickable(test.getDriver(), SongModel.SONG_LOADED_XPATH);
+    }
 
     public WebElement performQuicksearch(String songTitle) {
         test.getDriver().manage().window().maximize();

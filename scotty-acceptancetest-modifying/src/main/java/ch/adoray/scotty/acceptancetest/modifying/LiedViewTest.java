@@ -4,29 +4,26 @@ import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 
 import org.junit.Test;
 
+import com.appfoundation.automation.framework.BaseSeleniumTest;
+
 import ch.adoray.scotty.acceptancetest.base.macros.LiedViewMacros;
 import ch.adoray.scotty.acceptancetest.base.macros.LogInScreenMacros;
 import ch.adoray.scotty.acceptancetest.base.macros.MessageBoxMacros;
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
-import ch.adoray.scotty.acceptancetest.base.model.SongPropertiesModel;
 import ch.adoray.scotty.acceptancetest.base.model.ViewportModel;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiederbuchHelper;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
-
-import com.appfoundation.automation.framework.BaseSeleniumTest;
 public class LiedViewTest extends BaseSeleniumTest {
     private final LogInScreenModel logInScreenModel;
     private final ViewportModel viewportModel;
     private final LogInScreenMacros<LiedViewTest> logInMacros;
     private final LiedViewMacros<LiedViewTest> liedViewMacros;
-    private SongPropertiesModel songPropertiesModel;
     private MessageBoxMacros<BaseSeleniumTest> messageBoxMacros;
 
     public LiedViewTest() {
         this.logInScreenModel = new LogInScreenModel(this);
         this.viewportModel = new ViewportModel(this);
-        this.songPropertiesModel = new SongPropertiesModel(this);
         this.logInMacros = new LogInScreenMacros<LiedViewTest>(this, logInScreenModel);
         this.liedViewMacros = new LiedViewMacros<LiedViewTest>(this, viewportModel);
         messageBoxMacros = new MessageBoxMacros<BaseSeleniumTest>(this);

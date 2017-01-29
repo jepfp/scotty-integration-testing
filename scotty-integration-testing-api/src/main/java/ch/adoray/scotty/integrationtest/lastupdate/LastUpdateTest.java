@@ -1,26 +1,13 @@
 package ch.adoray.scotty.integrationtest.lastupdate;
 
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.time.LocalDateTime;
-import java.util.Map;
-
 import org.apache.commons.io.IOUtils;
-import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.ExtRestDeleteInteractor;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.common.entityhelper.LiedHelper;

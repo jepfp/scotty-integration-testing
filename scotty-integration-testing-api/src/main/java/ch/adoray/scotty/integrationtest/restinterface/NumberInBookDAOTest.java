@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -13,9 +13,7 @@ import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.ResourceLoader;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class AuthTest {
 	@Test

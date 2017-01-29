@@ -7,7 +7,7 @@
 		<version>0.0.1-SNAPSHOT</version>
     </parent>
 	<artifactId>scotty-acceptancetest-base</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>scotty-acceptancetest-base</name>
 

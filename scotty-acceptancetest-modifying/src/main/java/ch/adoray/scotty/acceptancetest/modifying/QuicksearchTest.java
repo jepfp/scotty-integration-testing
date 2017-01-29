@@ -3,11 +3,7 @@ package ch.adoray.scotty.acceptancetest.modifying;
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import org.junit.Test;
-import org.openqa.selenium.WebElement;
-
 import ch.adoray.scotty.acceptancetest.base.macros.LiedViewMacros;
 import ch.adoray.scotty.acceptancetest.base.macros.LogInScreenMacros;
 import ch.adoray.scotty.acceptancetest.base.model.LogInScreenModel;
@@ -15,7 +11,6 @@ import ch.adoray.scotty.acceptancetest.base.model.SongModel;
 import ch.adoray.scotty.acceptancetest.base.model.ViewportModel;
 
 import com.appfoundation.automation.framework.BaseSeleniumTest;
-import com.appfoundation.automation.util.XPathUtils;
 public class QuicksearchTest extends BaseSeleniumTest {
     private final LogInScreenModel logInScreenModel;
     private final ViewportModel viewportModel;

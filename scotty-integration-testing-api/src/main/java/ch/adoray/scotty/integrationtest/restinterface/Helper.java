@@ -14,7 +14,6 @@ import ch.adoray.scotty.integrationtest.common.Interactor;
 import ch.adoray.scotty.integrationtest.common.Interactor.InteractorConfigurationWithParams;
 import ch.adoray.scotty.integrationtest.common.entityhelper.UserHelper;
 
-import com.gargoylesoftware.htmlunit.JavaScriptPage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
