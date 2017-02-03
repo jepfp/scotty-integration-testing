@@ -200,7 +200,7 @@ public class NumberInBookDAOTest {
     }
 
     @Test
-    public void update_updateNumberToFoo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
+    public void update_updateNumberTo1Foo_updatedAtAndLastEditUserIdOfLiedChanged() throws JSONException, ClassNotFoundException, SQLException, IOException {
         String newLiedNr = "1foo";
         updateLiedNrAndAssertUpdatedAtOnLied(newLiedNr);
     }
@@ -266,6 +266,16 @@ public class NumberInBookDAOTest {
         RestResponse result = changeLiedNrAndExpectError(neueLiedNr);
         // assert
         String expectedMessagePart = "Die Liednummer muss mit einer Zahl beginnen.";
+        Assert.assertThat(result.getMessage(), CoreMatchers.containsString(expectedMessagePart));
+    }
+    
+    @Test
+    public void update_changeExistingEntryToNrWithBeginning0_exception() throws JSONException, ClassNotFoundException, SQLException, IOException {
+        // arrange
+        String neueLiedNr = "029";
+        RestResponse result = changeLiedNrAndExpectError(neueLiedNr);
+        // assert
+        String expectedMessagePart = "Die Liednummer darf nicht mit einer 0 beginnen.";
         Assert.assertThat(result.getMessage(), CoreMatchers.containsString(expectedMessagePart));
     }
 
