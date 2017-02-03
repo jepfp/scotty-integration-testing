@@ -68,9 +68,9 @@ public class SongModel extends BaseModel {
         return findElement(xpath);
     }
 
-    public WebElement findSongbookNumberEditFieldByRowNr(int rowNr) {
+    public WebElement findSongbookNumberEditFieldByRowNr(long rowNr) {
         String headerTextOfSongbookNumberGrid = ""; //empty because it has no title
-        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText(rowNr, 2, headerTextOfSongbookNumberGrid);
+        String xpath = ExtJs5XPathUtils.findCellByRowAndColumnInGridByHeaderText((int) rowNr, 2, headerTextOfSongbookNumberGrid);
         WebElement cell = findElement(xpath);
         cell.click();
         String xpathInputField = XPathUtils.findInputByName("Liednr");

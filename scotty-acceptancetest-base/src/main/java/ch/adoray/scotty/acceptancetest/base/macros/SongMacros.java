@@ -14,7 +14,7 @@ public class SongMacros<T extends BaseSeleniumTest> {
         this.model = model;
     }
 
-    public void setNumberInSongbook(int songbookRowId, String liednr) {
+    public void setNumberInSongbook(long songbookRowId, String liednr) {
         WebElement inputField = model.findSongbookNumberEditFieldByRowNr(songbookRowId);
         inputField.clear();
         inputField.sendKeys(liednr);
@@ -33,6 +33,13 @@ public class SongMacros<T extends BaseSeleniumTest> {
         String xPath = ExtJs5XPathUtils.findComboBoxItemByRow(row);
         model.find(xPath).click();
         waitUntilComboBoxDoesNotExist();
+    }
+    
+    public void setTitel(String newTitel){
+        WebElement field = model.findTitelField();
+        field.click();
+        field.clear();
+        field.sendKeys(newTitel);
     }
 
     private void waitUntilComboBoxExists() {
@@ -57,6 +64,5 @@ public class SongMacros<T extends BaseSeleniumTest> {
         String xPath = ExtJs5XPathUtils.findComboBoxItemByRow(row);
         model.find(xPath).click();
         waitUntilComboBoxDoesNotExist();
-        
     }
 }

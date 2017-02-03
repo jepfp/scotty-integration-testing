@@ -1,6 +1,7 @@
 package ch.adoray.scotty.acceptancetest.modifying;
 
 import static ch.adoray.scotty.integrationtest.base.Configuration.config;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -38,6 +39,44 @@ public class SongPropertiesTest extends BaseSeleniumTest {
     }
 
     @Test
+    public void lied_changeTitelAndLiednr_happyCase() {
+        // arrange
+        String oldLiednr = "15a";
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture = setupFixtureWithLiedNr(LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, oldLiednr);
+        String newLiedNr = "15b";
+        String newTitel = "changed Lied-Titel";
+        openSong(fixture);
+        // act
+        songMacros.setNumberInSongbook(LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2, newLiedNr);
+        songMacros.setTitel(newTitel);
+        songMacros.saveSong();
+        // assert
+        reopenSongWithNewTitel(newTitel);
+        WebElement songNumberInputField = songModel.findSongbookNumberEditFieldByRowNr(LiederbuchHelper.BOOKID_DIR_SINGEN_WIR2);
+        assertEquals(newLiedNr, songNumberInputField.getAttribute("value"));
+        // clean up
+        fixture.cleanUp();
+    }
+
+    private void openSong(LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture) {
+        driver.get(config().getBaseUrl());
+        logInMacros.loginWithDefaults();
+        liedViewMacros.openLiedFromQuicksearchResult(fixture.getTitel());
+    }
+
+    private LiedWithLiedtextsRefrainsAndNumbersInBookFixture setupFixtureWithLiedNr(long liederbuchId, String liedNr) {
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        LiedHelper.addNumberInBookToLied(fixture.getLiedId(), liederbuchId, liedNr);
+        return fixture;
+    }
+
+    private void reopenSongWithNewTitel(String newTitel) {
+        this.driver.navigate().refresh();
+        TestUtils.waitToBeClickable(getDriver(), ViewportModel.QUICKSEARCH_XPATH);
+        liedViewMacros.openLiedFromQuicksearchResult(newTitel);
+    }
+
+    @Test
     public void lied_changeLiednrToNrWithSpaces_exception() {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture fixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
@@ -54,7 +93,7 @@ public class SongPropertiesTest extends BaseSeleniumTest {
         // clean up
         fixture.cleanUp();
     }
-    
+
     private void clickSave() {
         WebElement button = songModel.findSpeichernButton();
         button.click();

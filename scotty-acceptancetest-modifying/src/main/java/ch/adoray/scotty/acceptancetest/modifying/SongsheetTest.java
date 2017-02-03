@@ -123,7 +123,7 @@ public class SongsheetTest extends BaseSeleniumTest {
     }
 
     private void setSomePropertiesAndSaveSong(String songTitle) {
-        songModel.findTitelField().sendKeys(songTitle);
+        songMacros.setTitel(songTitle);
         songMacros.selectTonality(2);
         songMacros.selectRubrik(1);
         songMacros.saveSong();
