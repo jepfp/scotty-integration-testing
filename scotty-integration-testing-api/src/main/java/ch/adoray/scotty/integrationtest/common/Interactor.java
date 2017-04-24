@@ -32,6 +32,7 @@ public class Interactor {
             doLogin();
         }
         webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setUseInsecureSSL(true);
         return webClient;
     }
 
