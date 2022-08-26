@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.json.JSONException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,10 +52,11 @@ public class LiedDAOTest {
         assertNull("Record must not be found", record);
     }
 
+    //to make sure this works, check php.ini: date.timezone=Europe/Berlin
     @Test
     public void insertLied_creating_triggerSetsCreatedAt() throws JSONException, ClassNotFoundException, SQLException {
         //arrange
-        Date testStartTime = new Date();
+        Date testStartTime = DateUtils.addSeconds(new Date(),-5); //-5s to make sure its before
         // act
         long idCreatedRow = LiedHelper.createDummyLied("Dummy-Lied");
         // assert
@@ -84,7 +86,7 @@ public class LiedDAOTest {
 
     private void assertCreatedAtAfterOrEqualsTestStartTime(Date createdAt, Date testStartTime) {
         int compareResult = createdAt.compareTo(testStartTime);
-        assert (compareResult >= 0);
+        assertTrue("createdAt=" + createdAt + " testStartTime=" + testStartTime + " compareResult=" + compareResult, compareResult >= 0);
     }
 
     @Test

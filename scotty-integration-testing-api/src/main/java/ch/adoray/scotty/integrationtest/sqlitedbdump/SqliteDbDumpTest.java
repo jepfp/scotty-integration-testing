@@ -13,6 +13,8 @@ import org.junit.rules.TemporaryFolder;
 import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
 import ch.adoray.scotty.integrationtest.common.Tables;
 import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
+
+//Make sure sqlite extension is activated in php.ini
 public class SqliteDbDumpTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();

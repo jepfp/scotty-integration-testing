@@ -1,17 +1,14 @@
 package ch.adoray.scotty.integrationtest.restinterface;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.Map;
-
+import ch.adoray.scotty.integrationtest.common.*;
+import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
+import ch.adoray.scotty.integrationtest.common.response.RestResponse;
+import ch.adoray.scotty.integrationtest.fixture.FileFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedContainingFixture;
+import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.UnexpectedPage;
+import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
@@ -21,20 +18,26 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import ch.adoray.scotty.integrationtest.common.DatabaseAccess;
-import ch.adoray.scotty.integrationtest.common.ExtRestGETInteractor;
-import ch.adoray.scotty.integrationtest.common.ExtRestMultipartFormPostInteractor;
-import ch.adoray.scotty.integrationtest.common.ResourceLoader;
-import ch.adoray.scotty.integrationtest.common.Tables;
-import ch.adoray.scotty.integrationtest.common.entityhelper.FileHelper;
-import ch.adoray.scotty.integrationtest.common.response.RestResponse;
-import ch.adoray.scotty.integrationtest.fixture.FileFixture;
-import ch.adoray.scotty.integrationtest.fixture.LiedContainingFixture;
-import ch.adoray.scotty.integrationtest.fixture.LiedWithLiedtextsRefrainsAndNumbersInBookFixture;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.Map;
 
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.UnexpectedPage;
-import com.gargoylesoftware.htmlunit.util.KeyDataPair;
+import static org.junit.Assert.*;
+
+/**
+ * This should work. If not make sure that mysql is configured:
+ * my.ini
+ * max_allowed_packet = 20M
+ * innodb_log_file_size = 170M (The following error occured while executing an sql statement: The size of BLOB/TEXT data inserted in one transaction is greater than 10% of redo log size. Increase the redo log size using innodb_log_file_size. in C:\Workspace\pdt\adonai-database\src\Scotty\database\DatabaseException.php:16)
+ * in php.ini
+ * post_max_size=16M
+ * upload_max_filesize=16M
+ * display_errors=Off (to make sure we can parse the result json)
+ */
 public class FileDAOTest {
     private static final String MIME_TYPE_APPLICATION_PDF = "application/pdf";
     @Rule
@@ -134,10 +137,11 @@ public class FileDAOTest {
         Map<String, String> record = DatabaseAccess.getRecordFromLogHistory(Tables.LOGGING, 2);
         String message = record.get("message");
         String expectedMessage = "3 ## correct@login.ch ## file ## INSERT INTO file (filemetadata_id, filename, filesize, filetype, data) " //
-            + "VALUES (?, ?, ?, ?, ?) ## sssss, " + fileMetadataId + ", scottyUpAndDownload.pdf, 368754, pdf, ";
+                + "VALUES (?, ?, ?, ?, ?) ## sssss, " + fileMetadataId + ", scottyUpAndDownload.pdf, 368754, pdf, ";
         Assert.assertThat(message, CoreMatchers.containsString(expectedMessage));
     }
 
+    //check php and mysql config (see note above)
     @Test
     public void create_happyCase14mb_jsonAnswer() throws IOException, JSONException {
         // arrange
@@ -183,6 +187,7 @@ public class FileDAOTest {
         liedFixture.cleanUp();
     }
 
+    //check php and mysql config (see note above)
     @Test
     public void create_20mbFile_dtoException() throws IOException, JSONException {
         // arrange
