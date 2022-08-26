@@ -10,6 +10,7 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -20,12 +21,15 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Map;
 
+import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.*;
 
 /**
@@ -124,6 +128,21 @@ public class FileDAOTest {
         interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), MIME_TYPE_APPLICATION_PDF, "utf-8"));
         Page response = interactor.performRequest();
         return response;
+    }
+
+    @Test
+    public void create_happyCase_updatedAtChanges() throws IOException, ClassNotFoundException, SQLException {
+        // arrange
+        LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
+        String pdfPath = FileHelper.getPdfResourcePathByName("fixture/scottyUpAndDownload.pdf");
+        String before = LastUpdateFromServerReader.read();
+        // act
+        uploadFile(liedFixture, pdfPath);
+        // assert
+        String after = LastUpdateFromServerReader.read();
+        assertNotEquals(before, after);
+        // clean up
+        liedFixture.cleanUp();
     }
 
     private long findFileMetadataIdByLiedId(long liedId) {
