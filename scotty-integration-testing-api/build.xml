@@ -3,7 +3,7 @@
 
 	<property file="./src/main/resources/basic.properties" />
 
-	<property name="mysqlworkbench" value="C:/xampp/mysql/bin/" />
+	<property name="mysqlworkbench" value="C:\Program Files\MySQL\MySQL Workbench 8.0 CE" />
 
 	<property name="mysqldump" value="${mysqlworkbench}/mysqldump.exe" />
 	<property name="mysql" value="${mysqlworkbench}/mysql.exe" />

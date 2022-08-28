@@ -4,6 +4,8 @@ import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import ch.adoray.scotty.integrationtest.common.response.RestResponse;
@@ -55,7 +57,7 @@ abstract class ExtRestInteractor {
         try {
             String requestUrl = url + (addDebugParam ? "?" + debugParamString : "");
             WebRequest request = new WebRequest(new URL(requestUrl), getHttpMethod());
-            request.setCharset("utf-8");
+            request.setCharset(StandardCharsets.UTF_8);
             setRequestParamsAndBody(request);
             P page = getPage(request);
             System.out.println("Response:");

@@ -10,7 +10,6 @@ import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.hamcrest.CoreMatchers;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -21,15 +20,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static ch.adoray.scotty.integrationtest.base.Configuration.config;
 import static org.junit.Assert.*;
 
 /**
@@ -125,20 +122,23 @@ public class FileDAOTest {
     private Page uploadFile(LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture, String pdfPath) {
         ExtRestMultipartFormPostInteractor interactor = new ExtRestMultipartFormPostInteractor("file");
         interactor.addRequestParameter("lied_id", String.valueOf(liedFixture.getLiedId()));
-        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), MIME_TYPE_APPLICATION_PDF, "utf-8"));
+        final File file = new File(pdfPath);
+        interactor.addRequestParameter(new KeyDataPair("file", file, file.getName(), MIME_TYPE_APPLICATION_PDF, StandardCharsets.UTF_8));
         Page response = interactor.performRequest();
         return response;
     }
 
     @Test
-    public void create_happyCase_updatedAtChanges() throws IOException, ClassNotFoundException, SQLException {
+    public void create_happyCase_updatedAtChanges() throws IOException, ClassNotFoundException, SQLException, InterruptedException {
         // arrange
         LiedWithLiedtextsRefrainsAndNumbersInBookFixture liedFixture = LiedWithLiedtextsRefrainsAndNumbersInBookFixture.setupAndCreate();
         String pdfPath = FileHelper.getPdfResourcePathByName("fixture/scottyUpAndDownload.pdf");
+        Thread.sleep(1000);
         String before = LastUpdateFromServerReader.read();
         // act
         uploadFile(liedFixture, pdfPath);
         // assert
+        Thread.sleep(1000);
         String after = LastUpdateFromServerReader.read();
         assertNotEquals(before, after);
         // clean up
@@ -240,7 +240,8 @@ public class FileDAOTest {
         interactor.setFailOnJsonSuccessFalse(false);
         interactor.setThrowExceptionOnFailingStatusCode(false);
         interactor.addRequestParameter("lied_id", String.valueOf(fileFixture.getLiedId()));
-        interactor.addRequestParameter(new KeyDataPair("file", new File(pdfPath), mimeType, "utf-8"));
+        final File file = new File(pdfPath);
+        interactor.addRequestParameter(new KeyDataPair("file", file, file.getName(), mimeType, StandardCharsets.UTF_8));
         RestResponse response = interactor.performRequestAsRestResponse();
         return response;
     }

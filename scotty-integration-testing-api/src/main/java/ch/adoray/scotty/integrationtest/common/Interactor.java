@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.skyscreamer.jsonassert.JSONParser;
@@ -52,7 +53,7 @@ public class Interactor {
         } catch (FailingHttpStatusCodeException | IOException e) {
             throw new RuntimeException("Performing http request failed.", e);
         } finally {
-            webClient.closeAllWindows();
+            webClient.close();
         }
     }
 
@@ -336,7 +337,7 @@ public class Interactor {
                 request.put("method", method);
                 request.put("type", extType);
                 request.put("upload", extUpload);
-                request.put("data", methodParams);
+                request.put("data", new JSONArray(methodParams));
                 return request.toString();
             } catch (JSONException e) {
                 throw new RuntimeException("Error while building request body.", e);

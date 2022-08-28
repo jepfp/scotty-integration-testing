@@ -94,7 +94,7 @@ public class LiedHelper {
     // TODO: remove method and use the one from above maybe better with this code.
     public static LocalDateTime determineUpdatedAtOfLiedById(Long liedId) {
         Map<String, String> record = DatabaseAccess.getRecordById(Tables.LIED, liedId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(record.get("updated_at"), formatter);
     }
 

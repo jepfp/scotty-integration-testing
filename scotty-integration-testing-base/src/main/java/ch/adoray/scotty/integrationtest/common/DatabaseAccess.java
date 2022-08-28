@@ -64,9 +64,10 @@ public class DatabaseAccess {
     }
 
     public static Map<String, String> executeStatementAndReturnLastResult(String sqlStatement) throws SQLException, ClassNotFoundException {
-        try (Statement statement = getConnection().createStatement(); ResultSet resultSet = statement.executeQuery(sqlStatement);) {
+        try (PreparedStatement statement = getConnection().prepareStatement(sqlStatement, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY); ResultSet resultSet = statement.executeQuery();) {
+            resultSet.afterLast();
             ResultSetMetaData metaData = resultSet.getMetaData();
-            if (resultSet.last()) {
+            if (resultSet.previous()) {
                 int columnCount = metaData.getColumnCount();
                 Map<String, String> tuple = new LinkedHashMap<String, String>();
                 for (int i = 1; i <= columnCount; i++) {

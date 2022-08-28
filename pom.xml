@@ -18,37 +18,34 @@
 	<modules>
 		<module>scotty-integration-testing-base</module>
 		<module>scotty-integration-testing-api</module>
-		<module>scotty-acceptancetest-readonly</module>
-		<module>scotty-acceptancetest-modifying</module>
-		<module>scotty-acceptancetest-base</module>
 	</modules>
 
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<!-- Needs to be above 3.0? -->
-			<version>3.2.1</version>
+			<version>3.2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.28</version>
+			<version>8.0.30</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>r09</version>
+			<version>23.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
+			<version>2.11.0</version>
 		</dependency>
 	</dependencies>
 </project>
